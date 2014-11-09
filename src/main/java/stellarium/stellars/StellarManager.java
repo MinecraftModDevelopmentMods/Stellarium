@@ -134,9 +134,9 @@ public class StellarManager {
 		//Declaration
 		System.out.println("[Stellarium]: "+"Initializing Earth...");
 		Earth.AddSatellite(Moon);
-		Earth.Radius=4.2634e-5;
+		Earth.Radius.set(4.2634e-5);
 		Earth.Mass=3.002458398e-6;
-		Moon.Radius=4e-5;
+		Moon.Radius.set(4e-5);
 		
 		//Initialization
 		//-Earth
@@ -172,7 +172,7 @@ public class StellarManager {
 		//Mercury
 		System.out.println("[Stellarium]: "+"Initializing Mercury...");
 		Mercury.Albedo=0.119;
-		Mercury.Radius=1.630815508e-5;
+		Mercury.Radius.set(1.630815508e-5);
 		Mercury.Mass=1.660147806e-7;
 		Mercury.a0=0.38709843;
 		Mercury.e0=0.20563661;
@@ -192,7 +192,7 @@ public class StellarManager {
 		//Venus
 		System.out.println("[Stellarium]: "+"Initizlizing Venus...");
 		Venus.Albedo=0.90;
-		Venus.Radius=4.0453208556e-5;
+		Venus.Radius.set(4.0453208556e-5);
 		Venus.Mass=2.447589362e-6;
 		Venus.a0=0.72332102;
 		Venus.e0=0.00676399;
@@ -212,7 +212,7 @@ public class StellarManager {
 		//Mars
 		System.out.println("[Stellarium]: "+"Initializing Mars...");
 		Mars.Albedo=0.25;
-		Mars.Radius=2.26604278e-5;
+		Mars.Radius.set(2.26604278e-5);
 		Mars.Mass=3.22683626e-7;
 		Mars.a0=1.52371243;
 		Mars.e0=0.09336511;
@@ -232,7 +232,7 @@ public class StellarManager {
 		//Jupiter
 		System.out.println("[Stellarium]: "+"Initializing Jupiter...");
 		Jupiter.Albedo=0.343;
-		Jupiter.Radius=4.673195187e-4;
+		Jupiter.Radius.set(4.673195187e-4);
 		Jupiter.Mass=9.54502036e-4;
 		Jupiter.a0=5.20248019;
 		Jupiter.e0=0.0485359;
@@ -256,7 +256,7 @@ public class StellarManager {
 		//Saturn
 		System.out.println("[Stellarium]: "+"Initializing Saturn...");
 		Saturn.Albedo=0.342;
-		Saturn.Radius=3.83128342e-4;
+		Saturn.Radius.set(3.83128342e-4);
 		Saturn.Mass=2.8578754e-4;
 		Saturn.a0=9.54149883;
 		Saturn.e0=0.05550825;
@@ -280,7 +280,7 @@ public class StellarManager {
 		//Uranus
 		System.out.println("[Stellarium]: "+"Initializing Uranus...");
 		Uranus.Albedo=0.300;
-		Uranus.Radius=1.68890374e-4;
+		Uranus.Radius.set(1.68890374e-4);
 		Uranus.Mass=4.3642853557e-5;
 		Uranus.a0=19.1897948;
 		Uranus.e0=0.0468574;
@@ -304,7 +304,7 @@ public class StellarManager {
 		//Neptune
 		System.out.println("[Stellarium]: "+"Initializing Neptune...");
 		Neptune.Albedo=0.290;
-		Neptune.Radius=1.641209893e-4;
+		Neptune.Radius.set(1.641209893e-4);
 		Neptune.Mass=5.14956513e-5;
 		Neptune.a0=30.06952752;
 		Neptune.e0=0.00895439;
@@ -340,6 +340,8 @@ public class StellarManager {
 	public static final void Update(double time, boolean IsOverWorld){
 		time=time+5000.0;
 		
+        long cur = System.currentTimeMillis();
+		
 		//Must be first
 		Transforms.Update(time, IsOverWorld);
 		
@@ -355,5 +357,8 @@ public class StellarManager {
 		Neptune.Update();
 		
 		if(BrStar.IsInitialized) BrStar.UpdateAll();
+		
+        //System.out.println(System.currentTimeMillis() - cur);
+
 	}
 }

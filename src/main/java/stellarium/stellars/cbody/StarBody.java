@@ -6,8 +6,8 @@ import stellarium.stellars.orbit.OrbitMv;
 import stellarium.stellars.orbit.OrbitSt;
 import stellarium.initials.*;
 import stellarium.util.math.*;
+import stellarium.view.ViewPoint;
 import stellarium.viewrender.render.RBase;
-import stellarium.viewrender.viewpoint.ViewPoint;
 import cpw.mods.fml.relauncher.*;
 
 

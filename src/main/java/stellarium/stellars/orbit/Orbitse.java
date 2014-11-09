@@ -15,7 +15,6 @@ import stellarium.util.math.Rotate;
 import stellarium.util.math.SpCoord;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vec;
 
 public class Orbitse extends OrbitMv {
 	public double a, e;
@@ -151,7 +150,7 @@ public class Orbitse extends OrbitMv {
 	
 	@SideOnly(Side.SERVER)
 	protected void UpdateEcRPos(){
-		Pos=Spmath.GetOrbVec(a, e, new Rotate('X', -Spmath.Radians(i.val)), new Rotate('Z', -Spmath.Radians(w.val)), new Rotate('Z', -Spmath.Radians(Om.val)), M.val);
+		Pos.set(Spmath.GetOrbVec(a, e, new Rotate('X').setRAngle(-Spmath.Radians(i.val)), new Rotate('Z').setRAngle(-Spmath.Radians(w.val)), new Rotate('Z').setRAngle(-Spmath.Radians(Om.val)), M.val));
 	}
 	
 	@Override

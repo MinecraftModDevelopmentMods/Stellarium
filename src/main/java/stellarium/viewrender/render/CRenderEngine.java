@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.stellars.Color;
 import stellarium.util.math.*;
 
@@ -128,9 +129,9 @@ public class CRenderEngine {
 		ARBShaderObjects.glUniform1fARB(my_value_loc, (float)val);
 	}
 	
-	public void setValue(String Value_name, Vec val){
+	public void setValue(String Value_name, EVector val){
 		int my_value_loc = ARBShaderObjects.glGetUniformLocationARB(nowshader, Value_name);
-		ARBShaderObjects.glUniform3fARB(my_value_loc, (float)val.x, (float)val.y, (float)val.z);
+		ARBShaderObjects.glUniform3fARB(my_value_loc, val.getCoord(0).asFloat(), val.getCoord(1).asFloat(), val.getCoord(2).asFloat());
 	}
 	
 	public void setValue(String Value_name, Color val){

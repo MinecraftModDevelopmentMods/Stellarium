@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 
 import stellarium.stellars.Color;
 import stellarium.util.math.Spmath;
-import stellarium.util.math.Vec;
 
 public class RPointy extends RBase {
 	
@@ -28,7 +27,7 @@ public class RPointy extends RBase {
 		     
 		GL11.glPointSize((float) Spmath.Radians(cre.res));
 	   	GL11.glBegin(GL11.GL_POINT);
-	   	GL11.glVertex3d(Pos.x, Pos.y, Pos.z); 
+	   	GL11.glVertex3d(Pos.getCoord(0).asDouble(), Pos.getCoord(1).asDouble(), Pos.getCoord(2).asDouble()); 
 		GL11.glEnd();
 		
 	}

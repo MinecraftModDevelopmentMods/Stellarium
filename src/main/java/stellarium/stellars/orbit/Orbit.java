@@ -5,6 +5,7 @@ import java.util.*;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import scala.Int;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.util.*;
 import stellarium.util.math.*;
 import stellarium.initials.*;
@@ -12,7 +13,7 @@ import stellarium.initials.CConstructReader.*;
 import stellarium.stellars.*;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
-import stellarium.viewrender.viewpoint.*;
+import stellarium.view.ViewPoint;
 
 
 public abstract class Orbit {
@@ -29,7 +30,7 @@ public abstract class Orbit {
 	
 	public double Mass;
 	
-	public Vec Pos;
+	public EVector Pos;
 	
 	
 	public StellarManager manager;
@@ -158,8 +159,8 @@ public abstract class Orbit {
 	 * */
 
 	public void GetLocalized(ViewPoint vp, LocalCValue lcv){
-		lcv.Pos=Vec.Sub(Pos, vp.EcRPos);
-		lcv.Dist=lcv.Pos.Size();
+		lcv.Pos.set(VecMath.sub(Pos, vp.EcRPos));
+		lcv.Dist=Spmath.getD(VecMath.size(lcv.Pos));
 		if(!this.IsVirtual)
 			theBody.GetLocalized(vp, lcv);
 	}

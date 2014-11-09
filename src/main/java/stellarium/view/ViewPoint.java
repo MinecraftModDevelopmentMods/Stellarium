@@ -1,4 +1,4 @@
-package stellarium.viewrender.viewpoint;
+package stellarium.view;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,11 @@ import java.util.Map;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import scala.collection.immutable.Map.Map1;
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.CrossUtil;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
+import stellarium.sky.ISkySet;
 import stellarium.stellars.StellarManager;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
@@ -31,19 +36,25 @@ public class ViewPoint {
 	public double Heightkm, HeightAU;
 	
 	//Horizontal Coordinate - Zenith, North, East (Unit Vector)
-	public Coord HorCoord;
-	public Vec Zen, North, East;
+	public EVector Zen = new EVector(3), North = new EVector(3), East = new EVector(3);
 	
 	//EcRPos of Viewpoint
-	public Vec EcRPos;
+	public EVector EcRPos = new EVector(3);
 	
-	//Maps fo LocalCValues
+	//Maps for LocalCValues
 	public Map<Orbit, LocalCValue> mapotol=new HashMap<Orbit, LocalCValue>();
 	public Map<LocalCValue, Orbit> mapltoo=new HashMap<LocalCValue, Orbit>();
 
 	
 	//The StellarManager
 	public StellarManager manager;
+	
+	public ISkySet skyset;
+	
+	public ISkySet getSkySet()
+	{
+		return skyset;
+	}
 	
 	public void InitFixedVp(CBody hostcbody, StellarManager m){
 		manager=m;
@@ -77,12 +88,12 @@ public class ViewPoint {
 
 	protected void UpdateCoordPos(){
 		if(HostCBody!=null){
-			Zen=HostCBody.GetZenDir(lat, lon);
-			East=Vec.Cross(HostCBody.Pol, Zen);
-			North=Vec.Cross(Zen, East);
+			Zen.set(HostCBody.GetZenDir(lat, lon));
+			East.set((IValRef)CrossUtil.cross((IEVector)HostCBody.Pol, (IEVector)Zen));
+			North.set((IValRef)CrossUtil.cross((IEVector)Zen, (IEVector)East));
 			
 			HeightAU=Heightkm/manager.AU;
-			EcRPos=Vec.Add(HostCBody.theOrbit.Pos, Vec.Mul(Zen, HostCBody.Radius+this.HeightAU));
+			EcRPos.set(VecMath.add(HostCBody.theOrbit.Pos, VecMath.mult(HostCBody.Radius+this.HeightAU, Zen)));
 		}
 		else{
 		}

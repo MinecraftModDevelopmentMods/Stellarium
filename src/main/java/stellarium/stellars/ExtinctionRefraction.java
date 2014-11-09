@@ -1,11 +1,12 @@
 package stellarium.stellars;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.util.math.SpCoord;
 import stellarium.util.math.SpCoordf;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vec;
-import stellarium.util.math.Vecf;
+import stellarium.util.math.VecMath;
 
 //Will be corrected
 public class ExtinctionRefraction {
@@ -39,9 +40,9 @@ public class ExtinctionRefraction {
 		return am;
 	}
 	
-	//Get Extinction magnitude(in V band) of vector(its size must be 1)
-	public static double Airmass(Vec vec, boolean IsApparent){
-		return Airmass(vec.z, IsApparent);
+	//Get Extinction magnitude(in V band) of EVectortor(its size must be 1)
+	public static double Airmass(IValRef<EVector> vec, boolean IsApparent){
+		return Airmass(vec.getVal().getCoord(2).asDouble(), IsApparent);
 	}
 	
 	//Calculate Airmass
@@ -65,20 +66,12 @@ public class ExtinctionRefraction {
 		return am;
 	}
 	
-	//Get Extinction magnitude(in V band) of vector(its size must be 1)
-	public static float Airmass(Vecf vec, boolean IsApparent){
-		return Airmass(vec.z, IsApparent);
-	}
-	
 	//Get Refraction-applied Vector(IsApplying=true) or Refraction-disapplied Vector(IsApplying=false)
-	public static Vec Refraction(Vec vec, boolean IsApplying){
-		
-		double size=vec.Size();
-		vec=Vec.Div(vec, size);
-		
-		
+	public static IValRef<EVector> Refraction(IValRef<EVector> vec, boolean IsApplying){
+				
 		double R;
-		SpCoord sp=Transforms.GetHorCoord(vec);
+		SpCoord sp = new SpCoord();
+		sp.setWithVec(VecMath.normalize(vec));
 				
  		if(IsApplying)
 		{
@@ -93,32 +86,6 @@ public class ExtinctionRefraction {
 			sp.y-=R/60.0;
 		}
  		
- 		return vec.Mul(Transforms.GetVec(sp),size);
-	}
-	
-	//Get Refraction-applied Vector(IsApplying=true) or Refraction-disapplied Vector(IsApplying=false)
-	public static Vecf Refraction(Vecf vec, boolean IsApplying){
-		
-		float size=vec.Size();
-		vec=Vecf.Div(vec, size);
-		
-		
-		float R;
-		SpCoordf sp=Transforms.GetHorCoord(vec);
-				
- 		if(IsApplying)
-		{
-			//Saemundsson (1986)
- 			R=1.02f/Spmath.tand(sp.y+10.3f/(sp.y+5.11f));
- 			sp.y+=R/60.0f;
-		}
-		else
-		{
-			//Garfinkel (1967)
-			R=1.0f/Spmath.tand(sp.y+7.31f/(sp.y+4.4f));
-			sp.y-=R/60.0f;
-		}
- 		
- 		return vec.Mul(Transforms.GetVec(sp),size);
+ 		return VecMath.mult(VecMath.size(vec), sp.getVec());
 	}
 }

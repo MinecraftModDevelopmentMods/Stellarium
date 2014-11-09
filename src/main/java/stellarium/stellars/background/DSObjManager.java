@@ -1,7 +1,7 @@
 package stellarium.stellars.background;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
 
 public abstract class DSObjManager {
-	public abstract DSObj[] GetDsObjArray(Vec view, double dangle);
+	public abstract DSObj[] GetDsObjArray(EVector view, double dangle);
 }

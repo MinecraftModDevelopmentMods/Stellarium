@@ -1,13 +1,17 @@
 package stellarium.lighting;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.numerics.IReal;
+import sciapi.api.value.util.BOp;
+import sciapi.api.value.util.VOp;
+
 
 public class LightSource {
-	public Vec Pos;
+	public EVector Pos;
 	public double Lum;
 	public double Size;
 	
-	public LightSource(Vec pos, double lum, double size){
+	public LightSource(EVector pos, double lum, double size){
 		Pos = pos;
 		Lum = lum;
 		Size = size;
@@ -20,7 +24,7 @@ public class LightSource {
 		return Lum/(Dist*Dist);
 	}
 	
-	public double GetFlux(Vec gPos){
-		return Lum/ Vec.Sub(gPos, Pos).Size2() ;
+	public double GetFlux(EVector gPos){
+		return Lum / ((IReal) VOp.size2(BOp.sub(gPos, Pos))).asDouble();
 	}
 }

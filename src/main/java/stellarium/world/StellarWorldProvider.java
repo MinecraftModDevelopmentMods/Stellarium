@@ -1,21 +1,35 @@
 package stellarium.world;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.EVectorSet;
+import sciapi.api.value.util.COp;
 import stellarium.stellars.ExtinctionRefraction;
 import stellarium.stellars.StellarManager;
 import stellarium.util.math.Spmath;
-import stellarium.util.math.Vec;
+import stellarium.util.math.VecMath;
 import net.minecraft.world.WorldProviderSurface;
 
 public class StellarWorldProvider extends WorldProviderSurface {
-	
+		
     public float calculateCelestialAngle(long par1, float par3)
     {
-    	if(StellarManager.Earth.EcRPos==null)
+    	if(StellarManager.Earth.EcRPos == null)
     		StellarManager.Update(par1+par3, isSurfaceWorld());
-    	Vec sun=StellarManager.Sun.GetPosition();
-    	double h=Math.asin(ExtinctionRefraction.Refraction(sun, true).z);
-    	if(sun.x<0) h=Math.PI-h;
-    	if(sun.x>0 && h<0) h=h+2*Math.PI;
+    	
+    	IValRef<EVector> sun = EVectorSet.ins(3).getSTemp();
+    	
+    	sun.set(StellarManager.Sun.GetPosition());
+    	sun.set(ExtinctionRefraction.Refraction(sun, true));
+    	sun.set(VecMath.normalize(sun));
+    	
+    	double h=Math.asin(VecMath.getZ(sun));
+    	
+    	if(VecMath.getCoord(sun, 0).asDouble()<0) h=Math.PI-h;
+    	if(VecMath.getCoord(sun, 0).asDouble()>0 && h<0) h=h+2*Math.PI;
+    	
+    	sun.onUsed();
+    	
     	return (float)(Spmath.fmod((h/2/Math.PI)+0.75,2*Math.PI));
     }
 

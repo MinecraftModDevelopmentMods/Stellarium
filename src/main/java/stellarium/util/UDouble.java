@@ -1,6 +1,6 @@
 package stellarium.util;
 
-public class DDouble {
+public class UDouble {
 	public double pre, post;
 	
 	public void Set(double d){

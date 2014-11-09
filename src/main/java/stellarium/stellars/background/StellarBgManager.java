@@ -3,7 +3,6 @@ package stellarium.stellars.background;
 import stellarium.stellars.Color;
 import stellarium.stellars.StellarManager;
 import stellarium.util.math.Spmath;
-import stellarium.util.math.Vec;
 import stellarium.viewrender.render.*;
 import stellarium.viewrender.scope.Scope;
 
@@ -12,16 +11,16 @@ public class StellarBgManager {
 	StellarManager manager;
 	
 	StarManager brs = new BrStarManager();
-	StarManager mids = new MidStarManager();
-	StarManager fns = new FnStarManager();
+	//StarManager mids = new MidStarManager();
+	//StarManager fns = new FnStarManager();
 	
-	DSObjManager mes = new MessierManager();
+	//DSObjManager mes = new MessierManager();
 	
 	public StellarBgManager(StellarManager m){
 		manager = m;
 	}
 	
-	public void AddBgToRender(StellarRenders sr){
+	/*public void AddBgToRender(StellarRenders sr){
 		Vec view = sr.view;
 		Scope scope = sr.scope;
 		Star[] star;
@@ -71,5 +70,5 @@ public class StellarBgManager {
 		else if(scope.Conc < 200.0)
 			return 1;
 		else return 2;
-	}
+	}*/
 }

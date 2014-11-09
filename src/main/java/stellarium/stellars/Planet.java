@@ -2,10 +2,14 @@ package stellarium.stellars;
 
 import java.util.ArrayList;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.util.BOp;
+import sciapi.api.value.util.VOp;
 import stellarium.util.math.Rotate;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vec;
+import stellarium.util.math.VecMath;
 
 public class Planet extends SolarObj{
 	
@@ -18,17 +22,14 @@ public class Planet extends SolarObj{
 	double ad, ed, Id, Ld, wbard, Omegad;
 	double b, c, s, f;
 	
-	//Radius of Planet
-	public double Radius;
-	
 	//Planet's Pole(Ecliptic Coord)
-	Vec Pole;
+	EVector Pole;
 	
 	//Planet's Prime Meridian at first
-	Vec PrMer0;
+	EVector PrMer0;
 	
 	//Planet's East from Prime Meridian
-	Vec East;
+	EVector East;
 	
 	//Rotating angular velocity
 	double Rot;
@@ -45,9 +46,11 @@ public class Planet extends SolarObj{
 	//Planet name
 	char name[];
 
+	Rotate roti = new Rotate('X'), rotw = new Rotate('Z'), rotom = new Rotate('Z');
+	
 	@Override
-	//Calculate Planet's Ecliptic Vector from Sun
-	public Vec GetEcRPos(double time) {
+	//Calculate Planet's Ecliptic EVectortor from Sun
+	public IValRef<EVector> GetEcRPos(double time) {
 		double day=time/24000.0;
 		double cen=day/36525.0;
 		double a=a0+ad*cen,
@@ -58,28 +61,32 @@ public class Planet extends SolarObj{
 				Omega=Omega0+Omegad*cen;
 		double w=wbar-Omega;
 		double M=L-wbar+b*cen*cen+c*Spmath.cosd(f*cen)+s*Spmath.sind(f*cen);
-		return Spmath.GetOrbVec(a, e, new Rotate('X', -Spmath.Radians(I)), new Rotate('Z', -Spmath.Radians(w)), new Rotate('Z', -Spmath.Radians(Omega)), M);
+		
+		roti.setRAngle(-Spmath.Radians(I));
+		rotw.setRAngle(-Spmath.Radians(w));
+		rotom.setRAngle(-Spmath.Radians(Omega));
+		
+		return Spmath.GetOrbVec(a, e, roti, rotw, rotom, M);
 	}
 	
 	//Ecliptic Position of Planet's Local Region from Moon Center (Update Needed)
-	public Vec PosLocalP(double longitude, double lattitude, double time){
+	public IValRef<EVector> PosLocalP(double longitude, double lattitude, double time){
 		double longp=Spmath.Radians(longitude+Rot*time);
 		double lat=Spmath.Radians(lattitude);
-		Vec Pl=Vec.Add(Vec.Add(Vec.Mul(Pole, Math.sin(lat)), Vec.Mul(PrMer0, Math.cos(lat)*Math.cos(longp))), Vec.Mul(East,Math.cos(lat)*Math.sin(longp)));
-		return Vec.Mul(Pl, Radius);
+		return VOp.mult(Radius, BOp.add(BOp.add(VecMath.mult(Math.sin(lat), Pole), VecMath.mult(Math.cos(lat)*Math.cos(longp), PrMer0)), VecMath.mult(Math.cos(lat)*Math.sin(longp), East)));
 	}
 	
 	//Ecliptic Position of Planet's Local Region from Earth (Update Needed)
-	public Vec PosLocalE(double longitude, double lattitude, double time){
-		return Vec.Add(EcRPosE, PosLocalP(longitude, lattitude, time));
+	public IValRef<EVector> PosLocalE(double longitude, double lattitude, double time){
+		return VecMath.add(EcRPosE, PosLocalP(longitude, lattitude, time));
 	}
 	
 	//Update magnitude
 	public void UpdateMagnitude(){
-		double dist=this.EcRPosE.Size();
-		double distS=this.EcRPos.Size();
-		double distE=StellarManager.Earth.EcRPos.Size();
-		double LvsSun=this.Radius*this.Radius*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
+		double dist=Spmath.getD(VecMath.size(EcRPosE));
+		double distS=Spmath.getD(VecMath.size(EcRPos));
+		double distE=Spmath.getD(VecMath.size(StellarManager.Earth.EcRPos));
+		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}
 	
@@ -88,16 +95,16 @@ public class Planet extends SolarObj{
 	//Update Planet
 	@Override
 	public void Update() {
-		EcRPos=GetEcRPos(Transforms.time);
-		EcRPosE=Vec.Sub(this.EcRPos, StellarManager.Earth.EcRPos);
+		EcRPos.set(GetEcRPos(Transforms.time));
+		EcRPosE.set(VecMath.sub(this.EcRPos, StellarManager.Earth.EcRPos));
 		
 		for(int i=0; i<satellites.size(); i++)
 			satellites.get(i).Update();
 		
 		this.UpdateMagnitude();
 		
-		AppPos=GetAtmPos();
-		App_Mag=Mag+ExtinctionRefraction.Airmass(AppPos.z, true)*ExtinctionRefraction.ext_coeff_V;
+		AppPos.set(GetAtmPos());
+		App_Mag=Mag+ExtinctionRefraction.Airmass(AppPos, true)*ExtinctionRefraction.ext_coeff_V;
 	}
 	
 	public void AddSatellite(Satellite sat){
@@ -108,7 +115,7 @@ public class Planet extends SolarObj{
 
 	@Override
 	public void Initialize() {
-//		East=Vec.Cross(Pole, PrMer0);
+//		East=EVector.Cross(Pole, PrMer0);
 		for(int i=0; i<satellites.size(); i++)
 			satellites.get(i).Initialize();
 	}

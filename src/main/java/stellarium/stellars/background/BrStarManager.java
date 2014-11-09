@@ -1,12 +1,12 @@
 package stellarium.stellars.background;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
 
 public class BrStarManager extends StarManager{
 	Star[] bgstars;
 
 	@Override
-	public Star[] GetStarArray(Vec view, double dangle) {
+	public Star[] GetStarArray(EVector view, double dangle) {
 		return bgstars;
 	}
 

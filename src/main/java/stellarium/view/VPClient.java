@@ -1,13 +1,15 @@
-package stellarium.viewrender.viewpoint;
+package stellarium.view;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.CrossUtil;
+import sciapi.api.value.euclidian.IEVector;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.stellars.orbit.Orbit;
 import stellarium.util.DVec;
-import stellarium.util.math.Coord;
-import stellarium.util.math.Vec;
+import stellarium.util.math.VecMath;
 import cpw.mods.fml.relauncher.*;
 
 
@@ -29,9 +31,9 @@ public class VPClient extends ViewPoint {
 	public void Setpartial(double part){
 		this.Setpartial(part, manager.mvmanager.CSystem);
 		
-		Zen = DZen.Get(part);
-		North = DNorth.Get(part);
-		East = DEast.Get(part);
+		Zen.set(DZen.Get(part));
+		North.set(DNorth.Get(part));
+		East.set(DEast.Get(part));
 	}
 	
 	protected void Setpartial(double part, Orbit orb){
@@ -46,11 +48,11 @@ public class VPClient extends ViewPoint {
 	protected void UpdateCoordPos(){
 		if(HostCBody!=null){
 			DZen.Set(HostCBody.GetZenDir(lat, lon));
-			DEast.Set(Vec.Cross(HostCBody.Pol, Zen));
-			DNorth.Set(Vec.Cross(Zen, East));
+			DEast.Set((IValRef)CrossUtil.cross((IEVector)HostCBody.Pol, (IEVector)Zen));
+			DNorth.Set((IValRef)CrossUtil.cross((IEVector)Zen, (IEVector)East));
 			
 			HeightAU=Heightkm/manager.AU;
-			EcRPos=Vec.Add(HostCBody.theOrbit.Pos, Vec.Mul(Zen, HostCBody.Radius+this.HeightAU));
+			EcRPos.set(VecMath.add(HostCBody.theOrbit.Pos, VecMath.mult(HostCBody.Radius+this.HeightAU, Zen)));
 		}
 		else{
 		}

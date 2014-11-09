@@ -10,12 +10,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import net.minecraft.client.Minecraft;
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
 import stellarium.stellars.ExtinctionRefraction;
 import stellarium.stellars.StellarManager;
 import stellarium.util.math.SpCoordf;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vecf;
 
 public class BrStar extends Star {
 	
@@ -23,12 +25,6 @@ public class BrStar extends Star {
 	//constants
 	public static final int NumStar=9110;
 	public static final int Bufsize=198;
-	
-	//Object's Ecliptic Position(Mainly from Sun)
-	public Vecf EcRPos;
-	
-	//Object's Apparent Position
-	public Vecf AppPos;
 	
 	//Magnitude
 	public float Mag;
@@ -56,24 +52,23 @@ public class BrStar extends Star {
 	 * time is 'tick' unit
 	 * world is false in Overworld, and true in Ender
 	*/
-	public Vecf GetPositionf(){
-		Vecf pvec=Transforms.ZTEctoNEcf.Rot(EcRPos);
-		pvec=Transforms.EctoEqf.Rot(pvec);
-		pvec=Transforms.NEqtoREqf.Rot(pvec);
-		pvec=Transforms.REqtoHorf.Rot(pvec);
+	public IValRef<EVector> GetPositionf(){
+		IValRef pvec=Transforms.ZTEctoNEc.transform((IEVector)EcRPos);
+		pvec=Transforms.EctoEq.transform(pvec);
+		pvec=Transforms.NEqtoREq.transform(pvec);
+		pvec=Transforms.REqtoHor.transform(pvec);
 		return pvec;
 	}
 	
-	public Vecf GetAtmPosf(){
-		Vecf p=GetPositionf();
-		return ExtinctionRefraction.Refraction(p, true);
+	public IValRef<EVector> GetAtmPosf(){
+		return ExtinctionRefraction.Refraction(GetPositionf(), true);
 	}
 
 	@Override
 	public void Update() {
 		if(Mag>StellarManager.Mag_Limit) this.unable=true;
-		AppPos=GetAtmPosf();
-		float Airmass=ExtinctionRefraction.Airmass(AppPos, true);
+		AppPos.set(GetAtmPosf());
+		float Airmass=(float) ExtinctionRefraction.Airmass(AppPos, true);
     	App_Mag= (Mag+Airmass*ExtinctionRefraction.ext_coeff_Vf);
     	App_B_V= (B_V+Airmass*ExtinctionRefraction.ext_coeff_B_Vf);
 	}
@@ -160,8 +155,7 @@ public class BrStar extends Star {
 				+Spmath.btoi(star_value, 86, 2)/60.0f
 				+Spmath.btoi(star_value, 88, 2)/3600.0f);
 		
-		EcRPos=Transforms.GetVec(new SpCoordf(RA, Dec));
-		EcRPos=Transforms.EqtoEcf.Rot(EcRPos);
+		EcRPos.set((IValRef)Transforms.EqtoEc.transform((IValRef)new SpCoordf(RA, Dec).getVec()));
 		
 		star_value=null;
 	}

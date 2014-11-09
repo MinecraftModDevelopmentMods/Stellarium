@@ -1,10 +1,10 @@
 package stellarium.viewrender.render;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
 
 public abstract class RHost{
 	//Direction Vector of Zenith, North, East
-	public Vec Zen, North, East;
+	public EVector Zen, North, East;
 	
 	//Distance per Radius
 	public double DtoR;
@@ -12,7 +12,7 @@ public abstract class RHost{
 	//Astronomical Seeing of Host Planet
 	public double Seeing;
 	
-	public RHost SetHor(Vec zen, Vec north, Vec east){
+	public RHost SetHor(EVector zen, EVector north, EVector east){
 		Zen=zen;
 		North=north;
 		East=east;

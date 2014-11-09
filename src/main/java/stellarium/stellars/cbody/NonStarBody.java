@@ -3,15 +3,17 @@ package stellarium.stellars.cbody;
 import java.util.ArrayList;
 
 import cpw.mods.fml.relauncher.*;
+import sciapi.api.value.util.BOp;
+import sciapi.api.value.util.VOp;
 import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.CShade;
 import stellarium.stellars.Color;
 import stellarium.stellars.StellarManager;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.util.math.*;
+import stellarium.view.ViewPoint;
 import stellarium.viewrender.render.RBase;
 import stellarium.viewrender.render.RPointy;
-import stellarium.viewrender.viewpoint.ViewPoint;
 
 public abstract class NonStarBody extends CBody {
 	
@@ -85,7 +87,7 @@ public abstract class NonStarBody extends CBody {
 	@Override
 	@SideOnly(Side.SERVER)
 	protected void UpdateLuminosity() {
-		double dist=Vec.Sub(theOrbit.Pos, ParStarBody.theOrbit.Pos).Size();
+		double dist=Spmath.getD(VecMath.size(VecMath.sub(theOrbit.Pos, ParStarBody.theOrbit.Pos)));
 		Lum = ParStarBody.Lum / (4*dist*dist)*this.Radius*this.Radius;
 	}
 	
@@ -106,7 +108,7 @@ public abstract class NonStarBody extends CBody {
 
 	@SideOnly(Side.CLIENT)
 	public double GetPhase(){
-		return (1.0+Vec.Dot(theOrbit.Pos, ParStarBody.theOrbit.Pos)/ParStarBody.theOrbit.Pos.Size()/ParStarBody.theOrbit.Pos.Size())/2.0;
+		return (1.0+Spmath.getD(BOp.div(VecMath.dot(theOrbit.Pos, ParStarBody.theOrbit.Pos), BOp.mult(VecMath.size(ParStarBody.theOrbit.Pos), VecMath.size(ParStarBody.theOrbit.Pos)))))/2.0;
 	}
 
 	@Override

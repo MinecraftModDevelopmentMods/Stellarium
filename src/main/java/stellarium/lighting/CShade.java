@@ -8,10 +8,10 @@ public class CShade {
 	public CBody cause;
 	
 	public DVec ShadePos;
-	public DDouble Depth;
-	public DDouble EffRad;
-	public DDouble size_LS, size_Sh;
-	public DDouble d_LS, d_Sh;
+	public UDouble Depth;
+	public UDouble EffRad;
+	public UDouble size_LS, size_Sh;
+	public UDouble d_LS, d_Sh;
 	
 	public CShade Get(double part){
 		CShade sh=new CShade();

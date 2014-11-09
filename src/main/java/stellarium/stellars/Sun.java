@@ -1,7 +1,10 @@
 package stellarium.stellars;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vec;
+import stellarium.util.math.VecMath;
 
 public class Sun extends StellarObj{
 	
@@ -19,11 +22,14 @@ public class Sun extends StellarObj{
 
 	//Get Direction Vector of Sun from Earth
 	@Override
-	public Vec GetPosition() {
-		Vec pvec=Transforms.ZTEctoNEc.Rot(Vec.Mul(StellarManager.Earth.EcRPos, -1.0));
-		pvec=Transforms.EctoEq.Rot(pvec);
-		pvec=Transforms.NEqtoREq.Rot(pvec);
-		pvec=Transforms.REqtoHor.Rot(pvec);
+	public synchronized IValRef<EVector> GetPosition() {
+		IValRef pvec=(IValRef)VecMath.mult(-1.0, StellarManager.Earth.EcRPos);
+		
+		pvec=Transforms.ZTEctoNEc.transform(pvec);
+		pvec=Transforms.EctoEq.transform(pvec);
+		pvec=Transforms.NEqtoREq.transform(pvec);
+		pvec=Transforms.REqtoHor.transform(pvec);
+		
 		return pvec;
 	}
 

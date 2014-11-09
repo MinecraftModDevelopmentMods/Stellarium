@@ -2,6 +2,9 @@ package stellarium.stellars.orbit;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
 import stellarium.initials.CCertificateHelper;
 import stellarium.stellars.cbody.CBody;
 import stellarium.util.UpDouble;
@@ -11,7 +14,7 @@ public abstract class OrbitMv extends Orbit {
 	
 	public UpDouble i=new UpDouble(), Om=new UpDouble();
 	
-	public Vec Pol;
+	public EVector Pol = new EVector(3);
 	
 	public double Hill_Radius;
 	
@@ -47,15 +50,17 @@ public abstract class OrbitMv extends Orbit {
 	
 	@SideOnly(Side.SERVER)
 	protected void ParEcRPos(){
-		Pos=Vec.Add(Pos, ParOrbit.Pos);
+		Pos.set(VecMath.add(Pos, ParOrbit.Pos));
 	}
+	
+	Rotate ri = new Rotate('X'), rom = new Rotate('Z');
 	
 	@SideOnly(Side.SERVER)
 	protected void UpdatePole(){
-		Pol=new Vec(0.0, 0.0, 1.0);
-		Rotate RI=new Rotate('X', -Spmath.Radians(i.val0));
-		Rotate ROm=new Rotate('Z', -Spmath.Radians(Om.val0));
-		Pol=ROm.Rot(RI.Rot(Pol));
+		Pol.set(0.0, 0.0, 1.0);
+		ri.setRAngle(-Spmath.Radians(i.val0));
+		rom.setRAngle(-Spmath.Radians(Om.val0));
+		Pol.set((IValRef)rom.transform(ri.transform((IValRef)Pol)));
 	}
 	
 	

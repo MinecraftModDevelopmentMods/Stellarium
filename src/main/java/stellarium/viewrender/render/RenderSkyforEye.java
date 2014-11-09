@@ -4,7 +4,6 @@ import java.nio.DoubleBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-import stellarium.util.math.Vec;
 import stellarium.viewrender.viewer.Viewer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

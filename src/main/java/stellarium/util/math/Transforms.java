@@ -1,5 +1,11 @@
 package stellarium.util.math;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.STempRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.EVectorSet;
+import sciapi.api.value.euclidian.IEVector;
+import sciapi.api.value.util.VOp;
 import stellarium.stellars.StellarManager;
 
 public class Transforms {
@@ -23,132 +29,60 @@ public class Transforms {
 	public static void Update(double stime, boolean IsOverWorld){
 		time=stime;
 		
-		ZTEctoNEc=new Rotate('Z',-Prec*time);
-		NEctoZTEc=new Rotate('Z', Prec*time);
-		NEqtoREq=new Rotate('Z', -Rot*time);
-		REqtoNEq=new Rotate('Z', Rot*time);
+		ZTEctoNEc.setRAngle(-Prec*time);
+		NEctoZTEc.setRAngle(Prec*time);
+		NEqtoREq.setRAngle(-Rot*time);
+		REqtoNEq.setRAngle(Rot*time);
 		if(IsOverWorld){
-			REqtoHor=new Rotate('X', Lat-Math.PI*0.5);
-			HortoREq=new Rotate('X', Math.PI*0.5-Lat);
+			REqtoHor.setRAngle(Lat-Math.PI*0.5);
+			HortoREq.setRAngle(Math.PI*0.5-Lat);
 		}
 		else{
-			REqtoHor=new Rotate('X', Lat2-Math.PI*0.5);
-			HortoREq=new Rotate('X', Math.PI*0.5-Lat2);
+			REqtoHor.setRAngle(Lat2-Math.PI*0.5);
+			HortoREq.setRAngle(Math.PI*0.5-Lat2);
 		}
 		
-		ZTEctoNEcf=new Rotatef('Z',(float) (-Prec*time));
-		NEctoZTEcf=new Rotatef('Z', (float) (Prec*time));
-		NEqtoREqf=new Rotatef('Z', (float) (-Rot*time));
-		REqtoNEqf=new Rotatef('Z', (float) (Rot*time));
-		if(IsOverWorld){
-			REqtoHorf=new Rotatef('X', (float) (Lat-Math.PI*0.5));
-			HortoREqf=new Rotatef('X', (float) (Math.PI*0.5-Lat));
-		}
-		else{
-			REqtoHorf=new Rotatef('X', (float) (Lat2-Math.PI*0.5));
-			HortoREqf=new Rotatef('X', (float) (Math.PI*0.5-Lat2));
-		}
-		
-		ZenD=new Vec(0.0,0.0,1.0);
-		ZenD=Transforms.HortoREq.Rot(ZenD);
-		ZenD=Transforms.REqtoNEq.Rot(ZenD);
-		ZenD=Transforms.EqtoEc.Rot(ZenD);
-		ZenD=Transforms.NEctoZTEc.Rot(ZenD);
-		Zen=Vec.Mul(ZenD, StellarManager.Earth.Radius);
+		ZenD = new EVector(0.0,0.0,1.0);
+		ZenD.set(HortoREq.transform(ZenD));
+		ZenD.set(REqtoNEq.transform(ZenD));
+		ZenD.set(EqtoEc.transform(ZenD));
+		ZenD.set(NEctoZTEc.transform(ZenD));
+		Zen.set(VOp.mult(StellarManager.Earth.Radius, ZenD));
 	}
 	
 	
 	//Direction of Zenith
-	public static Vec ZenD;
+	public static IEVector ZenD;
 	
 	//Vector from Earth center to Ground
-	public static Vec Zen;
+	public static EVector Zen = new EVector(3);
 	
 	
 	//Equatorial to Ecliptic
-	public static final Rotate EqtoEc=new Rotate('X',-e); 
+	public static final Rotate EqtoEc = new Rotate('X').setRAngle(-e); 
 	
 	//Ecliptic to Equatorial
-	public static final Rotate EctoEq=new Rotate('X',e); 
+	public static final Rotate EctoEq = new Rotate('X').setRAngle(e); 
 	
 	
 	//Zero Time Ecliptic to Now Ecliptic
-	public static Rotate ZTEctoNEc;
+	public static Rotate ZTEctoNEc = new Rotate('Z');
 
 	//Now Ecliptic to Zero Time Ecliptic
-	public static Rotate NEctoZTEc;
+	public static Rotate NEctoZTEc = new Rotate('Z');
 
 
 	//Now Equatorial to Rotating Equatorial
-	public static Rotate NEqtoREq;
+	public static Rotate NEqtoREq = new Rotate('Z');
 	
 	//Rotating Equatorial to Now Equatorial
-	public static Rotate REqtoNEq;
+	public static Rotate REqtoNEq = new Rotate('Z');
 
 	
 	//Rotating Equatorial to Horizontal
-	public static Rotate REqtoHor;
+	public static Rotate REqtoHor = new Rotate('X');
 	
 	//Horizontal to Rotating Equatorial
-	public static Rotate HortoREq;
+	public static Rotate HortoREq = new Rotate('X');
 	
-	//Equatorial to Ecliptic
-	public static final Rotatef EqtoEcf=new Rotatef('X',(float) -e); 
-	
-	//Ecliptic to Equatorial
-	public static final Rotatef EctoEqf=new Rotatef('X',(float) e); 
-	
-	
-	//Zero Time Ecliptic to Now Ecliptic
-	public static Rotatef ZTEctoNEcf;
-
-	//Now Ecliptic to Zero Time Ecliptic
-	public static Rotatef NEctoZTEcf;
-
-
-	//Now Equatorial to Rotating Equatorial
-	public static Rotatef NEqtoREqf;
-	
-	//Rotating Equatorial to Now Equatorial
-	public static Rotatef REqtoNEqf;
-
-	
-	//Rotating Equatorial to Horizontal
-	public static Rotatef REqtoHorf;
-	
-	//Horizontal to Rotating Equatorial
-	public static Rotatef HortoREqf;
-	
-	
-	//Get Vector from SpCoord
-	public static final Vec GetVec(SpCoord eqc){
-		return new Vec(
-				Spmath.cosd(eqc.y)*Spmath.cosd(eqc.x),
-				Spmath.cosd(eqc.y)*Spmath.sind(eqc.x),
-				Spmath.sind(eqc.y)
-				);
-	}
-	
-	public static final Vecf GetVec(SpCoordf eqc){
-		return new Vecf(
-				( (Spmath.cosd(eqc.y)*Spmath.cosd(eqc.x))),
-				( (Spmath.cosd(eqc.y)*Spmath.sind(eqc.x))),
-				( Spmath.sind(eqc.y))
-				);
-	}
-	
-	//Get Horizontal Sphere Coordinate from Direction Vector
-	public static final SpCoord GetHorCoord(Vec vec){
-		return new SpCoord(
-				Spmath.Degrees(Math.atan2(vec.y, vec.x)),
-				Spmath.Degrees(Math.asin(vec.z))
-				);
-	}
-	
-	public static final SpCoordf GetHorCoord(Vecf vec){
-		return new SpCoordf(
-				(float)(Spmath.Degrees(Math.atan2(vec.y, vec.x))),
-				(float)(Spmath.Degrees(Math.asin(vec.z)))
-				);
-	}
 }

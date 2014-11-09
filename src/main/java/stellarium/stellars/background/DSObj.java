@@ -1,6 +1,6 @@
 package stellarium.stellars.background;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
 
 public class DSObj {
 	byte[] DSObjData;
@@ -11,7 +11,7 @@ public class DSObj {
 	
 	public double Size;
 	
-	public Vec Pos;
+	public EVector Pos;
 	
 	public String ImgLoc;
 }

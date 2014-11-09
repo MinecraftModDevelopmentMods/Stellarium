@@ -6,9 +6,9 @@ import stellarium.stellars.background.StellarBgManager;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
 import stellarium.stellars.orbit.*;
+import stellarium.view.VPClient;
 import stellarium.viewrender.render.*;
 import stellarium.viewrender.scope.*;
-import stellarium.viewrender.viewpoint.*;
 import stellarium.stellars.*;
 
 @SideOnly(Side.CLIENT)

@@ -6,16 +6,20 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.CrossUtil;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
 import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.*;
 import stellarium.stellars.*;
 import stellarium.stellars.local.*;
 import stellarium.stellars.orbit.*;
 import stellarium.util.math.*;
+import stellarium.view.ViewPoint;
 import stellarium.viewrender.render.RBase;
 import stellarium.viewrender.render.RHost;
 import stellarium.viewrender.render.StellarRenders;
-import stellarium.viewrender.viewpoint.ViewPoint;
 
 public abstract class CBody {
 	
@@ -36,7 +40,7 @@ public abstract class CBody {
 	public boolean IsResonant=false;
 	
 	//Initial Pole, Prime Meridian, East (Unit Vector)
-	public Vec Pol0;
+	public EVector Pol0 = new EVector(3);
 	
 	//On Equatorial Plane, Initial Angle from projection of x-axis to Prime Meridian (Degree)
 	double PMAngle;
@@ -50,7 +54,7 @@ public abstract class CBody {
 	public double Lum;
 
 	//Pole, Prime Meridian, East-from Prime Meridian (Unit Vector)
-	public Vec Pol, PrMer, East;
+	public EVector Pol = new EVector(3), PrMer = new EVector(3), East = new EVector(3);
 
 		
 	//Texture Locations
@@ -90,7 +94,7 @@ public abstract class CBody {
 			j++;
 		}
 		
-		Pol=Transforms.GetVec(new SpCoord(Lo, La));
+		Pol.set(new SpCoord(Lo, La).getVec());
 	}
 	
 	public void ConstructLoop(String[] ConBody) {
@@ -146,7 +150,7 @@ public abstract class CBody {
 		UpdateCoord(yr);
 		UpdateLuminosity();
 	}
-	
+		
 	@SideOnly(Side.SERVER)
 	protected void UpdateCoord(double yr){
 		if(theOrbit instanceof OrbitSt)
@@ -154,25 +158,28 @@ public abstract class CBody {
 		else{
 			OrbitMv orbit=(OrbitMv)theOrbit;
 			if(IsResonant)
-				Pol=orbit.Pol;
-			else Pol=Spmath.AxisRotate(orbit.Pol, Prec*yr, Pol0);
+				Pol.set(orbit.Pol);
+			else {
+				AxisRotate orbpol = new AxisRotate(orbit.Pol, Prec*yr);
+				Pol.set((IValRef)orbpol.transform((IEVector)Pol0));
+			}
 		}
-		PrMer=Spmath.Projection(Pol, new Vec(1.0, 0.0, 0.0));
-		PrMer=Spmath.AxisRotate(Pol, PMAngle+Rot*yr, PrMer);
-		East=Vec.Cross(Pol, PrMer);
+		PrMer.set(VecMath.Projection(Pol, new EVector(1.0, 0.0, 0.0)));
+		PrMer.set((IValRef)new AxisRotate(Pol, PMAngle+Rot*yr).transform((IEVector)PrMer));
+		East.set((IValRef)CrossUtil.cross((IEVector)Pol, (IEVector)PrMer));
 	}
 	
 	@SideOnly(Side.SERVER)
 	protected abstract void UpdateLuminosity();
 
 	
-	public Vec GetZen(double lat, double lon){
-		Vec Pl=Vec.Add(Vec.Add(Vec.Mul(Pol, Spmath.sind(lat)), Vec.Mul(PrMer, Spmath.cosd(lat)*Spmath.cosd(lon))), Vec.Mul(East,Spmath.cosd(lat)*Spmath.sind(lon)));
-		return Vec.Mul(Pl, Radius);
+	public IValRef<EVector> GetZen(double lat, double lon){
+		IValRef<EVector> Pl=VecMath.add(VecMath.add(VecMath.mult(Spmath.sind(lat), Pol), VecMath.mult(Spmath.cosd(lat)*Spmath.cosd(lon), PrMer)), VecMath.mult(Spmath.cosd(lat)*Spmath.sind(lon), East));
+		return VecMath.mult(Radius, Pl);
 	}
 	
-	public Vec GetZenDir(double lat, double lon){
-		return Vec.Add(Vec.Add(Vec.Mul(Pol, Spmath.sind(lat)), Vec.Mul(PrMer, Spmath.cosd(lat)*Spmath.cosd(lon))), Vec.Mul(East,Spmath.cosd(lat)*Spmath.sind(lon)));
+	public IValRef<EVector> GetZenDir(double lat, double lon){
+		return VecMath.add(VecMath.add(VecMath.mult(Spmath.sind(lat), Pol), VecMath.mult(Spmath.cosd(lat)*Spmath.cosd(lon), PrMer)), VecMath.mult(Spmath.cosd(lat)*Spmath.sind(lon), East));
 	}
 
 	/*

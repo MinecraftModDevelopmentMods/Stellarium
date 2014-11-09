@@ -1,7 +1,8 @@
 package stellarium.stellars.background;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.euclidian.EVector;
+
 
 public abstract class StarManager {
-	public abstract Star[] GetStarArray(Vec view, double dangle);
+	public abstract Star[] GetStarArray(EVector view, double dangle);
 }

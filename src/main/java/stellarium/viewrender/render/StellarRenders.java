@@ -5,6 +5,10 @@ import java.util.*;
 
 import org.lwjgl.opengl.GL11;
 
+import sciapi.api.value.euclidian.CrossUtil;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
+import sciapi.api.value.util.VOp;
 import stellarium.stellars.Optics;
 import stellarium.stellars.StellarManager;
 import stellarium.util.math.*;
@@ -21,7 +25,7 @@ public class StellarRenders {
 	private Tessellator tessellator=Tessellator.instance;
 	private double bglight, weathereff;
 	
-	public Vec view;
+	public EVector view;
 	public Scope scope;
 	
 	public double Res;
@@ -39,7 +43,7 @@ public class StellarRenders {
 	
 	private boolean first = true;
 	
-	public void Reset(Vec v){
+	public void Reset(EVector v){
 		view = v;
 		bgobjs.clear();
 		shapes.clear();
@@ -92,13 +96,13 @@ public class StellarRenders {
 		else shape = null;
 	}
 	
-	protected boolean IsInViewSight(Vec pos, double Size){
+	protected boolean IsInViewSight(EVector pos, double Size){
 		double angle;
 		
 		if(scope.FOV < 2.0)
-			angle = Spmath.Radians(Vec.Cross(pos, view).Size());
+			angle = Spmath.Radians(Spmath.getD(VOp.size(CrossUtil.cross((IEVector)pos, (IEVector)view))));
 		else
-			angle = Spmath.Degrees(Math.acos(Vec.Dot(pos, view)));
+			angle = Spmath.Degrees(Math.acos(Spmath.getD(VecMath.dot(pos, view))));
 		
 		if(angle+Size > scope.FOV/2) return false;
 		
@@ -200,10 +204,10 @@ public class StellarRenders {
 	protected void PreRender(){
 		//Horizontal Coordinate to Ecliptic Coordinate
         if(host != null){
-        	Coord hrd = new Coord(host.East, host.North, host.Zen);
-        	Coord ecl = hrd.InverseCoord();
+        	//Coord hrd = new Coord(host.East, host.North, host.Zen);
+        	//Coord ecl = hrd.InverseCoord();
         	
-        	GL11.glMultMatrix(ecl.ToDoubleBuffer());
+        	//GL11.glMultMatrix(ecl.ToDoubleBuffer());
         	
         	if(this.host instanceof RAtmHost)
         		CRenderEngine.instance.SetAtm((RAtmHost)host);

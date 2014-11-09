@@ -1,15 +1,17 @@
 package stellarium.viewrender.render;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.util.math.*;
 
 public abstract class RBase {
 	
 	public StellarRenders sr;
-	public Vec Pos;
+	public EVector Pos;
 	public double Lum;
 	
-	public RBase SetPos(Vec pos){
-		Pos=pos;
+	public RBase SetPos(IValRef<EVector> pos){
+		Pos.set(pos);
 		return this;
 	}
 	

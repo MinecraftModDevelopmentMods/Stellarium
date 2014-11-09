@@ -1,6 +1,7 @@
 package stellarium.viewrender.render;
 
 import net.minecraft.client.Minecraft;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.util.math.*;
@@ -33,7 +34,7 @@ public class StellarRenderManager {
 		CCD = null;
 	}
 	
-	public void Reset(Vec v){
+	public void Reset(EVector v){
 		if(!CCDMode)
 			eye.Reset(v);
 		else
@@ -51,10 +52,10 @@ public class StellarRenderManager {
 				CCD.RenderHost(host);
 		}
 		
-		if(!CCDMode)
-			viewer.bgm.AddBgToRender(eye);
-		else
-			viewer.bgm.AddBgToRender(CCD);
+//		if(!CCDMode)
+//			viewer.bgm.AddBgToRender(eye);
+//		else
+//			viewer.bgm.AddBgToRender(CCD);
 	}
 	
 	public void AddCBodyforRender(CBody body, double part){

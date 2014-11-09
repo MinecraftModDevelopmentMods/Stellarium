@@ -1,5 +1,9 @@
 package stellarium.util.math;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
+import sciapi.api.value.numerics.IReal;
 import net.minecraft.util.MathHelper;
 
 public class Spmath {
@@ -158,18 +162,11 @@ public class Spmath {
 		return tanf(Radians(d));
 	}
 	
-	/*Vector Calculation*/
 	
-	//Projection of target to Polar plane
-	public static final Vec Projection(Vec pol, Vec tar){
-		return Vec.Sub(tar, Vec.Mul(pol,Vec.Dot(pol,tar)));
+	public static final double getD(IValRef<IReal> val){
+		val.onUsed();
+		return val.getVal().asDouble();
 	}
-	
-	//Rotate via Axis (Unit vector axis, Degrees angle)
-	public static final Vec AxisRotate(Vec axis, double angle, Vec tar){
-		return Vec.Add(Vec.Add(Vec.Mul(tar, cosd(angle)),Vec.Mul(axis, Vec.Dot(axis, tar)*(1-cosd(angle)))),Vec.Mul(Vec.Cross(axis, tar),sind(angle)));
-	}
-	
 	
 	//Calculate Eccentric Anomaly
 	public static final double CalEcanomaly(double e, double M){
@@ -195,12 +192,12 @@ public class Spmath {
 		return delM/(1.0-e*cosd(E));
 	}
 	
-	public static Vec GetOrbVec(double a, double e, Rotate Ir, Rotate wr, Rotate Omr, double M){
+	public static IValRef GetOrbVec(double a, double e, Rotate Ir, Rotate wr, Rotate Omr, double M){
 		M=Spmath.fmod(M+180.0,360.0)-180.0;
 		double e2=Spmath.Degrees(e);
 		double E=Spmath.CalEcanomaly(e2, M);
-		Vec r=new Vec(a*(cosd(E)-e),a*Math.sqrt(1-e*e)*sind(E),0.0);
-		return Omr.Rot(Ir.Rot(wr.Rot(r)));
+		IValRef r = new EVector(a*(cosd(E)-e), a*Math.sqrt(1-e*e)*sind(E), 0.0);
+		return Omr.transform(Ir.transform(wr.transform(r)));
 	}
 
 	public static double TemptoB_V(double temp) {

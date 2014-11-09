@@ -42,8 +42,7 @@ public class OrbitSt extends Orbit {
 		Lo = Spmath.StrtoD(SPos[1]);
 		La = Spmath.StrtoD(SPos[2]);
 		
-		Pos=Transforms.GetVec(new SpCoord(Lo, La));
-		Pos=Vec.Mul(Pos, Di);
+		Pos.set(VecMath.mult(Di, new SpCoord(Lo, La).getVec()));
 	}
 	
 	

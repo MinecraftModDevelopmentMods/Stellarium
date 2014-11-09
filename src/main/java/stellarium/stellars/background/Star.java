@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
 import stellarium.stellars.ExtinctionRefraction;
 import stellarium.stellars.StellarObj;
 import stellarium.util.math.Transforms;
-import stellarium.util.math.Vec;
 
 public abstract class Star extends StellarObj{
 	
@@ -27,24 +29,24 @@ public abstract class Star extends StellarObj{
 	
 	public String Name;
 	
-	public Vec Pos;
+	public EVector Pos = new EVector(3);
 	
 	/*
 	 * Get star's position
 	 * time is 'tick' unit
 	 * world is false in Overworld, and true in Ender
 	*/
-	public Vec GetPosition(){
-		Vec pvec=Transforms.ZTEctoNEc.Rot(EcRPos);
-		pvec=Transforms.EctoEq.Rot(pvec);
-		pvec=Transforms.NEqtoREq.Rot(pvec);
-		pvec=Transforms.REqtoHor.Rot(pvec);
+	public IValRef<EVector> GetPosition(){
+		IValRef pvec=Transforms.ZTEctoNEc.transform((IEVector)EcRPos);
+		pvec=Transforms.EctoEq.transform(pvec);
+		pvec=Transforms.NEqtoREq.transform(pvec);
+		pvec=Transforms.REqtoHor.transform(pvec);
 		return pvec;
 	}
 
 	@Override
 	public void Update() {
-		AppPos=GetAtmPos();
+		AppPos.set(GetAtmPos());
 		double Airmass=ExtinctionRefraction.Airmass(AppPos, true);
     	App_Mag=Mag+Airmass*ExtinctionRefraction.ext_coeff_V;
     	App_B_V=B_V+Airmass*ExtinctionRefraction.ext_coeff_B_V;

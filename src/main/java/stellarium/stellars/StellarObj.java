@@ -1,14 +1,18 @@
 package stellarium.stellars;
 
-import stellarium.util.math.Vec;
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.EVectorSet;
+import stellarium.util.math.VecMath;
+
 
 public abstract class StellarObj {
 	
 	//Object's Ecliptic Position(Mainly from Sun)
-	public Vec EcRPos;
+	public EVector EcRPos = new EVector(3);
 	
 	//Object's Apparent Position
-	public Vec AppPos;
+	public EVector AppPos = new EVector(3);
 	
 	//Magnitude of Object(Except Atmosphere)
 	public double Mag;
@@ -21,15 +25,14 @@ public abstract class StellarObj {
 	
 	//Update the Object
 	public void Update(){
-		AppPos=GetAtmPos();
-		App_Mag=Mag+ExtinctionRefraction.Airmass(AppPos.z, true)*ExtinctionRefraction.ext_coeff_V;
+		AppPos.set(GetAtmPos());
+		App_Mag=Mag+ExtinctionRefraction.Airmass(VecMath.getCoord(AppPos, 2).asDouble(), true)*ExtinctionRefraction.ext_coeff_V;
 	}
 	
-	//Get Vector of Object from Earth
-	abstract public Vec GetPosition();
+	//Get EVectortor of Object from Earth
+	abstract public IValRef<EVector> GetPosition();
 	
-	public Vec GetAtmPos(){
-		Vec p=GetPosition();
-		return ExtinctionRefraction.Refraction(p, true);
+	public IValRef<EVector> GetAtmPos(){
+		return ExtinctionRefraction.Refraction(GetPosition(), true);
 	}
 }

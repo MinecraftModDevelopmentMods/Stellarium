@@ -31,7 +31,7 @@ public class RDSObj extends RBase {
 			cre.setValue("color", new Color());
 			
 		   	GL11.glBegin(GL11.GL_POINT);
-		   	GL11.glVertex3d(Pos.x, Pos.y, Pos.z); 
+		   	GL11.glVertex3d(Pos.getCoord(0).asDouble(), Pos.getCoord(1).asDouble(), Pos.getCoord(2).asDouble()); 
 			GL11.glEnd();
 		}
 			
@@ -42,7 +42,7 @@ public class RDSObj extends RBase {
 			cre.setValue("size", Size);
 		
 			GL11.glBegin(GL11.GL_POINT);
-			GL11.glVertex3d(Pos.x, Pos.y, Pos.z); 
+		   	GL11.glVertex3d(Pos.getCoord(0).asDouble(), Pos.getCoord(1).asDouble(), Pos.getCoord(2).asDouble()); 
 			GL11.glEnd();
 		}
 	}
