@@ -67,6 +67,11 @@ public class CMvEntry {
 		return this;
 	}
 	
+	protected CMvEntry removeSatellite(CMvEntry entry) {
+		satellites.remove(entry);
+		return this;
+	}
+	
 	protected CMvEntry setMass(double m) {
 		mass = m;
 		return this;

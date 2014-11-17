@@ -5,10 +5,10 @@ package stellarium.config;
  * */
 public interface ICfgArrMListener {
 
-	/**called when a category is added*/
+	/**called when a category is added in any ways.*/
 	public void onNew(IConfigCategory cat);
 	
-	/**called when a category is removed*/
+	/**called when a category is removed in any ways. (sub-configurations will all be removed)*/
 	public void onRemove(IConfigCategory cat);
 	
 	/**called when a category changed its parent, only for tree-type arrangement*/

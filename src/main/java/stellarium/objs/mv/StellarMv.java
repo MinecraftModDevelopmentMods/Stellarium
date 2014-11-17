@@ -6,6 +6,11 @@ import java.util.List;
 import stellarium.catalog.EnumCatalogType;
 import stellarium.catalog.IStellarCatalog;
 import stellarium.config.EnumCategoryType;
+import stellarium.config.ICfgArrMListener;
+import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigProperty;
+import stellarium.config.IMConfigProperty;
+import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
@@ -25,12 +30,24 @@ public class StellarMv implements Iterable<CMvEntry> {
 	public CMvEntry root;
 	public List<CBody> bodies;
 	
+	private CMvCfgManager cfg;
+	
 	public StellarMv(String pid, boolean remote)
 	{
 		id = pid;
 		isRemote = remote;
+		cfg = new CMvCfgManager(this);
 	}
 	
+	public String getID()
+	{
+		return id;
+	}
+	
+	public void setID(String pid)
+	{
+		id = pid;
+	}
 	
 	public void update(int tick) {
 		
@@ -51,7 +68,7 @@ public class StellarMv implements Iterable<CMvEntry> {
 	}
 
 	
-	public List<IStellarObj> getList(ViewPoint vp, SpCoord dir, double hfov) {
+	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -132,6 +149,22 @@ public class StellarMv implements Iterable<CMvEntry> {
 	public Iterator<CMvEntry> iterator()
 	{
 		return new MvIterator();
+	}
+
+	
+	public CMvEntry findEntry(String name)
+	{
+		for(CMvEntry e : this)
+		{
+			if(e.getName().equals(name))
+				return e;
+		}
+		
+		return null;
+	}
+	
+	public void formatConfig(IStellarConfig subConfig) {
+		cfg.formatConfig(subConfig);
 	}
 
 }

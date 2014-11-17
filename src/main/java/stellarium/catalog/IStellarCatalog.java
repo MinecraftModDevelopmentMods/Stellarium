@@ -37,7 +37,7 @@ public interface IStellarCatalog {
 	 * @param hfov the radius of the range
 	 * @return the list of Stellar Objects within the range
 	 * */
-	public List<IStellarObj> getList(ViewPoint vp, SpCoord dir, double hfov);
+	public <T extends IStellarObj> List<T> getList(ViewPoint vp, SpCoord dir, double hfov);
 	
 	/**
 	 * gives the (Average) Magnitude of this catalog.

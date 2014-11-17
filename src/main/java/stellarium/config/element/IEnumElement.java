@@ -12,4 +12,6 @@ public interface IEnumElement extends IPropElement {
 	
 	public String getValue();
 	
+	public int getIndex();
+	
 }

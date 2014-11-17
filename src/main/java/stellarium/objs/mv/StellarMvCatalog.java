@@ -8,6 +8,8 @@ import com.google.common.collect.Maps;
 import stellarium.catalog.EnumCatalogType;
 import stellarium.catalog.IStellarCatalog;
 import stellarium.config.EnumCategoryType;
+import stellarium.config.ICfgArrMListener;
+import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
@@ -16,7 +18,7 @@ import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
-public class StellarMvCatalog implements IStellarCatalog {
+public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 	public boolean isRemote;
 	
 	public int renderId;
@@ -34,6 +36,11 @@ public class StellarMvCatalog implements IStellarCatalog {
 		mvs.put(id, mv);
 	}
 	
+	public void removeMv(String id)
+	{
+		mvs.remove(id);
+	}
+	
 	public void setMv(String id)
 	{
 		current = mvs.get(id);
@@ -43,9 +50,16 @@ public class StellarMvCatalog implements IStellarCatalog {
 	@Override
 	public void formatConfig(IStellarConfig cfg) {
 		cfg.setCategoryType(EnumCategoryType.ConfigList);
-		cfg.setModifiable(true);
+		cfg.setModifiable(true, true);
 		
+		cfg.addAMListener(this);
 		
+		for(IConfigCategory cat : cfg.getAllCategories())
+		{
+			cfg.setSubConfig(cat);
+			onNew(cat);
+			mvs.get(cat.getDisplayName()).formatConfig(cfg.getSubConfig(cat));
+		}
 	}
 	
 	@Override
@@ -90,7 +104,7 @@ public class StellarMvCatalog implements IStellarCatalog {
 	}
 
 	@Override
-	public List<IStellarObj> getList(ViewPoint vp, SpCoord dir, double hfov) {
+	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -120,5 +134,30 @@ public class StellarMvCatalog implements IStellarCatalog {
 	@Override
 	public String getCatalogName() {
 		return "Moving";
+	}
+
+	
+	@Override
+	public void onNew(IConfigCategory cat) {
+		mvs.put(cat.getDisplayName(), new StellarMv(cat.getDisplayName(), isRemote));
+	}
+
+	@Override
+	public void onRemove(IConfigCategory cat) {
+		mvs.remove(cat.getDisplayName());
+	}
+
+	@Override
+	public void onChangeParent(IConfigCategory cat, IConfigCategory from,
+			IConfigCategory to) { }
+
+	@Override
+	public void onChangeOrder(IConfigCategory cat, int before, int after) { }
+
+	@Override
+	public void onDispNameChange(IConfigCategory cat, String before) {
+		StellarMv mv = mvs.remove(before);
+		mvs.put(cat.getDisplayName(), mv);
+		mv.setID(cat.getDisplayName());
 	}
 }

@@ -7,8 +7,12 @@ public interface IStellarConfig {
 	/**Sets category type of this configuration*/
 	public void setCategoryType(EnumCategoryType t);
 	
-	/**Sets whether category is modifiable or not*/
-	public boolean setModifiable(boolean modif);
+	/**
+	 * Sets whether category is modifiable or not
+	 * @param modif modifiability flag
+	 * @param warn warning flag. when it is enabled, any modification will be warned.
+	 * */
+	public boolean setModifiable(boolean modif, boolean warn);
 	
 	/**Adds Configuration Arrangement Modification Listener.*/
 	public void addAMListener(ICfgArrMListener list);

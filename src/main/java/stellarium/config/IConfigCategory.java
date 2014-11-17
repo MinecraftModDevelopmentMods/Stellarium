@@ -9,8 +9,12 @@ public interface IConfigCategory {
 	/**Gets displayed name of this category.*/
 	public String getDisplayName();
 	
-	/**Sets displayed name of this category.*/
+	/**Sets displayed name of this category. (Not will be changed if the name is same)*/
 	public void setDisplayName(String name);
+	
+	
+	/**Gets (current) parent category of this category.*/
+	public IConfigCategory getParCategory();
 	
 	
 	/**Adds property in this category.*/

@@ -9,7 +9,7 @@ public interface IConfigPropHandler<T> {
 	 * called when the property element value is changed,
 	 * so the property value has to be modified.
 	 * */
-	public void getValue(IMConfigProperty<T> prop);
+	public T getValue(IMConfigProperty<T> prop);
 
 	/**
 	 * called when the property value is being set.

@@ -2,6 +2,7 @@ package stellarium.construct;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -14,7 +15,7 @@ public class CTypeRegistry {
 	private static CTypeRegistry ins;
 	
 	private Map<String, IOrbitType> orbtm = Maps.newHashMap();
-		
+	
 	private Map<String, ICBodyType> cbtm = Maps.newHashMap();
 	
 	public static CTypeRegistry instance()
@@ -22,6 +23,11 @@ public class CTypeRegistry {
 		if(ins == null)
 			ins = new CTypeRegistry();
 		return ins;
+	}
+	
+	public CTypeRegistry()
+	{
+
 	}
 	
 	public void registerOrbType(IOrbitType orbt)
@@ -44,5 +50,17 @@ public class CTypeRegistry {
 	{
 		return cbtm.get(name);
 	}
+	
+	
+	public Set<String> getRegOrbTypeNames()
+	{
+		return orbtm.keySet();
+	}
+	
+	public Set<String> getRegCBodyTypeNames()
+	{
+		return cbtm.keySet();
+	}
+
 
 }
