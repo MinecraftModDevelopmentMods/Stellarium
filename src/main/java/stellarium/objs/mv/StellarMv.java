@@ -19,34 +19,20 @@ import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
-public class StellarMv implements Iterable<CMvEntry> {
-	
-	public String id;
-	
+public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
+		
 	public boolean isRemote;
 	
-	public int renderId;
-	
-	public CMvEntry root;
 	public List<CBody> bodies;
 	
-	private CMvCfgManager cfg;
+	private CMvCfgPhysical cfg2;
 	
-	public StellarMv(String pid, boolean remote)
+	public StellarMv(String pid, int rid, boolean remote)
 	{
-		id = pid;
+		super(pid);
+		renderId = rid;
 		isRemote = remote;
-		cfg = new CMvCfgManager(this);
-	}
-	
-	public String getID()
-	{
-		return id;
-	}
-	
-	public void setID(String pid)
-	{
-		id = pid;
+		cfg2 = new CMvCfgPhysical(this);
 	}
 	
 	public void update(int tick) {
@@ -61,94 +47,9 @@ public class StellarMv implements Iterable<CMvEntry> {
 		
 	}
 	
-	protected CMvEntry newEntry(CMvEntry par, String name) {
-		CMvEntry ne = new CMvEntry(this, par, name);
-		par.addSatellite(ne);
-		return ne;
-	}
-
-	
 	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	
-	public class MvIterator implements Iterator<CMvEntry> {
-
-		CMvEntry now = null;
-		
-		@Override
-		public boolean hasNext() {
-			if(now == null)
-				return true;
-			if(now.hasSatellites())
-				return true;
-			if(!now.hasParent())
-				return false;
-			
-			CMvEntry anc, anc2 = now;
-			
-			do
-			{
-				anc = anc2.getParent();
-				
-				if(anc.getSatelliteList().indexOf(anc2)+1 < anc.getSatelliteList().size())
-					return true;
-				
-				anc2 = anc2.getParent();
-			}
-			while(anc2.hasParent());
-
-			return false;
-		}
-
-		@Override
-		public CMvEntry next() {
-			if(now == null)
-			{
-				now = root;
-				return now;
-			}
-			
-			if(now.hasSatellites())
-			{
-				now = now.getSatelliteList().get(0);
-				return now;
-			}
-			
-			CMvEntry anc, anc2 = now;
-			int ind;
-			
-			do
-			{
-				anc = anc2.getParent();
-				
-				ind = anc.getSatelliteList().indexOf(anc2);
-				if(ind + 1 < anc.getSatelliteList().size())
-				{
-					now = anc.getSatelliteList().get(ind + 1);
-					return now;
-				}
-				
-				anc2 = anc2.getParent();
-			}
-			while(anc2.hasParent());
-			
-			return null;
-		}
-
-		@Override
-		public void remove() {
-			//Not Removable via this Iterator.
-		}
-		
-	}
-
-	
-	public Iterator<CMvEntry> iterator()
-	{
-		return new MvIterator();
 	}
 
 	
@@ -162,9 +63,16 @@ public class StellarMv implements Iterable<CMvEntry> {
 		
 		return null;
 	}
-	
+
 	public void formatConfig(IStellarConfig subConfig) {
-		cfg.formatConfig(subConfig);
+		cfg2.formatConfig(subConfig);
 	}
 
+	public void loadFromConfig(IStellarConfig subConfig) {
+		cfg2.loadConfig(subConfig);
+	}
+
+	public void saveAsConfig(IStellarConfig subConfig) {
+		cfg2.saveConfig(subConfig);
+	}
 }

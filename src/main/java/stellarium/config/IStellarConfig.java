@@ -21,7 +21,10 @@ public interface IStellarConfig {
 	public void markImmutable(IConfigCategory cat);
 	
 	
-	/**Adds category for this configuration.*/
+	/**
+	 * Adds category for this configuration.
+	 * NOTE: Some Category will already exist before for Text Configuration.
+	 * */
 	public IConfigCategory addCategory(String cid);
 	
 	/**Removes category for this configuration.*/
@@ -30,7 +33,10 @@ public interface IStellarConfig {
 	/**Gets category for this configuration.*/
 	public IConfigCategory getCategory(String cid);
 	
-	/**Gets all categories for this configuration.*/
+	/**
+	 * Gets all categories for this configuration.
+	 * Every parent category will be prior to their sub-categories.
+	 * */
 	public List<IConfigCategory> getAllCategories();
 	
 	
@@ -58,4 +64,8 @@ public interface IStellarConfig {
 
 	/**Gets all sub-categories with certain parent for this configuration.*/
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent);
+	
+	
+	/**Saves the current state of this config. mainly for Text Configuration*/
+	public void save();
 }

@@ -23,7 +23,8 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 	
 	public int renderId;
 	
-	private Map<String, StellarMv> mvs = Maps.newHashMap();
+	private Map<String, StellarMvLogical> mvs = Maps.newHashMap();
+	
 	private StellarMv current;
 	
 	public StellarMvCatalog(boolean remote)
@@ -41,9 +42,20 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 		mvs.remove(id);
 	}
 	
-	public void setMv(String id)
+	public StellarMvLogical getMv(String id)
 	{
-		current = mvs.get(id);
+		return mvs.get(id);
+	}
+	
+	
+	public StellarMv createMv(String id)
+	{
+		return new StellarMv(id, renderId, isRemote);
+	}
+	
+	public void setMv(StellarMv mv)
+	{
+		current = mv;
 	}
 
 	
@@ -53,12 +65,18 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 		cfg.setModifiable(true, true);
 		
 		cfg.addAMListener(this);
-		
+
 		for(IConfigCategory cat : cfg.getAllCategories())
 		{
+			if(!mvs.containsKey(cat.getDisplayName()))
+				onNew(cat);
+		}
+		
+		for(StellarMvLogical mv : mvs.values())
+		{
+			IConfigCategory cat = cfg.addCategory(mv.getID());
 			cfg.setSubConfig(cat);
-			onNew(cat);
-			mvs.get(cat.getDisplayName()).formatConfig(cfg.getSubConfig(cat));
+			mv.formatConfig(cfg.getSubConfig(cat));
 		}
 	}
 	
@@ -75,16 +93,33 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 		loadFromConfig(cfg);
 	}
 	
+	@Override
+	public void saveConfig(IStellarConfig cfg) {
+		for(StellarMvLogical mv : mvs.values())
+		{
+			IConfigCategory cat = cfg.getCategory(mv.getID());
+			mv.saveAsConfig(cfg.getSubConfig(cat));
+		}
+	}
+	
 	//Always called when loaded (either dynamically or statically)
 	public void loadFromConfig(IStellarConfig cfg) {
-		;
+		for(IConfigCategory cat : cfg.getAllCategories())
+		{
+			if(!mvs.containsKey(cat.getDisplayName()))
+				onNew(cat);
+		}
+		
+		for(StellarMvLogical mv : mvs.values())
+		{
+			IConfigCategory cat = cfg.getCategory(mv.getID());
+			mv.loadFromConfig(cfg.getSubConfig(cat));
+		}
 	}
 	
 	@Override
 	public void update(int tick) {
-		
 		current.update(tick);
-		
 	}
 	
 	
@@ -105,8 +140,7 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 
 	@Override
 	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
-		// TODO Auto-generated method stub
-		return null;
+		return current.getList(vp, dir, hfov);
 	}
 
 	@Override
@@ -139,7 +173,7 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 	
 	@Override
 	public void onNew(IConfigCategory cat) {
-		mvs.put(cat.getDisplayName(), new StellarMv(cat.getDisplayName(), isRemote));
+		mvs.put(cat.getDisplayName(), new StellarMvLogical(cat.getDisplayName()));
 	}
 
 	@Override
@@ -156,7 +190,7 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 
 	@Override
 	public void onDispNameChange(IConfigCategory cat, String before) {
-		StellarMv mv = mvs.remove(before);
+		StellarMvLogical mv = mvs.remove(before);
 		mvs.put(cat.getDisplayName(), mv);
 		mv.setID(cat.getDisplayName());
 	}

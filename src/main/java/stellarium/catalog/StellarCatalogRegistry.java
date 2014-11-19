@@ -97,6 +97,18 @@ public class StellarCatalogRegistry {
 			cat.load(cfg.getSubConfig(cfg.getCategory(cat.getCatalogName())));
 	}
 	
+	public void applyCatalogCfg(IStellarConfig cfg)
+	{
+		for(IStellarCatalog cat : catalog)
+			cat.applyConfig(cfg.getSubConfig(cfg.getCategory(cat.getCatalogName())));
+	}
+	
+	public void saveCatalog(IStellarConfig cfg)
+	{
+		for(IStellarCatalog cat : catalog)
+			cat.saveConfig(cfg.getSubConfig(cfg.getCategory(cat.getCatalogName())));
+	}
+	
 	public Iterator<IStellarCatalog> getItetoFind()
 	{
 		return findlist.iterator();

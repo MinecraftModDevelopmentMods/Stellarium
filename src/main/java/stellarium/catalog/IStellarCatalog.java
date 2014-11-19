@@ -64,7 +64,7 @@ public interface IStellarCatalog {
 	
 	/**
 	 * formats configuration to get certain input.
-	 * always called when opening configuration.
+	 * always called before editing / loading configuration.
 	 * */
 	public void formatConfig(IStellarConfig cfg);
 	
@@ -79,9 +79,15 @@ public interface IStellarCatalog {
 	 * called when configuration is finished to apply the settings.
 	 * */
 	public void applyConfig(IStellarConfig cfg);
+
+	/**
+	 * called when saving information as configuration
+	 * */
+	public void saveConfig(IStellarConfig subConfig);
 	
 	/**
 	 * gives the type of object this catalog contains.
 	 * */
 	public EnumCatalogType getType();
+
 }

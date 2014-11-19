@@ -20,8 +20,12 @@ public interface IConfigCategory {
 	/**Adds property in this category.*/
 	public <T> IConfigProperty<T> addProperty(String proptype, String propname, T def);
 	
+	/**Removes property in this category.*/
+	public void removeProperty(String propname);
+	
 	/**Gets property in this category.*/
 	public <T> IConfigProperty<T> getProperty(String propname);
+	
 	
 	/**Adds property relation in this category.*/
 	public void addPropertyRelation(IPropertyRelation rel, IConfigProperty... relprops);

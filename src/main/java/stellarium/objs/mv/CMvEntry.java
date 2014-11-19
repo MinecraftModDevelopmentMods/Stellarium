@@ -10,14 +10,14 @@ import stellarium.objs.mv.orbit.Orbit;
 
 public class CMvEntry {
 	
-	public CMvEntry(StellarMv main, CMvEntry par, String pname)
+	public CMvEntry(StellarMvLogical main, CMvEntry par, String pname)
 	{
 		mv = main;
 		parent = par;
 		name = pname;
 	}
 
-	private final StellarMv mv;
+	private final StellarMvLogical mv;
 	
 	private Orbit orbit;
 	private CBody cbody;
@@ -29,7 +29,7 @@ public class CMvEntry {
 	private String name;
 	private double mass;
 	
-	public StellarMv getMain() { return mv; }
+	public StellarMvLogical getMain() { return mv; }
 	
 	public Orbit orbit() { return orbit; }
 	public CBody cbody() { return cbody; }
