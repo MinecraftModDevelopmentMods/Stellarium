@@ -15,7 +15,6 @@ public class CTypeRegistry {
 	private static CTypeRegistry ins;
 	
 	private Map<String, IOrbitType> orbtm = Maps.newHashMap();
-	
 	private Map<String, ICBodyType> cbtm = Maps.newHashMap();
 	
 	public static CTypeRegistry instance()
@@ -33,11 +32,13 @@ public class CTypeRegistry {
 	public void registerOrbType(IOrbitType orbt)
 	{
 		orbtm.put(orbt.getTypeName(), orbt);
+		orbt.init();
 	}
 	
 	public void registerCBodyType(ICBodyType cbt)
 	{
 		cbtm.put(cbt.getTypeName(), cbt);
+		cbt.init();
 	}
 	
 	

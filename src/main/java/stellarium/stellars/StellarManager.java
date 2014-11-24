@@ -60,13 +60,11 @@ public class StellarManager {
 	public Side side;
 	
 	
-	@SideOnly(Side.CLIENT)
 	public static float Mag_Limit;
 	
-	@SideOnly(Side.CLIENT)
 	public static int ImgFrac;
 	
-	
+	public static float Turb;
 
 	
 

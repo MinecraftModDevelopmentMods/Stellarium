@@ -12,6 +12,10 @@ public interface ICBodyType {
 	/**gives name of this type*/
 	public String getTypeName();
 	
+	/**initiation for this type*/
+	public void init();
+	
+	
 	/**forms configuration for this type*/
 	public void formatConfig(IConfigCategory cfg);
 	
@@ -21,11 +25,15 @@ public interface ICBodyType {
 	/**provides CBody from the entry*/
 	public CBody provideCBody(CMvEntry e);
 	
-	/**populates the body with configuration*/
-	public void populate(CBody body, IConfigCategory cfg);
+	/**applies the configuration to the body*/
+	public void apply(CBody body, IConfigCategory cfg);
 	
 	/**saves the body as configuration*/
 	public void save(CBody body, IConfigCategory cfg);
+	
+	/**checks the current settings and forms the celestial body*/
+	public void formCBody();
+	
 	
 	/**do tasks needed for remove*/
 	public void onRemove(CBody body);

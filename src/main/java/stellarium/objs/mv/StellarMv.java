@@ -3,6 +3,8 @@ package stellarium.objs.mv;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import stellarium.catalog.EnumCatalogType;
 import stellarium.catalog.IStellarCatalog;
 import stellarium.config.EnumCategoryType;
@@ -19,12 +21,11 @@ import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
+/**Physical StellarMv for gameplay*/
 public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 		
 	public boolean isRemote;
-	
-	public List<CBody> bodies;
-	
+	public List<CBody> bodies = Lists.newArrayList();
 	private CMvCfgPhysical cfg2;
 	
 	public StellarMv(String pid, int rid, boolean remote)
@@ -51,17 +52,10 @@ public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	
-	public CMvEntry findEntry(String name)
-	{
-		for(CMvEntry e : this)
-		{
-			if(e.getName().equals(name))
-				return e;
-		}
-		
-		return null;
+	protected void removeEntry(CMvEntry entry) {
+		super.removeEntry(entry);
+		bodies.remove(entry.cbody());
 	}
 
 	public void formatConfig(IStellarConfig subConfig) {

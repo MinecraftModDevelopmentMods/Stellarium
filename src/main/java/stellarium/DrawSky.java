@@ -220,12 +220,13 @@ public class DrawSky extends IRenderHandler {
             	StellarManager.Update(time, mc.theWorld.provider.isSurfaceWorld());
             	IsCalcd=true;
             }*/
+                       
             
             this.RenderStar(bglight, f4, time);
             
-           
             
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+            
             GL11.glColor4f(1.0F, 1.0F, 1.0F, f4);
            
            /* GL11.glRotatef(-(float)(90-(Transforms.Lat*180.0/Math.PI)), 1.0f, 0.0f, 0.0f);
@@ -263,6 +264,7 @@ public class DrawSky extends IRenderHandler {
             tessellator1.addVertexWithUV((double)(-f10), 100.0D, (double)f10, 0.0D, 1.0D);*/
             tessellator1.draw();
             //Sun
+          
             
             //Rendering Moon
             
@@ -450,6 +452,8 @@ public class DrawSky extends IRenderHandler {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		
 		renderEngine.bindTexture(locationStarPng);
+		
+		EVector pos = new EVector(3);
            
         if(!world.provider.isHellWorld){
         for(int i=0; i<BrStar.NumStar; i++){
@@ -459,14 +463,14 @@ public class DrawSky extends IRenderHandler {
         	BrStar star=BrStar.stars[i];
         	
         	
-        	EVector pos=star.AppPos;
+        	pos.set(VecMath.normalize(star.AppPos));
         	float Mag=star.App_Mag;
         	float B_V=star.App_B_V;
         	
         	if(Mag > StellarManager.Mag_Limit)
         		continue;
         	
-        	float Turb=0.1f*(float) random.nextGaussian();
+        	float Turb = StellarManager.Turb *(float) random.nextGaussian();
         	Mag+=Turb;
         	
         	if(VecMath.getZ(pos)<0) continue;
@@ -474,8 +478,11 @@ public class DrawSky extends IRenderHandler {
         	float size=0.5f;
         	float alpha=Optics.GetAlphaFromMagnitude(Mag, bglight);
         	
-        	dif.set(VOp.normalize(CrossUtil.cross((IEVector)pos, (IEVector)new EVector(0.0,0.0,1.0))));
-        	dif2.set((IValRef)CrossUtil.cross((IEVector)dif, (IEVector)pos));
+        	dif.set(CrossUtil.cross(pos, new EVector(0.0,0.0,1.0)));
+        	if(Spmath.getD(VecMath.size2(dif)) < 0.01)
+        		dif.set(CrossUtil.cross(pos, new EVector(0.0,1.0,0.0)));
+        	dif.set(VecMath.normalize(dif));
+        	dif2.set((IValRef)CrossUtil.cross(dif, pos));
         	pos.set(VecMath.mult(100.0, pos));
         	
         	dif.set(VecMath.mult(size, dif));
@@ -484,18 +491,17 @@ public class DrawSky extends IRenderHandler {
         	Color c=Color.GetColor(B_V);
    
 
-            tessellator1.startDrawingQuads();
-
         	GL11.glColor4f(((float)c.r)/255.0f, ((float)c.g)/255.0f, ((float)c.b)/255.0f, weathereff*alpha);
         	
-        	
+            tessellator1.startDrawingQuads();
+
         	tessellator1.addVertexWithUV(VecMath.getX(pos)+VecMath.getX(dif), VecMath.getY(pos)+VecMath.getY(dif), VecMath.getZ(pos)+VecMath.getZ(dif),0.0,0.0);
         	tessellator1.addVertexWithUV(VecMath.getX(pos)+VecMath.getX(dif2), VecMath.getY(pos)+VecMath.getY(dif2), VecMath.getZ(pos)+VecMath.getZ(dif2),1.0,0.0);
         	tessellator1.addVertexWithUV(VecMath.getX(pos)-VecMath.getX(dif), VecMath.getY(pos)-VecMath.getY(dif), VecMath.getZ(pos)-VecMath.getZ(dif),1.0,1.0);
         	tessellator1.addVertexWithUV(VecMath.getX(pos)-VecMath.getX(dif2), VecMath.getY(pos)-VecMath.getY(dif2), VecMath.getZ(pos)-VecMath.getZ(dif2),0.0,1.0);
         	
             tessellator1.draw();
-                        
+                                  
         }
         
         }
@@ -512,12 +518,15 @@ public class DrawSky extends IRenderHandler {
 		if(Mag > StellarManager.Mag_Limit) return;
 		if(VecMath.getZ(pos)<0) return;
 		
-		float size=0.3f;
+		float size=0.6f;
     	float alpha=Optics.GetAlphaFromMagnitude(Mag, bglight);
 		
 		pos.set(VecMath.normalize(pos));
 		
-    	difm.set(VOp.normalize(CrossUtil.cross((IEVector)pos, (IEVector)new EVector(0.0,0.0,1.0))));
+    	difm.set(CrossUtil.cross((IEVector)pos, (IEVector)new EVector(0.0,0.0,1.0)));
+    	if(Spmath.getD(VecMath.size2(difm)) < 0.01)
+    		difm.set(CrossUtil.cross((IEVector)pos, (IEVector)new EVector(0.0,1.0,0.0)));
+    	difm.set(VecMath.normalize(difm));
     	difm2.set((IValRef)CrossUtil.cross((IEVector)difm, (IEVector)pos));
     	pos.set(VecMath.mult(99.0, pos));
     	

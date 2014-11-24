@@ -11,7 +11,7 @@ public interface IMConfigProperty<T> extends IConfigProperty<T> {
 	/**adds property element with certain type*/
 	public void addElement(String subname, EnumPropElement e);
 	
-	/**enable/disable property.*/
+	/**enable/disable property. would not call onEnable, etc.*/
 	public void setEnabled(boolean enable);
 	
 	/**gets property element*/

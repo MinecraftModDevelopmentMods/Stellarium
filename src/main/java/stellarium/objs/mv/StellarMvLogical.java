@@ -8,16 +8,15 @@ import stellarium.objs.mv.cbody.CBody;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
-/**Logical StellarMv for */
+/**Logical StellarMv for Configuration*/
 public class StellarMvLogical implements Iterable<CMvEntry> {
 	
 	public String id;
-	
 	public int renderId;
-		
 	public CMvEntry root;
-	
 	private CMvCfgLogical cfg;
+	
+	public double Msun, syr, sday, Au;
 	
 	public StellarMvLogical(String pid)
 	{
@@ -41,6 +40,17 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 			par.addSatellite(ne);
 		else root = ne;
 		return ne;
+	}
+	
+	protected void removeEntry(CMvEntry mv)
+	{
+		if(mv.hasAdditive())
+			mv.additive().getAdditiveType().onRemove(mv.additive());
+		if(!mv.isVirtual())
+			mv.cbody().getCBodyType().onRemove(mv.cbody());
+		mv.orbit().getOrbitType().onRemove(mv.orbit());
+		
+		mv.getParent().removeSatellite(mv);
 	}
 
 	
@@ -149,5 +159,11 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 	public void formatMv(StellarMv nmv)
 	{
 		//TODO Total Stub
+		nmv.Au = Au;
+		nmv.Msun = Msun;
+		nmv.sday = sday;
+		nmv.syr = syr;
+		
+		
 	}
 }

@@ -26,10 +26,10 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.*;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid=Stellarium.name, name=Stellarium.name, version=Stellarium.version, dependencies="required-after:sciapi")
+@Mod(modid=Stellarium.modid, name=Stellarium.name, version=Stellarium.version, dependencies="required-after:sciapi")
 public class Stellarium {
 	
-		public static final String modid = "Stellarium";
+		public static final String modid = "stellarium";
 		public static final String name = "Stellarium";
 		public static final String version = "0.1.4";
 
@@ -55,6 +55,12 @@ public class Stellarium {
             		"and FPS will be exponentially improved";
             StellarManager.Mag_Limit=(float)Mag_Limit.getDouble(5.0);
 
+            config.load();
+            Property turb=config.get(Configuration.CATEGORY_GENERAL, "Twinkling(Turbulance)", 0.3);
+            turb.comment="Degree of the twinkling effect of star.\n"
+            		+ "It determines the turbulance of atmosphere, which actually cause the twinkling effect";
+            StellarManager.Turb=(float)turb.getDouble(0.3);
+            
             Property Moon_Frac=config.get(Configuration.CATEGORY_GENERAL, "Moon_Fragments_Number", 16);
             Moon_Frac.comment="Moon is drawn with fragments\n" +
             		"Less fragments will increase FPS, but the moon become more defective\n";

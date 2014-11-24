@@ -9,7 +9,10 @@ public interface IConfigProperty<T> {
 	/**gives the name of this property*/
 	public String getName();
 	
-	/**Sets Explanation of this property*/
-	public void setExpl(String expl);
+	/**
+	 * Sets Explanation of this property
+	 * @return this
+	 * */
+	public IConfigProperty<T> setExpl(String expl);
 	
 }

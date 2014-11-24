@@ -9,6 +9,10 @@ public interface IOrbitType {
 	/**gives name of this type*/
 	public String getTypeName();
 	
+	/**initiation for this type*/
+	public void init();
+	
+	
 	/**forms configuration for this type*/
 	public void formatConfig(IConfigCategory cat);
 	
@@ -18,14 +22,18 @@ public interface IOrbitType {
 	/**provides Orbit from the entry*/
 	public Orbit provideOrbit(CMvEntry e);
 	
-	/**populates the orbit with configuration*/
-	public void populate(Orbit orbit, IConfigCategory cfg);
+	/**applies the configuration to the orbit*/
+	public void apply(Orbit orbit, IConfigCategory cfg);
 	
 	/**saves the orbit as configuration*/
 	public void save(Orbit orbit, IConfigCategory cfg);
 	
+	/**checks the current settings and forms the orbit*/
+	public void formOrbit();
+	
 	/**sets the target orbit to be scaled orbit of reference orbit*/
 	public void setScaled(Orbit ref, Orbit target, double scale);
+	
 	
 	/**@return true iff. the orbit with this type has parent orbit.*/
 	public boolean hasParent();
