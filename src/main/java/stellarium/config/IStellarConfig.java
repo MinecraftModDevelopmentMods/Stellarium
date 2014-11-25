@@ -20,6 +20,9 @@ public interface IStellarConfig {
 	/**Marks a Category as Immutable.*/
 	public void markImmutable(IConfigCategory cat);
 	
+	/**Checks if this category is Immutable.*/
+	public boolean isImmutable(IConfigCategory cat);
+	
 	
 	/**
 	 * Adds category for this configuration.

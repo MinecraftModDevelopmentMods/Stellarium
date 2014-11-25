@@ -2,6 +2,10 @@ package stellarium.objs.mv;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
+
+import com.google.common.collect.Lists;
 
 import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.cbody.CBody;
@@ -11,12 +15,12 @@ import stellarium.view.ViewPoint;
 /**Logical StellarMv for Configuration*/
 public class StellarMvLogical implements Iterable<CMvEntry> {
 	
-	public String id;
+	protected String id;
 	public int renderId;
-	public CMvEntry root;
+	protected CMvEntry root;
 	private CMvCfgLogical cfg;
 	
-	public double Msun, syr, sday, Au;
+	public double Msun, yr, day, Au;
 	
 	public StellarMvLogical(String pid)
 	{
@@ -58,62 +62,59 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 
 		CMvEntry now = null;
 		
+		Stack<ListIterator> ites = new Stack();
+		
+		public boolean hasNextRec()
+		{
+			if(ites.isEmpty())
+				return false;
+						
+			ListIterator ite = ites.pop();
+			boolean hn = ite.hasNext() || hasNextRec();
+			ites.push(ite);
+			
+			return hn;
+		}
+		
 		@Override
 		public boolean hasNext() {
-			if(now == null)
-				return true;
-			if(now.hasSatellites())
-				return true;
-			if(!now.hasParent())
-				return false;
 			
-			CMvEntry anc, anc2 = now;
-			
-			do
-			{
-				anc = anc2.getParent();
-				
-				if(anc.getSatelliteList().indexOf(anc2)+1 < anc.getSatelliteList().size())
-					return true;
-				
-				anc2 = anc2.getParent();
-			}
-			while(anc2.hasParent());
+			if(ites.isEmpty())
+				return true;
 
-			return false;
+			if(now != null && now.hasSatellites())
+				return true;
+			
+			return hasNextRec();
+			
 		}
 
 		@Override
 		public CMvEntry next() {
-			if(now == null)
+			
+			if(ites.isEmpty())
 			{
-				now = root;
-				return now;
+				ListIterator<CMvEntry> rt = root.getSatelliteList().listIterator();
+				ites.push(rt);
+				return now = rt.next();
 			}
 			
 			if(now.hasSatellites())
 			{
-				now = now.getSatelliteList().get(0);
-				return now;
+				ListIterator<CMvEntry> ite = now.getSatelliteList().listIterator();
+				ites.push(ite);
+				return now = ite.next();
 			}
 			
-			CMvEntry anc, anc2 = now;
-			int ind;
-			
-			do
+			while(!ites.isEmpty())
 			{
-				anc = anc2.getParent();
-				
-				ind = anc.getSatelliteList().indexOf(anc2);
-				if(ind + 1 < anc.getSatelliteList().size())
+				ListIterator<CMvEntry> ite = ites.pop();
+				if(ite.hasNext())
 				{
-					now = anc.getSatelliteList().get(ind + 1);
-					return now;
+					ites.push(ite);
+					return now = ite.next();
 				}
-				
-				anc2 = anc2.getParent();
 			}
-			while(anc2.hasParent());
 			
 			return null;
 		}
@@ -155,15 +156,4 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 		cfg.saveConfig(subConfig);
 	}
 	
-	
-	public void formatMv(StellarMv nmv)
-	{
-		//TODO Total Stub
-		nmv.Au = Au;
-		nmv.Msun = Msun;
-		nmv.sday = sday;
-		nmv.syr = syr;
-		
-		
-	}
 }

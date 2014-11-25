@@ -1,5 +1,8 @@
 package stellarium.construct;
 
+import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigProperty;
+
 public class CPropLangStrs {
 	
 	//------------------------------------ Types -----------------------------------//
@@ -19,6 +22,7 @@ public class CPropLangStrs {
 	public static final String name = "Name";
 	public static final String mass = "Mass";
 	
+	
 	public static void onRegister()
 	{
 		CPropLangRegistry.instance().register(basicprops, "cmv.basicprops");
@@ -37,11 +41,18 @@ public class CPropLangStrs {
 		CPropLangRegistry.instance().register(name, "cmv.ent.name");
 		CPropLangRegistry.instance().register(mass, "cmv.ent.mass");
 
+		
+		
 	}
+	
 	
 	public static String getExpl(String propid)
 	{
 		return CPropLangRegistry.instance().getLangfromID(propid) + ".expl";
 	}
 	
+	public static <T> IConfigProperty<T> addProperty(IConfigCategory cat, String proptype, String propname, T def)
+	{
+		return cat.addProperty(proptype, propname, def).setExpl(getExpl(propname));
+	}
 }

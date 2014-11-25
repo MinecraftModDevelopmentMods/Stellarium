@@ -1,5 +1,12 @@
 package stellarium.objs.mv;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
+
+import com.google.common.collect.Lists;
+
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;
@@ -15,37 +22,24 @@ import stellarium.objs.mv.orbit.TypeOrbitRelation;
 
 public abstract class CMvCfgBase implements ICfgArrMListener {
 	
-	private StellarMvLogical ins;
+	private StellarMvLogical ins;	
 	
-	protected String bprop;
-	protected String msun;
-	protected String yr;
-	protected String day;
-	protected String au;
-	
-	
-	public CMvCfgBase(StellarMvLogical pins, String bp, String ms, String pyr, String pday, String pau)
+	public CMvCfgBase(StellarMvLogical pins)
 	{
 		ins = pins;
-		
-		bprop = bp;
-		msun = ms;
-		yr = pyr;
-		day = pday;
-		au = pau;
 	}
 	
-	public void formatConfig(IStellarConfig cfg) {
-		
+	public void formatConfig(IStellarConfig cfg)
+	{	
 		{
 			IConfigCategory props = cfg.addCategory(CPropLangStrs.basicprops);
 
 			cfg.markImmutable(props);
 			
-			props.addProperty("double", CPropLangStrs.msun, 1.0).setExpl(CPropLangStrs.getExpl(CPropLangStrs.msun));
-			props.addProperty("double", CPropLangStrs.yr, 365.2560).setExpl(CPropLangStrs.getExpl(CPropLangStrs.yr));
-			props.addProperty("double", CPropLangStrs.day, 24000.0).setExpl(CPropLangStrs.getExpl(CPropLangStrs.day));
-			props.addProperty("double", CPropLangStrs.au, 1.496e+11).setExpl(CPropLangStrs.getExpl(CPropLangStrs.au));
+			CPropLangStrs.addProperty(props, "double", CPropLangStrs.msun, 1.0);
+			CPropLangStrs.addProperty(props, "double", CPropLangStrs.yr, 365.2564);
+			CPropLangStrs.addProperty(props, "double", CPropLangStrs.day, 24000.0);
+			CPropLangStrs.addProperty(props, "double", CPropLangStrs.au, 1.496e+11);
 			//props.addProperty("double", "Stellar Distance Unit(pc)", 1.0);
 		}
 		
@@ -72,11 +66,20 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
 		
 		IConfigProperty<Double> mu = props.getProperty(CPropLangStrs.msun);
-		
+		IConfigProperty<Double> yr = props.getProperty(CPropLangStrs.yr);
+		IConfigProperty<Double> day = props.getProperty(CPropLangStrs.day);
+		IConfigProperty<Double> au = props.getProperty(CPropLangStrs.au);
+
 		ins.Msun = mu.getVal();
+		ins.yr = yr.getVal();
+		ins.day = day.getVal();
+		ins.Au = au.getVal();
 		
-		for(IConfigCategory cat : subConfig.getAllCategories())
+		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
 		{
+			if(subConfig.isImmutable(cat))
+				continue;
+			
 			CMvEntry ent = findEntry(cat);
 			
 			if(ent == null)
@@ -89,70 +92,116 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			
 			if(torb.getVal() == null)
 			{
-				//TODO Exception Handling
-				return;
+				if(handleOrbitMissing(ent, cat))
+					return;
 			}
-			
-			ent.setOrbit(torb.getVal().provideOrbit(ent));
+			else ent.setOrbit(torb.getVal().provideOrbit(ent));
 			
 			IConfigProperty<ICBodyType> tcb = cat.getProperty(CPropLangStrs.cbtype);
 			
 			if(tcb.getVal() == null)
 			{
-				//TODO Exception Handling
-				return;
+				if(handleCBodyMissing(ent, cat))
+					return;
 			}
-			
-			ent.setCBody(tcb.getVal().provideCBody(ent));
+			else ent.setCBody(tcb.getVal().provideCBody(ent));
 		}
 		
-		for(IConfigCategory cat : subConfig.getAllCategories())
+		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
 		{
+			if(subConfig.isImmutable(cat))
+				continue;
+			
 			CMvEntry ent = findEntry(cat);
 
-			ent.orbit().getOrbitType().apply(ent.orbit(), cat);
-			ent.cbody().getCBodyType().apply(ent.cbody(), cat);
+			if(ent.orbit() != null)
+				ent.orbit().getOrbitType().apply(ent.orbit(), cat);
+			
+			if(!ent.isVirtual())
+				ent.cbody().getCBodyType().apply(ent.cbody(), cat);
 		}
+		
+		postLoad(subConfig);
 	}
+	
+	/**@return <code>false</code> to continue loading.*/
+	public abstract boolean handleOrbitMissing(CMvEntry ent, IConfigCategory cat);
+	
+	/**@return <code>false</code> to continue loading.*/
+	public abstract boolean handleCBodyMissing(CMvEntry ent, IConfigCategory cat);
+	
+	public abstract void postLoad(IStellarConfig subConfig);
+	
 	
 	public void saveConfig(IStellarConfig subConfig) {
 		
 		//TODO Basic Properties Handling
+		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
 		
-		for(IConfigCategory cat : subConfig.getAllCategories())
+		IConfigProperty<Double> mu = props.getProperty(CPropLangStrs.msun);
+		IConfigProperty<Double> yr = props.getProperty(CPropLangStrs.yr);
+		IConfigProperty<Double> day = props.getProperty(CPropLangStrs.day);
+		IConfigProperty<Double> au = props.getProperty(CPropLangStrs.au);
+
+		mu.simSetVal(ins.Msun);
+		yr.simSetVal(ins.yr);
+		day.simSetVal(ins.yr);
+		au.simSetVal(ins.Au);
+		
+		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
 		{
+			if(subConfig.isImmutable(cat))
+				continue;
+			
 			CMvEntry ent = findEntry(cat);
 			
-			IMConfigProperty<IOrbitType> typeOrbit = (IMConfigProperty)cat.getProperty(CPropLangStrs.orbtype);
-			typeOrbit.setVal(ent.orbit().getOrbitType());
-			typeOrbit.setEnabled(false);
+			IConfigProperty<IOrbitType> typeOrbit = cat.getProperty(CPropLangStrs.orbtype);
 			
-			IMConfigProperty<ICBodyType> typeCBody = (IMConfigProperty)cat.getProperty(CPropLangStrs.cbtype);
-			typeCBody.setVal(ent.cbody().getCBodyType());
-			typeCBody.setEnabled(false);
+			if(ent.orbit() != null)
+			{
+				typeOrbit.simSetEnabled(true);
+				typeOrbit.simSetVal(ent.orbit().getOrbitType());
+				typeOrbit.simSetEnabled(false);
+				
+				ent.orbit().getOrbitType().formatConfig(cat);
+				ent.orbit().getOrbitType().save(ent.orbit(), cat);
+			} else {
+				typeOrbit.simSetEnabled(true);
+				typeOrbit.simSetVal(null);
+			}
 			
-			ent.orbit().getOrbitType().formatConfig(cat);
-			ent.orbit().getOrbitType().save(ent.orbit(), cat);
 			
-			ent.cbody().getCBodyType().formatConfig(cat);
-			ent.cbody().getCBodyType().save(ent.cbody(), cat);
+			IConfigProperty<ICBodyType> typeCBody = cat.getProperty(CPropLangStrs.cbtype);
+			
+			if(!ent.isVirtual())
+			{
+				typeCBody.simSetEnabled(true);
+				typeCBody.simSetVal(ent.cbody().getCBodyType());
+				typeCBody.simSetEnabled(false);
+
+				ent.cbody().getCBodyType().formatConfig(cat);
+				ent.cbody().getCBodyType().save(ent.cbody(), cat);
+			} else {
+				typeCBody.simSetEnabled(true);
+				typeCBody.simSetVal(null);
+			}
 		}
 	}
 	
 	public void formatEntryCategory(IConfigCategory cat)
 	{
-		IConfigProperty name = cat.addProperty("string", CPropLangStrs.name, cat.getDisplayName()).setExpl(CPropLangStrs.getExpl(CPropLangStrs.name));
+		IConfigProperty name = CPropLangStrs.addProperty(cat, "string", CPropLangStrs.name, cat.getDisplayName());
 		
 		EntryNameRelation rel = new EntryNameRelation();
 		rel.setCategory(cat);
 		cat.addPropertyRelation(rel, name);
 		
-		cat.addProperty("double", CPropLangStrs.mass, 1.0).setExpl(CPropLangStrs.getExpl(CPropLangStrs.mass));
+		CPropLangStrs.addProperty(cat, "double", CPropLangStrs.mass, 1.0);
 		
-		IConfigProperty typeOrbit = cat.addProperty("typeOrbit", CPropLangStrs.orbtype, null).setExpl(CPropLangStrs.getExpl(CPropLangStrs.orbtype));
+		IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
 		cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
 		
-		IConfigProperty typeCBody = cat.addProperty("typeCBody", CPropLangStrs.cbtype, null).setExpl(CPropLangStrs.getExpl(CPropLangStrs.cbtype));
+		IConfigProperty typeCBody = CPropLangStrs.addProperty(cat, "typeCBody", CPropLangStrs.cbtype, null);
 		cat.addPropertyRelation(new TypeCBodyRelation(cat), typeCBody);
 	}
 	
@@ -192,10 +241,10 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 
 	@Override
 	public void onDispNameChange(IConfigCategory cat, String before) {
-		IMConfigProperty<String> name = (IMConfigProperty)cat.getProperty(CPropLangStrs.name);
+		IConfigProperty<String> name = cat.getProperty(CPropLangStrs.name);
 		
 		//This will call EntryNameRelation.onValueChange(0) if name is not same
-		name.setVal(cat.getDisplayName());
+		name.simSetVal(cat.getDisplayName());
 		
 		onRemove(cat);
 		onRenew(cat);
@@ -232,6 +281,103 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		}
 
 	}
+	
+	public class CfgCategoryIterator implements Iterator<IConfigCategory> {
+
+		IStellarConfig cfg;
+		IConfigCategory now = null;
+		
+		Stack<ListIterator> ites = new Stack();
+		
+		public CfgCategoryIterator(IStellarConfig pcfg)
+		{
+			cfg = pcfg;
+		}
+		
+		public boolean hasNextRec()
+		{
+			if(ites.isEmpty())
+				return false;
+						
+			ListIterator ite = ites.pop();
+			boolean hn = ite.hasNext() || hasNextRec();
+			ites.push(ite);
+			
+			return hn;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			
+			if(ites.isEmpty())
+				return true;
+
+			if(now != null && !cfg.getAllSubCategories(now).isEmpty())
+				return true;
+			
+			return hasNextRec();
+			
+		}
+
+		@Override
+		public IConfigCategory next() {
+			
+			if(ites.isEmpty())
+			{
+				ListIterator<IConfigCategory> rt = cfg.getAllCategories().listIterator();
+				ites.push(rt);
+				return now = rt.next();
+			}
+			
+			if(!cfg.getAllSubCategories(now).isEmpty())
+			{
+				ListIterator<IConfigCategory> ite = cfg.getAllSubCategories(now).listIterator();
+				ites.push(ite);
+				return now = ite.next();
+			}
+			
+			while(!ites.isEmpty())
+			{
+				ListIterator<IConfigCategory> ite = ites.pop();
+				if(ite.hasNext())
+				{
+					ites.push(ite);
+					return now = ite.next();
+				}
+			}
+			
+			return null;
+		}
+
+		@Override
+		public void remove() {
+			//Not Removable via this Iterator.
+		}
+		
+	}
+	
+	public class CfgIteWrapper implements Iterable<IConfigCategory>
+	{
+		
+		IStellarConfig cfg;
+		
+		public CfgIteWrapper(IStellarConfig pcfg)
+		{
+			cfg = pcfg;
+		}
+
+		@Override
+		public Iterator<IConfigCategory> iterator() {
+			return new CfgCategoryIterator(cfg);
+		}
+		
+	}
+	
+	public CfgIteWrapper getCfgIteWrapper(IStellarConfig cfg)
+	{
+		return new CfgIteWrapper(cfg);
+	}
+	
 	
 	public CMvEntry findEntry(IConfigCategory cat)
 	{
