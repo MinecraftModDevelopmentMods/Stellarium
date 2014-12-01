@@ -69,6 +69,9 @@ public interface IStellarConfig {
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent);
 	
 	
-	/**Saves the current state of this config. mainly for Text Configuration*/
-	public void save();
+	/**
+	 * Adds loading-failure message. Only effective on loading phase.
+	 * @return <code>false</code> if this cfg is not in loading phase.
+	 * */
+	public boolean addLoadFailMessage(String title, String msg);
 }

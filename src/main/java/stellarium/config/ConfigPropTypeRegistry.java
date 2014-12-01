@@ -2,6 +2,11 @@ package stellarium.config;
 
 import java.util.Map;
 
+import stellarium.config.proptype.DoublePropHandler;
+import stellarium.config.proptype.IntegerPropHandler;
+import stellarium.config.proptype.StringPropHandler;
+import stellarium.config.proptype.UDoublePropHandler;
+
 import com.google.common.collect.Maps;
 
 public class ConfigPropTypeRegistry {
@@ -15,7 +20,14 @@ public class ConfigPropTypeRegistry {
 		return ins;
 	}
 	
-	Map<String, IConfigPropHandler> hmap = Maps.newHashMap();
+	private Map<String, IConfigPropHandler> hmap = Maps.newHashMap();
+	
+	static{	
+		register("double", new DoublePropHandler());
+		register("udouble", new UDoublePropHandler());
+		register("integer", new IntegerPropHandler());
+		register("string", new StringPropHandler());
+	}
 	
 	public static <T> void register(String proptype, IConfigPropHandler<T> handler)
 	{

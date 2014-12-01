@@ -35,6 +35,9 @@ public interface ICBodyType {
 	public void formCBody();
 	
 	
+	/**Copies the CBody.*/
+	public void setCopy(CBody ref, CBody target);
+	
 	/**do tasks needed for remove*/
 	public void onRemove(CBody body);
 	

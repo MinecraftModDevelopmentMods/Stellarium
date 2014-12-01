@@ -18,7 +18,7 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 	protected String id;
 	public int renderId;
 	protected CMvEntry root;
-	private CMvCfgLogical cfg;
+	protected CMvCfgBase cfg;
 	
 	public double Msun, yr, day, Au;
 	

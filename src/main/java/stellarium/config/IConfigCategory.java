@@ -13,7 +13,13 @@ public interface IConfigCategory {
 	public void setDisplayName(String name);
 	
 	
-	/**Gets (current) parent category of this category.*/
+	/**Gets configuration this category belongs to*/
+	public IStellarConfig getConfig();
+	
+	/**
+	 * Gets (current) parent category of this category.
+	 * gives null when this category has no parent.
+	 * */
 	public IConfigCategory getParCategory();
 	
 	

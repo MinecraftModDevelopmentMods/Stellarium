@@ -36,11 +36,11 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 
 			cfg.markImmutable(props);
 			
-			CPropLangStrs.addProperty(props, "double", CPropLangStrs.msun, 1.0);
-			CPropLangStrs.addProperty(props, "double", CPropLangStrs.yr, 365.2564);
-			CPropLangStrs.addProperty(props, "double", CPropLangStrs.day, 24000.0);
-			CPropLangStrs.addProperty(props, "double", CPropLangStrs.au, 1.496e+11);
-			//props.addProperty("double", "Stellar Distance Unit(pc)", 1.0);
+			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.msun, 1.0);
+			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.yr, 365.2564);
+			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.day, 24000.0);
+			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.au, 1.496e+11);
+			//props.addProperty("udouble", "Stellar Distance Unit(pc)", 1.0);
 		}
 		
 		
@@ -60,8 +60,6 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	}
 	
 	public void loadConfig(IStellarConfig subConfig) {
-		
-		//TODO Basic Properties Handling
 		
 		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
 		
@@ -135,7 +133,6 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	
 	public void saveConfig(IStellarConfig subConfig) {
 		
-		//TODO Basic Properties Handling
 		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
 		
 		IConfigProperty<Double> mu = props.getProperty(CPropLangStrs.msun);
@@ -157,7 +154,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			
 			IConfigProperty<IOrbitType> typeOrbit = cat.getProperty(CPropLangStrs.orbtype);
 			
-			if(ent.orbit() != null)
+			if(typeOrbit != null && ent.orbit() != null)
 			{
 				typeOrbit.simSetEnabled(true);
 				typeOrbit.simSetVal(ent.orbit().getOrbitType());
@@ -196,10 +193,13 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		rel.setCategory(cat);
 		cat.addPropertyRelation(rel, name);
 		
-		CPropLangStrs.addProperty(cat, "double", CPropLangStrs.mass, 1.0);
-		
-		IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
-		cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
+		CPropLangStrs.addProperty(cat, "udouble", CPropLangStrs.mass, 1.0);
+			
+		if(cat.getParCategory() != null)
+		{
+			IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
+			cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
+		}
 		
 		IConfigProperty typeCBody = CPropLangStrs.addProperty(cat, "typeCBody", CPropLangStrs.cbtype, null);
 		cat.addPropertyRelation(new TypeCBodyRelation(cat), typeCBody);

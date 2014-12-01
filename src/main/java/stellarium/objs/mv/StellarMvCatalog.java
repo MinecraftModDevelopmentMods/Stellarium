@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 
 import stellarium.catalog.EnumCatalogType;
 import stellarium.catalog.IStellarCatalog;
+import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.EnumCategoryType;
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
@@ -14,6 +15,8 @@ import stellarium.config.IStellarConfig;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.objs.mv.cbody.CBodyRenderer;
+import stellarium.objs.mv.cbody.TypeCBodyPropHandler;
+import stellarium.objs.mv.orbit.TypeOrbitPropHandler;
 import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
@@ -82,10 +85,14 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 	
 	@Override
 	public void load(IStellarConfig cfg) {
+		ConfigPropTypeRegistry.register("typeOrbit", new TypeOrbitPropHandler());
+		ConfigPropTypeRegistry.register("typeCBody", new TypeCBodyPropHandler());
+		
 		loadFromConfig(cfg);
 		
 		renderId = StellarRenderingRegistry.nextRenderId();
 		StellarRenderingRegistry.registerRenderer(renderId, new CBodyRenderer());
+		
 	}
 	
 	@Override

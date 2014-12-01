@@ -47,6 +47,8 @@ public abstract class Orbit {
 		//TODO Total Stub;
 		return null;
 	}
-
+	
+	abstract public double getAvgSize();
+	
 	abstract public IOrbitType getOrbitType();
 }

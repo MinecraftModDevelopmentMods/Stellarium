@@ -7,6 +7,7 @@ import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
 import stellarium.construct.CPropLangRegistry;
+import stellarium.construct.CPropLangStrs;
 import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.cbody.TypeCBodyRelation;
 import stellarium.objs.mv.orbit.IOrbitType;
@@ -23,8 +24,8 @@ public class CMvCfgPhysical extends CMvCfgBase implements ICfgArrMListener {
 
 	@Override
 	public boolean handleOrbitMissing(CMvEntry ent, IConfigCategory cat) {
-		// TODO Auto-generated method stub
-		return false;
+		cat.getConfig().addLoadFailMessage(CPropLangStrs.orbmissing, CPropLangStrs.getExpl(CPropLangStrs.orbmissing) + cat.getDisplayName());
+		return true;
 	}
 
 	@Override

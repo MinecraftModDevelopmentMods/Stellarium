@@ -26,14 +26,13 @@ public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 		
 	public boolean isRemote;
 	public List<CBody> bodies = Lists.newArrayList();
-	private CMvCfgPhysical cfg2;
 	
 	public StellarMv(String pid, int rid, boolean remote)
 	{
 		super(pid);
 		renderId = rid;
 		isRemote = remote;
-		cfg2 = new CMvCfgPhysical(this);
+		cfg = new CMvCfgPhysical(this);
 	}
 	
 	public void update(int tick) {
@@ -55,18 +54,28 @@ public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 	
 	protected void removeEntry(CMvEntry entry) {
 		super.removeEntry(entry);
-		bodies.remove(entry.cbody());
 	}
 
 	public void formatConfig(IStellarConfig subConfig) {
-		cfg2.formatConfig(subConfig);
+		cfg.formatConfig(subConfig);
 	}
 
 	public void loadFromConfig(IStellarConfig subConfig) {
-		cfg2.loadConfig(subConfig);
+		cfg.loadConfig(subConfig);
+		reset();
 	}
 
 	public void saveAsConfig(IStellarConfig subConfig) {
-		cfg2.saveConfig(subConfig);
+		cfg.saveConfig(subConfig);
+	}
+	
+	public void reset() {
+		bodies.clear();
+		
+		for(CMvEntry ent : this)
+		{
+			if(!ent.isVirtual())
+				bodies.add(ent.cbody());
+		}
 	}
 }

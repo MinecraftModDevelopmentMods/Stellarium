@@ -22,6 +22,9 @@ public class CPropLangStrs {
 	public static final String name = "Name";
 	public static final String mass = "Mass";
 	
+	//--------------------------- Loading Failure Messages -------------------------//
+	public static final String orbmissing = "Missing Orbit";
+	public static final String cbmissing = "Missing CBody";
 	
 	public static void onRegister()
 	{
@@ -41,8 +44,9 @@ public class CPropLangStrs {
 		CPropLangRegistry.instance().register(name, "cmv.ent.name");
 		CPropLangRegistry.instance().register(mass, "cmv.ent.mass");
 
-		
-		
+		//these has .expl
+		CPropLangRegistry.instance().register(orbmissing, "cmv.ent.err.missingorbit");
+		CPropLangRegistry.instance().register(cbmissing, "cmv.ent.err.missingcbody");
 	}
 	
 	
@@ -55,4 +59,5 @@ public class CPropLangStrs {
 	{
 		return cat.addProperty(proptype, propname, def).setExpl(getExpl(propname));
 	}
+	
 }
