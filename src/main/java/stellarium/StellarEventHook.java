@@ -9,7 +9,7 @@ public class StellarEventHook {
 	@SubscribeEvent
 	public void onWorldLoad(WorldEvent.Load e)
 	{
-		if(e.world.provider.isSurfaceWorld())
+		if(e.world.provider.dimensionId == 0 || e.world.provider.dimensionId == -1)
 		{
 			e.world.provider.setSkyRenderer(new DrawSky());
 		}
