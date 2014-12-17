@@ -29,9 +29,9 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid=Stellarium.modid, name=Stellarium.name, version=Stellarium.version, dependencies="required-after:sciapi")
 public class Stellarium {
 	
-		public static final String modid = "stellarium";
-		public static final String name = "Stellarium";
-		public static final String version = "0.1.4";
+		public static final String modid = "stellarcraft";
+		public static final String name = "StellarCraft";
+		public static final String version = "0.2.0";
 
         // The instance of Stellarium
         @Instance(Stellarium.modid)

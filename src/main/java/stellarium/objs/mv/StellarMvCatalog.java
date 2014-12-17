@@ -69,6 +69,8 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 		
 		cfg.addAMListener(this);
 
+		cfg.loadCategories();
+		
 		for(IConfigCategory cat : cfg.getAllCategories())
 		{
 			if(!mvs.containsKey(cat.getDisplayName()))
@@ -78,7 +80,6 @@ public class StellarMvCatalog implements IStellarCatalog, ICfgArrMListener {
 		for(StellarMvLogical mv : mvs.values())
 		{
 			IConfigCategory cat = cfg.addCategory(mv.getID());
-			cfg.setSubConfig(cat);
 			mv.formatConfig(cfg.getSubConfig(cat));
 		}
 	}

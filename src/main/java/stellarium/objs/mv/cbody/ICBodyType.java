@@ -32,7 +32,7 @@ public interface ICBodyType {
 	public void save(CBody body, IConfigCategory cfg);
 	
 	/**checks the current settings and forms the celestial body*/
-	public void formCBody();
+	public void formCBody(CBody body);
 	
 	
 	/**Copies the CBody.*/

@@ -1,5 +1,9 @@
 package stellarium.config;
 
+/**
+ * Property Relation, relation between properties which can control their related behaviors.
+ * Will be removed when any of its related property is removed
+ * */
 public interface IPropertyRelation {
 	
 	/**sets the properties of this relation.*/

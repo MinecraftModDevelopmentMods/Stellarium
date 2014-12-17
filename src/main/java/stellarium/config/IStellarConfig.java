@@ -12,7 +12,7 @@ public interface IStellarConfig {
 	 * @param modif modifiability flag
 	 * @param warn warning flag. when it is enabled, any modification will be warned.
 	 * */
-	public boolean setModifiable(boolean modif, boolean warn);
+	public void setModifiable(boolean modif, boolean warn);
 	
 	/**Adds Configuration Arrangement Modification Listener.*/
 	public void addAMListener(ICfgArrMListener list);
@@ -37,17 +37,10 @@ public interface IStellarConfig {
 	public IConfigCategory getCategory(String cid);
 	
 	/**
-	 * Gets all categories for this configuration.
-	 * Every parent category will be prior to their sub-categories.
+	 * Gets all non-sub categories for this configuration.
 	 * */
 	public List<IConfigCategory> getAllCategories();
 	
-	
-	/**
-	 * Sets category as sub-configuration.
-	 * Only valid for <code>{@link EnumCategoryType#ConfigList}</code> 
-	 * */
-	public IStellarConfig setSubConfig(IConfigCategory cat);
 	
 	/**
 	 * Gets sub-configuration from category.
@@ -69,9 +62,11 @@ public interface IStellarConfig {
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent);
 	
 	
+	/**Detects and Loads Categories*/
+	public void loadCategories();
+	
 	/**
-	 * Adds loading-failure message. Only effective on loading phase.
-	 * @return <code>false</code> if this cfg is not in loading phase.
+	 * Adds loading-failure message.
 	 * */
-	public boolean addLoadFailMessage(String title, String msg);
+	public void addLoadFailMessage(String title, String msg);
 }

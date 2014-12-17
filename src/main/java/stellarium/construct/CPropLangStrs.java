@@ -18,6 +18,10 @@ public class CPropLangStrs {
 	public static final String day = "day";
 	public static final String au = "Au";
 	
+	//------------------------------ StellarMv Defaults ----------------------------//
+	public static final String def = "(default)";
+
+	
 	//------------------------------ MvEntry Properties ----------------------------//
 	public static final String name = "Name";
 	public static final String mass = "Mass";
@@ -35,6 +39,8 @@ public class CPropLangStrs {
 		CPropLangRegistry.instance().register(yr, "cmv.yr");
 		CPropLangRegistry.instance().register(day, "cmv.day");
 		CPropLangRegistry.instance().register(au, "cmv.au");
+		
+		CPropLangRegistry.instance().register(def, "cmv.def");
 		
 		//these has .expl
 		CPropLangRegistry.instance().register(orbtype, "cmv.orbtype");

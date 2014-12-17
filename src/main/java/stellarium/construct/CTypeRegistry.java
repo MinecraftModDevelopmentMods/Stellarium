@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 
 import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.orbit.IOrbitType;
+import stellarium.objs.mv.orbit.OrbTStationary;
 
 public class CTypeRegistry {
 	
@@ -26,7 +27,7 @@ public class CTypeRegistry {
 	
 	public CTypeRegistry()
 	{
-
+		this.registerOrbType(new OrbTStationary());
 	}
 	
 	public void registerOrbType(IOrbitType orbt)

@@ -86,7 +86,6 @@ public class StellarCatalogRegistry {
 		for(IStellarCatalog cat : catalog)
 		{
 			IConfigCategory cfgcat = cfg.addCategory(cat.getCatalogName());
-			cfg.setSubConfig(cfgcat);
 			cat.formatConfig(cfg);
 		}
 	}

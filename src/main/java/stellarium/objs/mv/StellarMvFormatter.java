@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import stellarium.catalog.IStellarCatalog;
+import stellarium.construct.CPropLangStrsCBody;
+import stellarium.construct.CTypeRegistry;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -16,7 +18,6 @@ public class StellarMvFormatter {
 	
 	public void formatMv(StellarMvLogical lmv, StellarMv nmv)
 	{
-		//TODO Total Stub
 		nmv.Au = lmv.Au;
 		nmv.Msun = lmv.Msun;
 		nmv.day = lmv.day;
@@ -128,9 +129,15 @@ public class StellarMvFormatter {
 	
 	public void copyScaled(CMvEntry orig, CMvEntry tar, double scale)
 	{
-		tar.setOrbit(orig.orbit().getOrbitType().provideOrbit(tar));
-		tar.orbit().getOrbitType().setScaled(orig.orbit(), tar.orbit(), scale);
-		
+		if(orig.orbit() == null)
+		{
+			tar.setOrbit(CTypeRegistry.instance().getOrbType(CPropLangStrsCBody.storb).provideOrbit(tar));
+		}
+		else{
+			tar.setOrbit(orig.orbit().getOrbitType().provideOrbit(tar));
+			tar.orbit().getOrbitType().setScaled(orig.orbit(), tar.orbit(), scale);
+		}
+
 		if(getInfo(orig).tsatq.isEmpty())
 		{
 			tar.setCBody(orig.cbody().getCBodyType().provideCBody(tar));

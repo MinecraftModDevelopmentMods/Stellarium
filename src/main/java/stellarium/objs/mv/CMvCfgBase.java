@@ -43,6 +43,17 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			//props.addProperty("udouble", "Stellar Distance Unit(pc)", 1.0);
 		}
 		
+		cfg.addAMListener(this);
+		
+		cfg.loadCategories();
+		
+		for(IConfigCategory cat : getCfgIteWrapper(cfg))
+		{
+			if(cfg.isImmutable(cat))
+				continue;
+			if(findEntry(cat) == null)
+				onNew(cat);
+		}
 		
 		if(ins.root == null)
 		{
@@ -53,10 +64,27 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		else
 		{
 			for(CMvEntry entry : ins)
-				formatEntryCategory(cfg.getCategory(entry.getName()));
+			{
+				IConfigCategory encat, tmp;
+				
+				if(entry.hasParent())
+				{
+					encat = findCategory(cfg, entry.getParent());
+					
+					if((tmp = findSubCategory(cfg, encat, entry.getName())) != null)
+						encat = tmp;
+					else encat = cfg.addSubCategory(encat, entry.getName());
+				}
+				else
+				{
+					if((tmp = findCategory(cfg, entry.getName())) != null)
+						encat = tmp;
+					else encat = cfg.addCategory(entry.getName());
+				}
+				
+				formatEntryCategory(encat);
+			}
 		}
-		
-		cfg.addAMListener(this);
 	}
 	
 	public void loadConfig(IStellarConfig subConfig) {
@@ -88,7 +116,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			
 			IConfigProperty<IOrbitType> torb = cat.getProperty(CPropLangStrs.orbtype);
 			
-			if(torb.getVal() == null)
+			if(cat.getParCategory() != null && torb.getVal() == null)
 			{
 				if(handleOrbitMissing(ent, cat))
 					return;
@@ -194,7 +222,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		cat.addPropertyRelation(rel, name);
 		
 		CPropLangStrs.addProperty(cat, "udouble", CPropLangStrs.mass, 1.0);
-			
+		
 		if(cat.getParCategory() != null)
 		{
 			IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
@@ -382,6 +410,31 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	public CMvEntry findEntry(IConfigCategory cat)
 	{
 		return ins.findEntry(cat.getDisplayName());
+	}
+	
+	public IConfigCategory findCategory(IStellarConfig cfg, CMvEntry ent)
+	{
+		if(ent.hasParent())
+			return findSubCategory(cfg, findCategory(cfg, ent.getParent()), ent.getName());
+		return findCategory(cfg, ent.getName());
+	}
+	
+	public IConfigCategory findCategory(IStellarConfig cfg, String dispname)
+	{
+		for(IConfigCategory sub : cfg.getAllCategories())
+			if(sub.getDisplayName().equals(dispname))
+				return sub;
+		
+		return null;
+	}
+	
+	public IConfigCategory findSubCategory(IStellarConfig cfg, IConfigCategory cat, String dispname)
+	{
+		for(IConfigCategory sub : cfg.getAllSubCategories(cat))
+			if(sub.getDisplayName().equals(dispname))
+				return sub;
+		
+		return null;
 	}
 
 	

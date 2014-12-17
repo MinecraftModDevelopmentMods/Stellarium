@@ -9,6 +9,7 @@ import stellarium.config.IConfigPropHandler;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.element.EnumPropElement;
 import stellarium.config.element.IEnumElement;
+import stellarium.construct.CPropLangStrs;
 import stellarium.construct.CTypeRegistry;
 
 public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
@@ -20,7 +21,7 @@ public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 		IEnumElement pee = prop.getElement(prop.getName());
 		
 		List<String> nameList = Lists.newArrayList(CTypeRegistry.instance().getRegCBodyTypeNames());
-		nameList.add(0, "(default)");
+		nameList.add(0, CPropLangStrs.def);
 		pee.setValRange(nameList.toArray(new String[0]));
 		
 	}

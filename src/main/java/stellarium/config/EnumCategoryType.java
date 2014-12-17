@@ -2,6 +2,7 @@ package stellarium.config;
 
 /**
  * Category Arrangement Type for Configuration.
+ * Default: List
  * */
 public enum EnumCategoryType {
 	

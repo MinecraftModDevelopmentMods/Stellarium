@@ -29,7 +29,7 @@ public interface IOrbitType {
 	public void save(Orbit orbit, IConfigCategory cfg);
 	
 	/**checks the current settings and forms the orbit*/
-	public void formOrbit();
+	public void formOrbit(Orbit orb);
 	
 	/**sets the target orbit to be scaled orbit of reference orbit*/
 	public void setScaled(Orbit ref, Orbit target, double scale);
