@@ -7,7 +7,7 @@ public class JsonConfigCatCfg extends JsonConfigCategory {
 	protected JsonConfigHandler handler;
 	
 	public JsonConfigCatCfg(JsonConfigHandler pcfg, JsonConfigHandler handle, String pid) {
-		super(pcfg, pid);
+		super(pcfg, null, pid);
 		handler = handle;
 	}
 	

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
@@ -12,6 +13,7 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
+import stellarium.config.json.JsonConfigProperty.CfgElement;
 
 public class JsonConfigCategory implements IConfigCategory {
 
@@ -20,14 +22,17 @@ public class JsonConfigCategory implements IConfigCategory {
 	protected JsonConfigCategory parcat;
 	protected boolean isImmutable;
 	
-	public JsonConfigCategory(JsonConfigHandler pcfg, String pid)
+	protected JsonObject jobj;
+	
+	public JsonConfigCategory(JsonConfigHandler pcfg, JsonObject obj, String pid)
 	{
-		this(pcfg, null, pid);
+		this(pcfg, null, obj, pid);
 	}
 	
-	public JsonConfigCategory(JsonConfigHandler pcfg, JsonConfigCategory pcat, String pid)
+	public JsonConfigCategory(JsonConfigHandler pcfg, JsonConfigCategory pcat, JsonObject obj, String pid)
 	{
 		cfg = pcfg;
+		jobj = obj;
 		parcat = pcat;
 		id = pid;
 	}
@@ -79,6 +84,30 @@ public class JsonConfigCategory implements IConfigCategory {
 		
 		propmap.put(propname, jcp);
 		
+		if(jcp.isSingular())
+		{
+			String sub = (String) jcp.namelist.get(0);
+			CfgElement el = jcp.getElementProt(sub);
+			el.addToJson(jobj, propname);
+		} else {
+			JsonObject prop;
+			
+			if(jobj.has(propname) && jobj.get(propname).isJsonObject())
+			{
+				prop = jobj.getAsJsonObject();
+			} else {
+				prop = new JsonObject();
+				jobj.add(propname, prop);
+			}
+			
+			for(Object sub1 : jcp.namelist)
+			{
+				String sub = (String) sub1;
+				CfgElement el = jcp.getElementProt(sub);
+				el.addToJson(prop, sub);
+			}
+		}
+		
 		// TODO Loading Thingy
 		return jcp;
 	}
@@ -89,9 +118,22 @@ public class JsonConfigCategory implements IConfigCategory {
 		if(!propmap.containsKey(propname))
 			return;
 		
+		JsonConfigProperty jcp = propmap.get(propname);
 		propmap.remove(propname);
 		// TODO Something..?
 		
+		if(jcp.isSingular())
+		{
+			jobj.remove(propname);
+		} else {
+			JsonObject prop = jobj.getAsJsonObject();
+			
+			for(Object sub1 : jcp.namelist)
+			{
+				String sub = (String) sub1;
+				prop.remove(sub);
+			}
+		}
 		
 		//Clear Relations
 		List<PropertyRelation> lr = proprels.get(propname);

@@ -3,6 +3,8 @@ package stellarium.config.json;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.IConfigPropHandler;
@@ -14,6 +16,7 @@ import stellarium.config.json.JsonConfigCategory.PropertyRelation;
 public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 	
 	protected JsonConfigCategory par;
+	protected boolean singular = false;
 	
 	public JsonConfigProperty(JsonConfigCategory cat, String ptype, String pname, T def)
 	{
@@ -22,7 +25,15 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		handle = ConfigPropTypeRegistry.getHandler(ptype);
 		handle.onConstruct(this);
 		
+		if(namelist.size() == 1 && namelist.get(0).equals(pname))
+			singular = true;
+		
 		setVal(def);
+	}
+	
+	public boolean isSingular()
+	{
+		return this.singular;
 	}
 	
 	protected String name, expl;
@@ -49,7 +60,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 	public void simSetVal(T val) {
 		if(!enabled)
 			return;
-		// TODO Auto-generated method stub
+		// TODO SetVal Simulation
 		
 		setVal(val);
 		
@@ -68,7 +79,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 
 	@Override
 	public void simSetEnabled(boolean enabled) {
-		// TODO Auto-generated method stub
+		// TODO SetEnabled Simulation
 		
 		setEnabled(enabled);
 		
@@ -111,7 +122,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 	@Override
 	public void addElement(String subname, EnumPropElement e) {
 		namelist.add(subname);
-		ellist.add(getElement(e));
+		ellist.add(newElement(e));
 	}
 
 	@SuppressWarnings("hiding")
@@ -125,9 +136,19 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		
 		return null;
 	}
+	
+	protected CfgElement getElementProt(String subname) {
+		for(int i = 0; i < namelist.size(); i++)
+		{
+			if(namelist.get(i).equals(subname))
+				return (CfgElement) ellist.get(i);
+		}
+		
+		return null;
+	}
 
 	
-	public IPropElement getElement(EnumPropElement e)
+	protected IPropElement newElement(EnumPropElement e)
 	{
 		switch(e)
 		{
@@ -148,29 +169,55 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		}
 	}
 	
-	public class DoubleElement implements IDoubleElement {
+	public abstract class CfgElement {
 		
-		public double tval;
-
+		public abstract void addToJson(JsonObject jo, String elname);
+		
+	}
+	
+	public class DoubleElement extends CfgElement implements IDoubleElement {
+		
+		public double tval = 0.0;
+		
+		public JsonObject jobj;
+		public String eln;
+		
 		@Override
 		public void setValue(double val) {
 			tval = val;
+			
+			if(jobj != null)
+				jobj.addProperty(eln, val);
 		}
 
 		@Override
 		public double getValue() {
 			return tval;
 		}
+
+		@Override
+		public void addToJson(JsonObject jo, String elname) {
+			jo.addProperty(elname, tval);
+			
+			jobj = jo;
+			eln = elname;
+		}
 		
 	}
 	
-	public class IntElement implements IIntegerElement {
+	public class IntElement extends CfgElement implements IIntegerElement {
 		
 		public int tval;
 
+		public JsonObject jobj;
+		public String eln;
+		
 		@Override
 		public void setValue(int val) {
 			tval = val;
+			
+			if(jobj != null)
+				jobj.addProperty(eln, val);
 		}
 
 		@Override
@@ -178,15 +225,28 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 			return tval;
 		}
 		
+		@Override
+		public void addToJson(JsonObject jo, String elname) {
+			jo.addProperty(elname, tval);
+			
+			jobj = jo;
+			eln = elname;
+		}
 	}
 	
-	public class StringElement implements IStringElement {
+	public class StringElement extends CfgElement implements IStringElement {
 		
 		public String tval;
 
+		public JsonObject jobj;
+		public String eln;
+		
 		@Override
 		public void setValue(String val) {
 			tval = val;
+			
+			if(jobj != null)
+				jobj.addProperty(eln, val);
 		}
 
 		@Override
@@ -194,12 +254,23 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 			return tval;
 		}
 		
+		@Override
+		public void addToJson(JsonObject jo, String elname) {
+			jo.addProperty(elname, tval);
+			
+			jobj = jo;
+			eln = elname;
+		}
+		
 	}
 	
-	public class EnumElement implements IEnumElement {
+	public class EnumElement extends CfgElement implements IEnumElement {
 		
 		String valrange[];
-		int ind;
+		int ind = 0;
+		
+		public JsonObject jobj;
+		public String eln;
 
 		@Override
 		public void setValRange(String... str) {
@@ -209,13 +280,23 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		@Override
 		public void setValue(int index) {
 			ind = index;
+			
+			if(jobj != null)
+				jobj.addProperty(eln, valrange[index]);
 		}
 
 		@Override
 		public void setValue(String val) {
 			for(int i = 0; i < valrange.length; i++)
 				if(valrange[i].equals(val))
+				{
 					ind = i;
+			
+					if(jobj != null)
+						jobj.addProperty(eln, val);
+					
+					return;
+				}
 		}
 
 		@Override
@@ -226,6 +307,14 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		@Override
 		public int getIndex() {
 			return ind;
+		}
+		
+		@Override
+		public void addToJson(JsonObject jo, String elname) {
+			jo.addProperty(elname, valrange[ind]);
+			
+			jobj = jo;
+			eln = elname;
 		}
 		
 	}

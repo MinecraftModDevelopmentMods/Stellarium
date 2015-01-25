@@ -1,5 +1,6 @@
 package stellarium.config.json;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.gson.JsonObject;
@@ -10,21 +11,27 @@ public interface IJsonContainer {
 	 * Read this container as Json.
 	 * Will throw Exception if this container is not a Json file.
 	 * */
-	public JsonObject readJson();
+	public JsonObject readJson() throws IOException;
 	
-	/**Writes Json Object to this container.
-	 * Will throw Exception if this container is not a Json file.
+	/**
+	 * Writes Json Object to this container. Any  file would be overridden.
 	 * */
 	public void writeJson(JsonObject obj);
 
 	
-	/**creates sub-container*/
+	/**
+	 * Creates sub-container.
+	 * If it is invalid, then just gives null.
+	 * */
 	public IJsonContainer makeSubContainer(String sub);
 	
-	/**removes sub-container*/
+	/**Removes the sub-container, if it exists.*/
 	public void removeSubContainer(String sub);
 	
-	/**gets sub-container*/
+	/**
+	 * Gives the sub-container.
+	 * NOTE: this will give new instance of container, not same with the original.
+	 * */
 	public IJsonContainer getSubContainer(String sub);
 	
 	/**
@@ -32,4 +39,7 @@ public interface IJsonContainer {
 	 * Will give empty list if no sub-containers are present.
 	 * */
 	public Iterable<String> getAllSubContainerNames();
+	
+	/**Adds load & fail message for this container*/
+	public void addLoadFailMessage(String title, String msg);
 }

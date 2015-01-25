@@ -1,5 +1,6 @@
 package stellarium.config.json;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,12 +17,16 @@ import stellarium.config.core.CategoryContainer;
 
 public class JsonConfigHandler implements IStellarConfig {
 	
+	private static String cat = "__category";
+	
 	protected List<ICfgArrMListener> listenList = Lists.newArrayList();
 	protected IJsonContainer con;
 	protected EnumCategoryType cattype = EnumCategoryType.List;
 	protected boolean modifiable = false;
 	
 	protected CategoryContainer catcon;
+	
+	protected JsonObject jobj;
 	
 	public JsonConfigHandler(IJsonContainer pcon)
 	{
@@ -32,7 +37,17 @@ public class JsonConfigHandler implements IStellarConfig {
 	@Override
 	public void setCategoryType(EnumCategoryType t) {
 		cattype = t;
+		
 		catcon = CategoryContainer.newCatContainer(t);
+		if(t != EnumCategoryType.ConfigList)
+		{
+			try {
+				jobj = con.readJson();
+			} catch (IOException e) {
+				//TODO IOException Handling
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -67,9 +82,16 @@ public class JsonConfigHandler implements IStellarConfig {
 			JsonConfigHandler handle = new JsonConfigHandler(con.makeSubContainer(cid));
 			jcat = new JsonConfigCatCfg(this, handle, cid);
 		}
-		else jcat = new JsonConfigCategory(this, cid);
+		else {
+			JsonObject tobj = new JsonObject();
+			
+			jobj.add(cid, tobj);
+			tobj.addProperty(cat, true);
+			
+			jcat = new JsonConfigCategory(this, tobj, cid);
+		}
+		
 		catcon.addCategory(jcat);
-		// TODO Auto-generated method stub
 		
 		for(ICfgArrMListener list : listenList)
 			list.onNew(jcat);
@@ -96,8 +118,7 @@ public class JsonConfigHandler implements IStellarConfig {
 		
 		if(cattype == EnumCategoryType.ConfigList)
 			con.removeSubContainer(cid);
-	
-		// TODO Auto-generated method stub
+		else jobj.remove(cid);
 
 	}
 
@@ -108,7 +129,6 @@ public class JsonConfigHandler implements IStellarConfig {
 
 	@Override
 	public List<IConfigCategory> getAllCategories() {
-		// TODO Auto-generated method stub
 		return catcon.getAllCategories();
 	}
 
@@ -125,12 +145,17 @@ public class JsonConfigHandler implements IStellarConfig {
 		if(!modifiable)
 			return null;
 		
-		if(cattype != EnumCategoryType.ConfigList)
+		if(cattype != EnumCategoryType.Tree)
 			return null;
 		
-		IConfigCategory jcat = new JsonConfigCategory(this, (JsonConfigCategory) parent, subid);
+		JsonObject sub = new JsonObject();
+		
+		JsonConfigCategory par = (JsonConfigCategory) parent;
+		par.jobj.add(subid, sub);
+		sub.addProperty(cat, true);
+		
+		IConfigCategory jcat = new JsonConfigCategory(this, par, sub, subid);
 		catcon.addCategory(jcat);
-		// TODO Auto-generated method stub
 		
 		for(ICfgArrMListener list : listenList)
 			list.onNew(jcat);
@@ -142,6 +167,7 @@ public class JsonConfigHandler implements IStellarConfig {
 	public void removeSubCategory(IConfigCategory parent, String subid) {
 		if(!modifiable)
 			return;
+		
 		if(catcon.getSubCategory(parent, subid) == null
 				|| ((JsonConfigCategory)catcon.getSubCategory(parent, subid)).isImmutable)
 			return;
@@ -156,8 +182,9 @@ public class JsonConfigHandler implements IStellarConfig {
 		
 		catcon.removeSubCategory(parent, subid);
 		
-		// TODO Auto-generated method stub
-
+		JsonConfigCategory par = (JsonConfigCategory) parent;
+		par.jobj.remove(subid);
+		
 	}
 
 	@Override
@@ -167,16 +194,13 @@ public class JsonConfigHandler implements IStellarConfig {
 
 	@Override
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent) {
-		// TODO Auto-generated method stub
 		return catcon.getAllSubCategories(parent);
 	}
 
 	
-	public Map<String, String> msgMap = Maps.newHashMap();
-	
 	@Override
 	public void addLoadFailMessage(String title, String msg) {
-		msgMap.put(title, msg);
+		con.addLoadFailMessage(title, msg);
 	}
 
 
@@ -192,31 +216,51 @@ public class JsonConfigHandler implements IStellarConfig {
 			}
 			
 			break;
-		case List:
-			// TODO Handling for List Loading
 			
-			JsonObject jo = con.readJson();
+		case List:			
+			JsonObject jo = null;
+			
+			try {
+				jo = con.readJson();
+			} catch (IOException e) {
+				//TODO IOException Handling
+				e.printStackTrace();
+			}
 			
 			for(Entry<String, JsonElement> ent: jo.entrySet())
 			{
-				if(ent.getValue().isJsonObject())
-					catcon.addCategory(new JsonConfigCategory(this, ent.getKey()));
+				if(ent.getValue().isJsonObject() && ent.getValue().getAsJsonObject().has(cat))
+					catcon.addCategory(new JsonConfigCategory(this, ent.getValue().getAsJsonObject(), ent.getKey()));
 			}
 			
 			break;
 		case Tree:
-			// TODO Handling for Tree Loading
-			JsonObject tjo = con.readJson();
-			addSubCategories(tjo);
+			
+			JsonObject tjo = null;
+			try {
+				tjo = con.readJson();
+			} catch (IOException e) {
+				//TODO IOException Handling
+				e.printStackTrace();
+			}
+			
+			addSubCategories(null, tjo);
 			
 			break;
 		}
-
 	}
 	
-	private static String cat = "category";
-	
-	private void addSubCategories(JsonObject jo)
+	public void saveJson()
+	{
+		if(this.cattype == EnumCategoryType.ConfigList)
+		{
+			for(IConfigCategory cat : this.getAllCategories())
+				((JsonConfigHandler) cat.getConfig()).saveJson();
+		}
+		else con.writeJson(jobj);
+	}
+		
+	private void addSubCategories(JsonConfigCategory ca, JsonObject jo)
 	{
 		for(Entry<String, JsonElement> ent: jo.entrySet())
 		{
@@ -225,7 +269,20 @@ public class JsonConfigHandler implements IStellarConfig {
 				JsonObject je = ent.getValue().getAsJsonObject();
 				
 				if(je.has(cat))
-					catcon.addCategory(new JsonConfigCategory(this, ent.getKey()));
+				{
+					JsonConfigCategory subc;
+					
+					if(ca != null)
+					{
+						catcon.addSubCategory(ca, new JsonConfigCategory(this, ca, je, ent.getKey()));
+						subc = (JsonConfigCategory) catcon.getSubCategory(ca, ent.getKey());
+					}
+					else {
+						catcon.addCategory(new JsonConfigCategory(this, je, ent.getKey()));
+						subc = (JsonConfigCategory) catcon.getCategory(ent.getKey());
+					}
+					addSubCategories(subc, je);
+				}
 			}
 		}
 	}
