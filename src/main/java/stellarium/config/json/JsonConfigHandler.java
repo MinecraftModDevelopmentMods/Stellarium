@@ -26,7 +26,7 @@ public class JsonConfigHandler implements IStellarConfig {
 	
 	protected CategoryContainer catcon;
 	
-	protected JsonObject jobj;
+	protected JsonCommentedObj jobj;
 	
 	public JsonConfigHandler(IJsonContainer pcon)
 	{
@@ -196,6 +196,11 @@ public class JsonConfigHandler implements IStellarConfig {
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent) {
 		return catcon.getAllSubCategories(parent);
 	}
+	
+	public void setExpl(JsonElement prop, String expl)
+	{
+		jobj.setComment(prop, expl);
+	}
 
 	
 	@Override
@@ -218,16 +223,14 @@ public class JsonConfigHandler implements IStellarConfig {
 			break;
 			
 		case List:			
-			JsonObject jo = null;
-			
 			try {
-				jo = con.readJson();
+				jobj = con.readJson();
 			} catch (IOException e) {
 				//TODO IOException Handling
 				e.printStackTrace();
 			}
 			
-			for(Entry<String, JsonElement> ent: jo.entrySet())
+			for(Entry<String, JsonElement> ent: jobj.getObj().entrySet())
 			{
 				if(ent.getValue().isJsonObject() && ent.getValue().getAsJsonObject().has(cat))
 					catcon.addCategory(new JsonConfigCategory(this, ent.getValue().getAsJsonObject(), ent.getKey()));
@@ -236,15 +239,14 @@ public class JsonConfigHandler implements IStellarConfig {
 			break;
 		case Tree:
 			
-			JsonObject tjo = null;
 			try {
-				tjo = con.readJson();
+				jobj = con.readJson();
 			} catch (IOException e) {
 				//TODO IOException Handling
 				e.printStackTrace();
 			}
 			
-			addSubCategories(null, tjo);
+			addSubCategories(null, jobj.getObj());
 			
 			break;
 		}

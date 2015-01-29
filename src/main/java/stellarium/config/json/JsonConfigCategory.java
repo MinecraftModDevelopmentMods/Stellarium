@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import stellarium.config.ICfgArrMListener;
@@ -77,10 +78,11 @@ public class JsonConfigCategory implements IConfigCategory {
 	@Override
 	public <T> IConfigProperty<T> addProperty(String proptype, String propname,
 			T def) {
-		JsonConfigProperty jcp = new JsonConfigProperty(this, proptype, propname, def);
-		
 		if(propmap.containsKey(propname))
-			removeProperty(propname);
+			// TODO Loading Thingy
+			return propmap.get(propname);
+		
+		JsonConfigProperty jcp = new JsonConfigProperty(this, proptype, propname, def);
 		
 		propmap.put(propname, jcp);
 		
@@ -94,7 +96,7 @@ public class JsonConfigCategory implements IConfigCategory {
 			
 			if(jobj.has(propname) && jobj.get(propname).isJsonObject())
 			{
-				prop = jobj.getAsJsonObject();
+				prop = jobj.getAsJsonObject(propname);
 			} else {
 				prop = new JsonObject();
 				jobj.add(propname, prop);
@@ -108,7 +110,6 @@ public class JsonConfigCategory implements IConfigCategory {
 			}
 		}
 		
-		// TODO Loading Thingy
 		return jcp;
 	}
 
@@ -126,13 +127,15 @@ public class JsonConfigCategory implements IConfigCategory {
 		{
 			jobj.remove(propname);
 		} else {
-			JsonObject prop = jobj.getAsJsonObject();
+			JsonObject prop = jobj.getAsJsonObject(propname);
 			
 			for(Object sub1 : jcp.namelist)
 			{
 				String sub = (String) sub1;
 				prop.remove(sub);
 			}
+			
+			jobj.remove(propname);
 		}
 		
 		//Clear Relations
@@ -148,6 +151,11 @@ public class JsonConfigCategory implements IConfigCategory {
 	@Override
 	public <T> IConfigProperty<T> getProperty(String propname) {
 		return propmap.get(propname);
+	}
+	
+	public void setExpl(JsonConfigProperty jcp, String expl)
+	{
+		cfg.setExpl(jobj.get(jcp.getName()), expl);
 	}
 	
 	

@@ -11,9 +11,12 @@ import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
 
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import stellarium.config.IConfigCategory;
 import stellarium.config.json.IJsonContainer;
+import stellarium.config.json.JsonCommentedObj;
+import stellarium.config.json.JsonConfigHandler;
+import stellarium.config.util.CfgIteWrapper;
 import stellarium.construct.CPropLangUtil;
-import stellarium.stellars.background.BrStar;
 
 public class FileJsonContainer implements IJsonContainer {
 
@@ -25,44 +28,35 @@ public class FileJsonContainer implements IJsonContainer {
 	protected Gson gson;
 	
 	public FileJsonContainer(File pdir, String pname)
-	{
+	{		
 		pardir = pdir;
 		name = pname;
 		
 		GsonBuilder gb = new GsonBuilder();
 		gb.setPrettyPrinting();
+		gb.registerTypeAdapter(JsonCommentedObj.class, new FileJsonCmTypeAdapter(gson));
 		gson = gb.create();
 	}
 	
 	@Override
-	public JsonObject readJson() throws IOException {
+	public JsonCommentedObj readJson() throws IOException {
 		File file = new File(pardir, name + ext);
-				
+		
 		if(!file.exists())
 		{
-			return new JsonObject();
+			return new JsonCommentedObj();
 		} else if(file.isDirectory() || !file.canRead()) {
 			throw new MalformedJsonException("This file is not a Json file");
 		} else {
 			FileReader fr = new FileReader(file);
 			BufferedReader reader = new BufferedReader(fr);
 			
-			JsonParser parser = new JsonParser();
-			JsonElement elm = parser.parse(reader);
-			
-			if(!elm.isJsonObject())
-				throw new MalformedJsonException("This json element is not a Json Object");
-			
-			JsonObject obj = elm.getAsJsonObject();
-			
-			return elm.getAsJsonObject();
+			return gson.fromJson(reader, JsonCommentedObj.class);
 		}
-		
-		// TODO Translation(?)
 	}
 
 	@Override
-	public void writeJson(JsonObject obj) {
+	public void writeJson(JsonCommentedObj obj) {
 		
 		File file = new File(pardir, name + ext);
 		
@@ -78,6 +72,8 @@ public class FileJsonContainer implements IJsonContainer {
 			}
 		}
 		
+		//addCommentToJson(jch, obj);
+		
 		try {
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter writer = new BufferedWriter(fw);
@@ -87,9 +83,6 @@ public class FileJsonContainer implements IJsonContainer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		// Translation(?)
-
 	}
 
 	@Override

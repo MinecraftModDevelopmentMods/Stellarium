@@ -13,6 +13,7 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
+import stellarium.config.util.CfgIteWrapper;
 import stellarium.construct.CPropLangRegistry;
 import stellarium.construct.CPropLangStrs;
 import stellarium.objs.mv.cbody.ICBodyType;
@@ -308,97 +309,6 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			}
 		}
 
-	}
-	
-	public class CfgCategoryIterator implements Iterator<IConfigCategory> {
-
-		IStellarConfig cfg;
-		IConfigCategory now = null;
-		
-		Stack<ListIterator> ites = new Stack();
-		
-		public CfgCategoryIterator(IStellarConfig pcfg)
-		{
-			cfg = pcfg;
-		}
-		
-		public boolean hasNextRec()
-		{
-			if(ites.isEmpty())
-				return false;
-						
-			ListIterator ite = ites.pop();
-			boolean hn = ite.hasNext() || hasNextRec();
-			ites.push(ite);
-			
-			return hn;
-		}
-		
-		@Override
-		public boolean hasNext() {
-			
-			if(ites.isEmpty())
-				return true;
-
-			if(now != null && !cfg.getAllSubCategories(now).isEmpty())
-				return true;
-			
-			return hasNextRec();
-			
-		}
-
-		@Override
-		public IConfigCategory next() {
-			
-			if(ites.isEmpty())
-			{
-				ListIterator<IConfigCategory> rt = cfg.getAllCategories().listIterator();
-				ites.push(rt);
-				return now = rt.next();
-			}
-			
-			if(!cfg.getAllSubCategories(now).isEmpty())
-			{
-				ListIterator<IConfigCategory> ite = cfg.getAllSubCategories(now).listIterator();
-				ites.push(ite);
-				return now = ite.next();
-			}
-			
-			while(!ites.isEmpty())
-			{
-				ListIterator<IConfigCategory> ite = ites.pop();
-				if(ite.hasNext())
-				{
-					ites.push(ite);
-					return now = ite.next();
-				}
-			}
-			
-			return null;
-		}
-
-		@Override
-		public void remove() {
-			//Not Removable via this Iterator.
-		}
-		
-	}
-	
-	public class CfgIteWrapper implements Iterable<IConfigCategory>
-	{
-		
-		IStellarConfig cfg;
-		
-		public CfgIteWrapper(IStellarConfig pcfg)
-		{
-			cfg = pcfg;
-		}
-
-		@Override
-		public Iterator<IConfigCategory> iterator() {
-			return new CfgCategoryIterator(cfg);
-		}
-		
 	}
 	
 	public CfgIteWrapper getCfgIteWrapper(IStellarConfig cfg)
