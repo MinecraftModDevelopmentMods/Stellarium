@@ -8,7 +8,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import stellarium.initials.*;
 import stellarium.stellars.background.BrStar;
-import stellarium.stellars.background.StellarBgManager;
 import stellarium.stellars.cbody.StarBody;
 import stellarium.stellars.moving.StellarMvManager;
 import stellarium.stellars.orbit.*;
@@ -19,7 +18,7 @@ import stellarium.viewrender.render.StellarRenders;
 import stellarium.viewrender.viewer.*;
 import stellarium.world.StellarWorldManager;
 
-public class StellarManager {
+public class OldStellarManager {
 	
 	
 	public static Sun Sun=new Sun();
@@ -37,7 +36,6 @@ public class StellarManager {
 	//Managers
 	public StellarInitManager initmanager;
 	public StellarMvManager mvmanager;
-	public StellarBgManager bgmanager;
 	//public StellarDataManager datamanager;
 	public StellarWorldManager worldmanager;
 
@@ -69,12 +67,11 @@ public class StellarManager {
 	
 
 	
-	public StellarManager(){
+	public OldStellarManager(){
 		CRenderEngine.instance=new CRenderEngine();
 		
 		initmanager = new StellarInitManager(this);
 		mvmanager = new StellarMvManager(this);
-		bgmanager = new StellarBgManager(this);
 		worldmanager = new StellarWorldManager(this);
 	}
 	

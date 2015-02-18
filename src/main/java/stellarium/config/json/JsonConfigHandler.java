@@ -14,6 +14,7 @@ import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
 import stellarium.config.core.CategoryContainer;
+import stellarium.config.core.ConfigEntry;
 
 public class JsonConfigHandler implements IStellarConfig {
 	
@@ -41,12 +42,7 @@ public class JsonConfigHandler implements IStellarConfig {
 		catcon = CategoryContainer.newCatContainer(t);
 		if(t != EnumCategoryType.ConfigList)
 		{
-			try {
-				jobj = con.readJson();
-			} catch (IOException e) {
-				//TODO IOException Handling
-				e.printStackTrace();
-			}
+			jobj = con.readJson();
 		}
 	}
 
@@ -83,10 +79,15 @@ public class JsonConfigHandler implements IStellarConfig {
 			jcat = new JsonConfigCatCfg(this, handle, cid);
 		}
 		else {
-			JsonObject tobj = new JsonObject();
+			JsonObject tobj;
 			
-			jobj.add(cid, tobj);
-			tobj.addProperty(cat, true);
+			if(jobj.getObj().has(cid))
+				tobj = jobj.getObj().getAsJsonObject(cid);
+			else {
+				tobj = new JsonObject();
+				jobj.add(cid, tobj);
+				tobj.addProperty(cat, true);
+			}
 			
 			jcat = new JsonConfigCategory(this, tobj, cid);
 		}
@@ -148,12 +149,18 @@ public class JsonConfigHandler implements IStellarConfig {
 		if(cattype != EnumCategoryType.Tree)
 			return null;
 		
-		JsonObject sub = new JsonObject();
+		JsonObject sub;
 		
 		JsonConfigCategory par = (JsonConfigCategory) parent;
-		par.jobj.add(subid, sub);
-		sub.addProperty(cat, true);
 		
+		if(par.jobj.has(subid))
+			sub = par.jobj.getAsJsonObject(subid);
+		else {
+			sub = new JsonObject();
+			par.jobj.add(subid, sub);
+			sub.addProperty(cat, true);
+		}
+				
 		IConfigCategory jcat = new JsonConfigCategory(this, par, sub, subid);
 		catcon.addCategory(jcat);
 		
@@ -197,9 +204,9 @@ public class JsonConfigHandler implements IStellarConfig {
 		return catcon.getAllSubCategories(parent);
 	}
 	
-	public void setExpl(JsonElement prop, String expl)
+	public void setExpl(ConfigEntry ent, String expl)
 	{
-		jobj.setComment(prop, expl);
+		jobj.setComment(ent, expl);
 	}
 
 	
@@ -223,12 +230,7 @@ public class JsonConfigHandler implements IStellarConfig {
 			break;
 			
 		case List:			
-			try {
-				jobj = con.readJson();
-			} catch (IOException e) {
-				//TODO IOException Handling
-				e.printStackTrace();
-			}
+			jobj = con.readJson();
 			
 			for(Entry<String, JsonElement> ent: jobj.getObj().entrySet())
 			{
@@ -239,12 +241,7 @@ public class JsonConfigHandler implements IStellarConfig {
 			break;
 		case Tree:
 			
-			try {
-				jobj = con.readJson();
-			} catch (IOException e) {
-				//TODO IOException Handling
-				e.printStackTrace();
-			}
+			jobj = con.readJson();
 			
 			addSubCategories(null, jobj.getObj());
 			

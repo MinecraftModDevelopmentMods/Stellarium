@@ -12,7 +12,7 @@ import stellarium.util.math.SpCoord;
 import stellarium.util.math.SpCoordf;
 import stellarium.view.ViewPoint;
 
-public abstract class CBody implements IStellarObj{
+public abstract class CBody implements IStellarObj {
 
 	protected CMvEntry entry;
 	

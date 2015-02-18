@@ -85,7 +85,7 @@ public class Planet extends SolarObj{
 	public void UpdateMagnitude(){
 		double dist=Spmath.getD(VecMath.size(EcRPosE));
 		double distS=Spmath.getD(VecMath.size(EcRPos));
-		double distE=Spmath.getD(VecMath.size(StellarManager.Earth.EcRPos));
+		double distE=Spmath.getD(VecMath.size(OldStellarManager.Earth.EcRPos));
 		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}
@@ -96,7 +96,7 @@ public class Planet extends SolarObj{
 	@Override
 	public void Update() {
 		EcRPos.set(GetEcRPos(Transforms.time));
-		EcRPosE.set(VecMath.sub(this.EcRPos, StellarManager.Earth.EcRPos));
+		EcRPosE.set(VecMath.sub(this.EcRPos, OldStellarManager.Earth.EcRPos));
 		
 		for(int i=0; i<satellites.size(); i++)
 			satellites.get(i).Update();

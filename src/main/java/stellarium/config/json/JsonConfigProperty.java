@@ -36,7 +36,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 		return this.singular;
 	}
 	
-	protected String name, expl;
+	protected String name;
 	protected IConfigPropHandler<T> handle;
 	protected boolean enabled = true;
 
@@ -51,8 +51,8 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 	}
 
 	@Override
-	public IConfigProperty<T> setExpl(String pexpl) {
-		expl = pexpl;
+	public IConfigProperty<T> setExpl(String expl) {
+		par.setExpl(this, expl);
 		return this;
 	}
 
@@ -192,7 +192,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 
 		@Override
 		public double getValue() {
-			return tval;
+			return jobj.get(eln).getAsDouble();
 		}
 
 		@Override
@@ -222,7 +222,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 
 		@Override
 		public int getValue() {
-			return tval;
+			return jobj.get(eln).getAsInt();
 		}
 		
 		@Override
@@ -251,7 +251,7 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 
 		@Override
 		public String getValue() {
-			return tval;
+			return jobj.get(eln).getAsString();
 		}
 		
 		@Override
@@ -301,11 +301,17 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 
 		@Override
 		public String getValue() {
-			return valrange[ind];
+			return jobj.get(eln).getAsString();
 		}
 
 		@Override
 		public int getIndex() {
+			for(int i = 0; i < valrange.length; i++)
+				if(valrange[i].equals(jobj.get(eln).getAsString()))
+				{
+					ind = i;
+				}
+			
 			return ind;
 		}
 		

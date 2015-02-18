@@ -6,7 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import stellarium.initials.CConstructReader.CProperty;
 import stellarium.initials.CTranslateManager;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.cbody.CBody;
 import stellarium.util.math.*;
 

@@ -7,35 +7,28 @@ import java.util.Stack;
 
 import com.google.common.collect.Lists;
 
+import stellarium.catalog.IStellarCatalogData;
+import stellarium.catalog.IStellarCatalogProvider;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
 /**Logical StellarMv for Configuration*/
-public class StellarMvLogical implements Iterable<CMvEntry> {
+public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry> {
 	
-	protected String id;
 	public int renderId;
+	protected StellarMvCatalog provider;
+	
 	protected CMvEntry root;
 	protected CMvCfgBase cfg;
 	
 	public double Msun, yr, day, Au;
 	
-	public StellarMvLogical(String pid)
+	public StellarMvLogical(StellarMvCatalog par)
 	{
-		id = pid;
+		provider = par;
 		cfg = new CMvCfgLogical(this);
-	}
-	
-	public String getID()
-	{
-		return id;
-	}
-	
-	public void setID(String pid)
-	{
-		id = pid;
 	}
 	
 	protected CMvEntry newEntry(CMvEntry par, String name) {
@@ -144,16 +137,24 @@ public class StellarMvLogical implements Iterable<CMvEntry> {
 		return null;
 	}
 	
+	@Override
 	public void formatConfig(IStellarConfig subConfig) {
 		cfg.formatConfig(subConfig);
 	}
 
-	public void loadFromConfig(IStellarConfig subConfig) {
-		cfg.loadConfig(subConfig);
+	@Override
+	public void applyConfig(IStellarConfig config) {
+		cfg.loadConfig(config);
+	}
+	
+	@Override
+	public void saveConfig(IStellarConfig subConfig) {
+		cfg.saveConfig(subConfig);
 	}
 
-	public void saveAsConfig(IStellarConfig subConfig) {
-		cfg.saveConfig(subConfig);
+	@Override
+	public IStellarCatalogProvider getProvider() {
+		return provider;
 	}
 	
 }

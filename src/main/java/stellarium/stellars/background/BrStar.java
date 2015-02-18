@@ -14,7 +14,7 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import stellarium.stellars.ExtinctionRefraction;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.util.math.SpCoordf;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
@@ -66,7 +66,7 @@ public class BrStar extends Star {
 
 	@Override
 	public void Update() {
-		if(Mag>StellarManager.Mag_Limit) this.unable=true;
+		if(Mag>OldStellarManager.Mag_Limit) this.unable=true;
 		AppPos.set(GetAtmPosf());
 		float Airmass=(float) ExtinctionRefraction.Airmass(AppPos, true);
     	App_Mag= (Mag+Airmass*ExtinctionRefraction.ext_coeff_Vf);
@@ -137,7 +137,7 @@ public class BrStar extends Star {
 				(float)Spmath.btoi(star_value, 103, 1)
 				+Spmath.btoi(star_value, 105, 2)*0.01f);
 		
-		if(Mag>StellarManager.Mag_Limit-ExtinctionRefraction.ext_coeff_Vf)
+		if(Mag>OldStellarManager.Mag_Limit-ExtinctionRefraction.ext_coeff_Vf)
 			unable=true;
 		
 		B_V=Spmath.sgnize(star_value[109],

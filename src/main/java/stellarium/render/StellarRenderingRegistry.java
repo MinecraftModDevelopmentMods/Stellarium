@@ -6,6 +6,8 @@ import com.google.common.collect.Maps;
 
 public class StellarRenderingRegistry {
 	
+	private static final int RENDERER_MAX = 256;
+	
 	private static StellarRenderingRegistry instance = new StellarRenderingRegistry();
 	
 	public static StellarRenderingRegistry instance()
@@ -13,11 +15,16 @@ public class StellarRenderingRegistry {
 		return instance;
 	}
 	
-    private Map<Integer, ISObjRenderer> sobjRenderers = Maps.newHashMap();
+    private ISObjRenderer[] sobjRenderers = new ISObjRenderer[RENDERER_MAX];
 	private int nextId;
 	
 	public static void registerRenderer(int id, ISObjRenderer renderer){
-		instance().sobjRenderers.put(id, renderer);
+		if(id < 0 || id >= RENDERER_MAX)
+			throw new IllegalArgumentException(
+					"Invalid Renderer ID: " + id + "\n"
+					+ "Cannot accept id with < 0 or > " + RENDERER_MAX);
+		
+		instance().sobjRenderers[id] = renderer;
 	}
 	
 	public static int nextRenderId()
@@ -28,7 +35,10 @@ public class StellarRenderingRegistry {
 	
 	public static ISObjRenderer getRenderer(int id)
 	{
-		return instance().sobjRenderers.get(id);
+		if(instance().sobjRenderers == null)
+			throw new IllegalArgumentException("There is no Renderer with ID: " + id);
+		
+		return instance().sobjRenderers[id];
 	}
 
 }

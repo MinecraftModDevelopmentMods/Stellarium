@@ -10,7 +10,7 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.util.VOp;
 import stellarium.stellars.Optics;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.util.math.*;
 import stellarium.viewrender.scope.*;
 import cpw.mods.fml.relauncher.*;

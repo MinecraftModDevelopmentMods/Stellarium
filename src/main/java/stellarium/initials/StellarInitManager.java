@@ -2,18 +2,18 @@ package stellarium.initials;
 
 import java.io.IOException;
 
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.orbit.OrbitSt;
 
 public class StellarInitManager{
-	public StellarManager manager;
+	public OldStellarManager manager;
 	
 	public CConfiguration configf;
 	
 	public CConstructManager conmanager = new CConstructManager();
 	public CTranslateManager trmanager = new CTranslateManager();
 	
-	public StellarInitManager(StellarManager m){
+	public StellarInitManager(OldStellarManager m){
 		manager = m;
 		
 		conmanager.PreRegister();

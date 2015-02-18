@@ -1,5 +1,7 @@
 package stellarium.config;
 
+import stellarium.config.core.ConfigEntry;
+
 public interface IConfigCategory {
 	
 	/**Gets category id.*/
@@ -21,6 +23,11 @@ public interface IConfigCategory {
 	 * gives null when this category has no parent.
 	 * */
 	public IConfigCategory getParCategory();
+	
+	/**
+	 * Gets the Entry for this Category.
+	 * */
+	public ConfigEntry getConfigEntry();
 	
 	
 	/**Adds property in this category.*/

@@ -1,6 +1,6 @@
 package stellarium.stellars.cbody;
 
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 
 public class CometCBody extends NonStarBody {
 

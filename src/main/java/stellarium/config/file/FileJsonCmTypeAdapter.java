@@ -2,9 +2,11 @@ package stellarium.config.file;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import stellarium.config.core.ConfigEntry;
 import stellarium.config.json.JsonCommentedObj;
 import stellarium.construct.CPropLangUtil;
 
@@ -17,19 +19,21 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 public class FileJsonCmTypeAdapter extends TypeAdapter<JsonCommentedObj> {
 	
 	private Gson gson;
+	private Field fwr;
 	
 	public FileJsonCmTypeAdapter(Gson pgson)
 	{
 		gson = pgson;
+		fwr = ReflectionHelper.findField(JsonWriter.class, "out");
 	}
 	
 	@Override
 	public void write(JsonWriter out, JsonCommentedObj value) throws IOException {
-		write(out, getWriter(out), value, value.getObj());
+		write(out, getWriter(out), value, value.getObj(), new ConfigEntry());
 	}
 	
 	public void write(JsonWriter out, Writer nativeout, 
-			JsonCommentedObj cms, JsonElement value)
+			JsonCommentedObj cms, JsonElement value, ConfigEntry entry)
 			throws IOException {
 		
 		if (value.isJsonPrimitive()) {
@@ -44,9 +48,10 @@ public class FileJsonCmTypeAdapter extends TypeAdapter<JsonCommentedObj> {
 		} else if (value.isJsonObject()) {
 			out.beginObject();
 			for (Map.Entry<String, JsonElement> e : value.getAsJsonObject().entrySet()) {
-				addComment(nativeout, cms, value);
+				ConfigEntry ne = new ConfigEntry(entry, e.getKey());
+				addComment(nativeout, cms, ne);
 				out.name(e.getKey());
-				write(out, nativeout, cms, e.getValue());
+				write(out, nativeout, cms, e.getValue(), ne);
 			}
 			out.endObject();
 
@@ -55,12 +60,12 @@ public class FileJsonCmTypeAdapter extends TypeAdapter<JsonCommentedObj> {
 		}
 	}
 	
-	public void addComment(Writer nativeout, JsonCommentedObj cms, JsonElement value)
+	public void addComment(Writer nativeout, JsonCommentedObj cms, ConfigEntry entry)
 			throws IOException {
-		if(cms.getComment(value) != null)
+		if(cms.getComment(entry) != null)
 		{
 			nativeout.append("\n/*");
-			nativeout.append(CPropLangUtil.getLocalizedString(cms.getComment(value)));
+			nativeout.append(CPropLangUtil.getLocalizedString(cms.getComment(entry)));
 			nativeout.append("*/\n");
 		}
 	}
@@ -68,8 +73,7 @@ public class FileJsonCmTypeAdapter extends TypeAdapter<JsonCommentedObj> {
 	public Writer getWriter(JsonWriter writer)
 	{
 		try {
-			return (Writer) ReflectionHelper.findField(writer.getClass(), "out")
-					.get(writer);
+			return (Writer) fwr.get(writer);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

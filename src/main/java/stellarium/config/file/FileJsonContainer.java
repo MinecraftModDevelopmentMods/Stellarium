@@ -21,16 +21,30 @@ import stellarium.construct.CPropLangUtil;
 public class FileJsonContainer implements IJsonContainer {
 
 	private static String ext = ".cfg";
+	private static String sep = ".";
+	
+	public boolean isFailed = false;
 	
 	protected File pardir;
+	protected File logdir;
 	protected String name;
+	protected String lvl;
 	
 	protected Gson gson;
 	
-	public FileJsonContainer(File pdir, String pname)
+	public static FileJsonContainer getRootContainer(File root, String title)
+	{
+		File file = new File(root, title);
+		file.mkdirs();
+		return new FileJsonContainer(root, file, title, title);
+	}
+	
+	public FileJsonContainer(File pdir, File ldir, String level, String pname)
 	{		
 		pardir = pdir;
+		logdir = ldir;
 		name = pname;
+		lvl = level;
 		
 		GsonBuilder gb = new GsonBuilder();
 		gb.setPrettyPrinting();
@@ -39,20 +53,31 @@ public class FileJsonContainer implements IJsonContainer {
 	}
 	
 	@Override
-	public JsonCommentedObj readJson() throws IOException {
+	public JsonCommentedObj readJson() {
 		File file = new File(pardir, name + ext);
 		
 		if(!file.exists())
 		{
 			return new JsonCommentedObj();
 		} else if(file.isDirectory() || !file.canRead()) {
-			throw new MalformedJsonException("This file is not a Json file");
+			Exception e = new MalformedJsonException("This file is not a Json file:" + file);
+			addLoadFailMessage("MalformedJsonException", e.getLocalizedMessage());
+			isFailed = true;
 		} else {
-			FileReader fr = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fr);
+			FileReader fr;
 			
-			return gson.fromJson(reader, JsonCommentedObj.class);
+			try {
+				fr = new FileReader(file);
+				BufferedReader reader = new BufferedReader(fr);
+	
+				return gson.fromJson(reader, JsonCommentedObj.class);
+
+			} catch (FileNotFoundException e) {
+				addLoadFailMessage("FileNotFoundException", e.getLocalizedMessage());
+				isFailed = true;
+			}
 		}
+		return null;
 	}
 
 	@Override
@@ -68,12 +93,11 @@ public class FileJsonContainer implements IJsonContainer {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				e.printStackTrace();
+				addLoadFailMessage("IOException", e.getLocalizedMessage());
+				isFailed = true;
 			}
 		}
-		
-		//addCommentToJson(jch, obj);
-		
+				
 		try {
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter writer = new BufferedWriter(fw);
@@ -81,7 +105,8 @@ public class FileJsonContainer implements IJsonContainer {
 			gson.toJson(obj, writer);
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			addLoadFailMessage("IOException", e.getLocalizedMessage());
+			isFailed = true;
 		}
 	}
 
@@ -91,7 +116,7 @@ public class FileJsonContainer implements IJsonContainer {
 		file.mkdirs();
 		
 		if(file.isDirectory())
-			return new FileJsonContainer(file, sub);
+			return new FileJsonContainer(file, logdir, lvl + sep + sub, sub);
 		
 		return null;
 	}
@@ -110,7 +135,7 @@ public class FileJsonContainer implements IJsonContainer {
 		File file = new File(this.pardir, this.name);
 		
 		if(file.isDirectory())
-			return new FileJsonContainer(file, sub);
+			return new FileJsonContainer(file, logdir, lvl + sep + sub, sub);
 		
 		return null;
 	}
@@ -125,8 +150,34 @@ public class FileJsonContainer implements IJsonContainer {
 
 	@Override
 	public void addLoadFailMessage(String title, String msg) {
-		// TODO Auto-generated method stub
+		
+		if(!logdir.exists() || logdir.isDirectory() || !logdir.canWrite())
+		{
+			if(logdir.exists())
+				logdir.delete();
+			
+			try {
+				logdir.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				isFailed = true;
+			}
+		}
 
+		try {
+			FileWriter fw = new FileWriter(logdir, true);
+			BufferedWriter writer = new BufferedWriter(fw);
+			
+			writer.append(String.format("<%s>[%s]: %s", lvl, title,
+					CPropLangUtil.getLocalizedString(msg)));
+			
+			writer.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			isFailed = true;
+		}
+		
 	}
 
 }

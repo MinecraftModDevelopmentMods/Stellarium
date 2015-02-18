@@ -65,7 +65,7 @@ public abstract class CBody {
 	public String ImgTexLoc;
 		
 	//StellarManager
-	public StellarManager manager;
+	public OldStellarManager manager;
 	
 	
 	

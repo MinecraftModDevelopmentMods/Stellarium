@@ -23,7 +23,7 @@ public class Sun extends StellarObj{
 	//Get Direction Vector of Sun from Earth
 	@Override
 	public synchronized IValRef<EVector> GetPosition() {
-		IValRef pvec=(IValRef)VecMath.mult(-1.0, StellarManager.Earth.EcRPos);
+		IValRef pvec=(IValRef)VecMath.mult(-1.0, OldStellarManager.Earth.EcRPos);
 		
 		pvec=Transforms.ZTEctoNEc.transform(pvec);
 		pvec=Transforms.EctoEq.transform(pvec);

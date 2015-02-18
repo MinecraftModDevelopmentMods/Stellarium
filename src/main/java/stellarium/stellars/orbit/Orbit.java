@@ -33,7 +33,7 @@ public abstract class Orbit {
 	public EVector Pos;
 	
 	
-	public StellarManager manager;
+	public OldStellarManager manager;
 	
 	public CConstructReader conreader = new CConstructReader();
 	

@@ -14,6 +14,7 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.ConfigEntry;
 import stellarium.config.json.JsonConfigProperty.CfgElement;
 
 public class JsonConfigCategory implements IConfigCategory {
@@ -69,6 +70,13 @@ public class JsonConfigCategory implements IConfigCategory {
 	public IConfigCategory getParCategory() {
 		return parcat;
 	}
+	
+	@Override
+	public ConfigEntry getConfigEntry() {
+		if(parcat != null)
+			return new ConfigEntry(parcat.getConfigEntry(), id);
+		else return new ConfigEntry(id);
+	}
 
 	
 	protected Map<String, JsonConfigProperty> propmap = Maps.newHashMap();
@@ -79,17 +87,15 @@ public class JsonConfigCategory implements IConfigCategory {
 	public <T> IConfigProperty<T> addProperty(String proptype, String propname,
 			T def) {
 		if(propmap.containsKey(propname))
-			// TODO Loading Thingy
 			return propmap.get(propname);
 		
 		JsonConfigProperty jcp = new JsonConfigProperty(this, proptype, propname, def);
 		
 		propmap.put(propname, jcp);
 		
-		if(jcp.isSingular())
+		if(jcp.isSingular() && !jobj.has(propname) && jobj.get(propname).isJsonPrimitive())
 		{
-			String sub = (String) jcp.namelist.get(0);
-			CfgElement el = jcp.getElementProt(sub);
+			CfgElement el = jcp.getElementProt(propname);
 			el.addToJson(jobj, propname);
 		} else {
 			JsonObject prop;
@@ -105,8 +111,12 @@ public class JsonConfigCategory implements IConfigCategory {
 			for(Object sub1 : jcp.namelist)
 			{
 				String sub = (String) sub1;
-				CfgElement el = jcp.getElementProt(sub);
-				el.addToJson(prop, sub);
+				
+				if(!prop.has(sub))
+				{
+					CfgElement el = jcp.getElementProt(sub);
+					el.addToJson(prop, sub);
+				}
 			}
 		}
 		
@@ -155,7 +165,7 @@ public class JsonConfigCategory implements IConfigCategory {
 	
 	public void setExpl(JsonConfigProperty jcp, String expl)
 	{
-		cfg.setExpl(jobj.get(jcp.getName()), expl);
+		cfg.setExpl(new ConfigEntry(this.getConfigEntry(), jcp.getName()), expl);
 	}
 	
 	

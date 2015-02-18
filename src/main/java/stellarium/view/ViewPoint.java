@@ -11,7 +11,7 @@ import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import stellarium.sky.ISkySet;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
 import stellarium.stellars.orbit.*;
@@ -47,7 +47,7 @@ public class ViewPoint {
 
 	
 	//The StellarManager
-	public StellarManager manager;
+	public OldStellarManager manager;
 	
 	public ISkySet skyset;
 	
@@ -56,7 +56,7 @@ public class ViewPoint {
 		return skyset;
 	}
 	
-	public void InitFixedVp(CBody hostcbody, StellarManager m){
+	public void InitFixedVp(CBody hostcbody, OldStellarManager m){
 		manager=m;
 		
 		IsFixedVp=true;
@@ -65,7 +65,7 @@ public class ViewPoint {
 		SetLCV(manager.mvmanager.CSystem);
 	}
 	
-	public void InitVp(StellarManager m){
+	public void InitVp(OldStellarManager m){
 		manager=m;
 		SetLCV(manager.mvmanager.CSystem);
 	}

@@ -21,6 +21,10 @@ public class CPropLangUtil {
 		return FMLCommonHandler.instance().getCurrentLanguage();
 	}
 	
+	public static String getLocalizedFromID(String id)
+	{
+		return getLocalizedString(CPropLangRegistry.instance().getLangfromID(id));
+	}
 	
 	public static String getLocalizedString(String tar)
 	{

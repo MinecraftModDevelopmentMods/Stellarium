@@ -5,8 +5,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import stellarium.StellarManager;
 import stellarium.catalog.EnumCatalogType;
 import stellarium.catalog.IStellarCatalog;
+import stellarium.catalog.IStellarCatalogProvider;
+import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.EnumCategoryType;
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
@@ -17,22 +20,34 @@ import stellarium.config.IStellarConfig;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.objs.mv.cbody.CBodyRenderer;
+import stellarium.objs.mv.cbody.TypeCBodyPropHandler;
+import stellarium.objs.mv.orbit.TypeOrbitPropHandler;
 import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
 /**Physical StellarMv for gameplay*/
-public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
+public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iterable<CMvEntry> {
 		
-	public boolean isRemote;
+	protected StellarManager manager;
 	public List<CBody> bodies = Lists.newArrayList();
 	
-	public StellarMv(String pid, int rid, boolean remote)
+	public StellarMv(StellarMvCatalog prov, int rid)
 	{
-		super(pid);
+		super(prov);
 		renderId = rid;
-		isRemote = remote;
 		cfg = new CMvCfgPhysical(this);
+	}
+	
+	public StellarMv(StellarManager mn, StellarMvCatalog prov, int rid)
+	{
+		this(prov, rid);
+		setManager(mn);
+	}
+	
+	public void setManager(StellarManager mn)
+	{
+		manager = mn;
 	}
 	
 	public void update(int tick) {
@@ -44,9 +59,9 @@ public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 			if(!entry.isVirtual())
 				entry.cbody().update(tick);
 		}
-		
 	}
 	
+	@Override
 	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
 		// TODO Auto-generated method stub
 		return null;
@@ -56,26 +71,27 @@ public class StellarMv extends StellarMvLogical implements Iterable<CMvEntry> {
 		super.removeEntry(entry);
 	}
 
-	public void formatConfig(IStellarConfig subConfig) {
-		cfg.formatConfig(subConfig);
+	@Override
+	public int getRUpTick() {
+		return 1;
 	}
 
-	public void loadFromConfig(IStellarConfig subConfig) {
-		cfg.loadConfig(subConfig);
-		reset();
+	@Override
+	public void applyConfig(IStellarConfig config) {
+		cfg.loadConfig(config);
 	}
-
-	public void saveAsConfig(IStellarConfig subConfig) {
+	
+	@Override
+	public void saveConfig(IStellarConfig subConfig) {
 		cfg.saveConfig(subConfig);
 	}
 	
-	public void reset() {
-		bodies.clear();
-		
-		for(CMvEntry ent : this)
-		{
-			if(!ent.isVirtual())
-				bodies.add(ent.cbody());
-		}
+	
+	@Override
+	public IStellarCatalogProvider getProvider() {
+		return provider;
 	}
+
+	@Override
+	public boolean isDisabled() { return false; }
 }

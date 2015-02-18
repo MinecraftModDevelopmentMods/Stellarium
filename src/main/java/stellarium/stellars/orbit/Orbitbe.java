@@ -2,7 +2,7 @@ package stellarium.stellars.orbit;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.util.*;
 
 public class Orbitbe extends OrbitMv {

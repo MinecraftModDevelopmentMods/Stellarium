@@ -2,7 +2,6 @@ package stellarium.viewrender.viewer;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import stellarium.stellars.background.StellarBgManager;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
 import stellarium.stellars.orbit.*;
@@ -16,12 +15,11 @@ public class Viewer {
 	public VPClient CurVp;
 	
 	public StellarRenderManager rm;
-	public StellarBgManager bgm;
 	
-	public StellarManager manager;
+	public OldStellarManager manager;
 
 	
-	public void SetViewer(StellarManager m){
+	public void SetViewer(OldStellarManager m){
 		manager=m;
 		CurVp=new VPClient();
 		CurVp.InitVp(manager);

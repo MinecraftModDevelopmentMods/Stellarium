@@ -8,7 +8,7 @@ import sciapi.api.value.util.VOp;
 import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.CShade;
 import stellarium.stellars.Color;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.util.math.*;
 import stellarium.view.ViewPoint;

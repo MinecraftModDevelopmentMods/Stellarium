@@ -85,7 +85,7 @@ public class Moon extends Satellite {
 	public void UpdateMagnitude(){
 		double dist=Spmath.getD(VecMath.size(EcRPosG));
 		double distS=Spmath.getD(VecMath.size(EcRPos));
-		double distE=Spmath.getD(VecMath.size(StellarManager.Earth.EcRPos));
+		double distE=Spmath.getD(VecMath.size(OldStellarManager.Earth.EcRPos));
 		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}

@@ -1,7 +1,11 @@
 package stellarium.config.json;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import stellarium.config.core.ConfigEntry;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,7 +13,7 @@ import com.google.gson.JsonObject;
 public class JsonCommentedObj {
 	
 	private JsonObject obj;
-	private final Map<JsonElement, String> explmap = new HashMap();
+	private final Map<ConfigEntry, String> explmap = new HashMap();
 	
 	public JsonCommentedObj()
 	{
@@ -21,12 +25,12 @@ public class JsonCommentedObj {
 		obj = pobj;
 	}
 	
-	public void setComment(JsonElement element, String str)
+	public void setComment(ConfigEntry element, String str)
 	{
 		explmap.put(element, str);
 	}
 	
-	public String getComment(JsonElement element)
+	public String getComment(ConfigEntry element)
 	{
 		return explmap.get(element);
 	}

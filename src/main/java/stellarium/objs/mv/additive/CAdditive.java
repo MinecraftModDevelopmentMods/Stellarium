@@ -9,6 +9,7 @@ import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
+/**Celestial Additive like Rings.*/
 public abstract class CAdditive implements IStellarObj {
 	
 	protected CMvEntry entry;

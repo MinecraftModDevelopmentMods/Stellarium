@@ -11,7 +11,7 @@ import net.minecraftforge.common.*;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import stellarium.initials.CConstructManager;
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.orbit.*;
 import stellarium.stellars.cbody.*;
 import stellarium.world.StellarWorldProvider;
@@ -38,7 +38,7 @@ public class Stellarium {
         public static Stellarium instance;
         
 //        public static ITickHandler tickhandler=new StellarTickHandler();
-        public StellarManager manager;
+        public OldStellarManager manager;
         
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
@@ -53,23 +53,23 @@ public class Stellarium {
             Mag_Limit.comment="Limit of magnitude can be seen on naked eye.\n" +
             		"If you want to increase FPS, you can set this property a bit little (e.g. 0.3)\n" +
             		"and FPS will be exponentially improved";
-            StellarManager.Mag_Limit=(float)Mag_Limit.getDouble(5.0);
-
+            OldStellarManager.Mag_Limit=(float)Mag_Limit.getDouble(5.0);
+            
             config.load();
             Property turb=config.get(Configuration.CATEGORY_GENERAL, "Twinkling(Turbulance)", 0.3);
             turb.comment="Degree of the twinkling effect of star.\n"
             		+ "It determines the turbulance of atmosphere, which actually cause the twinkling effect";
-            StellarManager.Turb=(float)turb.getDouble(0.3);
+            OldStellarManager.Turb=(float)turb.getDouble(0.3);
             
             Property Moon_Frac=config.get(Configuration.CATEGORY_GENERAL, "Moon_Fragments_Number", 16);
             Moon_Frac.comment="Moon is drawn with fragments\n" +
             		"Less fragments will increase FPS, but the moon become more defective\n";
-            StellarManager.ImgFrac=Moon_Frac.getInt(16);
+            OldStellarManager.ImgFrac=Moon_Frac.getInt(16);
             
             config.save();
             
-            manager = new StellarManager();
-			StellarManager.InitializeStars();
+            manager = new OldStellarManager();
+			OldStellarManager.InitializeStars();
 			proxy.InitSided(manager);
 			
 			MinecraftForge.EVENT_BUS.register(new StellarEventHook());
@@ -78,7 +78,7 @@ public class Stellarium {
         @EventHandler
         public void load(FMLInitializationEvent event) {
 
-			StellarManager.Initialize();
+			OldStellarManager.Initialize();
         	
         	
         }

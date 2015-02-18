@@ -1,11 +1,11 @@
 package stellarium.world;
 
-import stellarium.stellars.StellarManager;
+import stellarium.stellars.OldStellarManager;
 
 public class StellarWorldManager {
-	StellarManager manager;
+	OldStellarManager manager;
 
-	public StellarWorldManager(StellarManager m) {
+	public StellarWorldManager(OldStellarManager m) {
 		manager = m;
 	}
 

@@ -11,7 +11,7 @@ public interface IJsonContainer {
 	 * Read this container as Json.
 	 * Will throw Exception if this container is not a Json file.
 	 * */
-	public JsonCommentedObj readJson() throws IOException;
+	public JsonCommentedObj readJson();
 	
 	/**
 	 * Writes Json Object to this container. Any  file would be overridden.
