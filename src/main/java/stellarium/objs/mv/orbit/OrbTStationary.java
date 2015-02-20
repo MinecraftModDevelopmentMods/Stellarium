@@ -1,7 +1,7 @@
 package stellarium.objs.mv.orbit;
 
 import stellarium.config.IConfigCategory;
-import stellarium.construct.CPropLangStrsCBody;
+import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
 
 public class OrbTStationary implements IOrbitType {

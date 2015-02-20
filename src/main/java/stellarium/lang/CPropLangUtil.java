@@ -1,4 +1,4 @@
-package stellarium.construct;
+package stellarium.lang;
 
 import java.util.Iterator;
 import java.util.List;

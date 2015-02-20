@@ -4,7 +4,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import stellarium.stellars.OldStellarManager;
 
-public class ServerProxy extends BaseProxy{
+public class ServerProxy extends BaseProxy {
 
 	@Override
 	public void InitSided(OldStellarManager m) {
@@ -13,12 +13,6 @@ public class ServerProxy extends BaseProxy{
 		FMLCommonHandler.instance().bus().register(new StellarTickHandler(m.side));
 
 	}
-	
-	
-	@Override
-	public void endRegistry()
-	{
-		super.endRegistry();
-	}
+
 
 }

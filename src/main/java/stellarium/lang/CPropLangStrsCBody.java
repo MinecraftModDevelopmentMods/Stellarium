@@ -1,4 +1,4 @@
-package stellarium.construct;
+package stellarium.lang;
 
 public class CPropLangStrsCBody {
 

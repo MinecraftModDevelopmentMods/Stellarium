@@ -1,6 +1,6 @@
 package stellarium.config.data;
 
-import stellarium.construct.CPropLangUtil;
+import stellarium.lang.CPropLangUtil;
 
 public class IllegalDataException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package stellarium.construct;
+package stellarium.objs.mv;
 
 import java.util.List;
 import java.util.Map;
@@ -11,21 +11,21 @@ import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.orbit.IOrbitType;
 import stellarium.objs.mv.orbit.OrbTStationary;
 
-public class CTypeRegistry {
+public class CMvTypeRegistry {
 	
-	private static CTypeRegistry ins;
+	private static CMvTypeRegistry ins;
 	
 	private Map<String, IOrbitType> orbtm = Maps.newHashMap();
 	private Map<String, ICBodyType> cbtm = Maps.newHashMap();
 	
-	public static CTypeRegistry instance()
+	public static CMvTypeRegistry instance()
 	{
 		if(ins == null)
-			ins = new CTypeRegistry();
+			ins = new CMvTypeRegistry();
 		return ins;
 	}
 	
-	public CTypeRegistry()
+	public CMvTypeRegistry()
 	{
 		this.registerOrbType(new OrbTStationary());
 	}

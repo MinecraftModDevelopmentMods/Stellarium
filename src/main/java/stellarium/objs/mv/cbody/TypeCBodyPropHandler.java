@@ -9,8 +9,8 @@ import stellarium.config.IConfigPropHandler;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.element.EnumPropElement;
 import stellarium.config.element.IEnumElement;
-import stellarium.construct.CPropLangStrs;
-import stellarium.construct.CTypeRegistry;
+import stellarium.lang.CPropLangStrs;
+import stellarium.objs.mv.CMvTypeRegistry;
 
 public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 
@@ -20,7 +20,7 @@ public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 
 		IEnumElement pee = prop.getElement(prop.getName());
 		
-		List<String> nameList = Lists.newArrayList(CTypeRegistry.instance().getRegCBodyTypeNames());
+		List<String> nameList = Lists.newArrayList(CMvTypeRegistry.instance().getRegCBodyTypeNames());
 		nameList.add(0, CPropLangStrs.def);
 		pee.setValRange(nameList.toArray(new String[0]));
 		
@@ -31,7 +31,7 @@ public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 		IEnumElement pee = prop.getElement(prop.getName());
 		if(pee.getIndex() == 0)
 			return null;
-		return CTypeRegistry.instance().getCBodyType(pee.getValue());
+		return CMvTypeRegistry.instance().getCBodyType(pee.getValue());
 	}
 
 	@Override

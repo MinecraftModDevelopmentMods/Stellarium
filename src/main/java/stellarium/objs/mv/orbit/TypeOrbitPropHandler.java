@@ -8,9 +8,9 @@ import stellarium.config.IConfigPropHandler;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.element.EnumPropElement;
 import stellarium.config.element.IEnumElement;
-import stellarium.construct.CPropLangStrs;
-import stellarium.construct.CPropLangStrsCBody;
-import stellarium.construct.CTypeRegistry;
+import stellarium.lang.CPropLangStrs;
+import stellarium.lang.CPropLangStrsCBody;
+import stellarium.objs.mv.CMvTypeRegistry;
 
 public class TypeOrbitPropHandler implements IConfigPropHandler<IOrbitType> {
 
@@ -20,7 +20,7 @@ public class TypeOrbitPropHandler implements IConfigPropHandler<IOrbitType> {
 
 		IEnumElement pee = prop.getElement(prop.getName());
 		
-		List<String> nameList = Lists.newArrayList(CTypeRegistry.instance().getRegOrbTypeNames());
+		List<String> nameList = Lists.newArrayList(CMvTypeRegistry.instance().getRegOrbTypeNames());
 		nameList.remove(CPropLangStrsCBody.storb);
 		nameList.add(0, CPropLangStrs.def);
 		pee.setValRange(nameList.toArray(new String[0]));
@@ -31,7 +31,7 @@ public class TypeOrbitPropHandler implements IConfigPropHandler<IOrbitType> {
 		IEnumElement pee = prop.getElement(prop.getName());
 		if(pee.getIndex() == 0)
 			return null;
-		return CTypeRegistry.instance().getOrbType(pee.getValue());
+		return CMvTypeRegistry.instance().getOrbType(pee.getValue());
 	}
 
 	@Override

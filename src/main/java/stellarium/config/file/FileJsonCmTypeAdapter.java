@@ -8,7 +8,7 @@ import java.util.Map;
 
 import stellarium.config.core.ConfigEntry;
 import stellarium.config.json.JsonCommentedObj;
-import stellarium.construct.CPropLangUtil;
+import stellarium.lang.CPropLangUtil;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;

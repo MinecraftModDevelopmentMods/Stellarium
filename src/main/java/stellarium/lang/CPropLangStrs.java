@@ -1,4 +1,4 @@
-package stellarium.construct;
+package stellarium.lang;
 
 import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;

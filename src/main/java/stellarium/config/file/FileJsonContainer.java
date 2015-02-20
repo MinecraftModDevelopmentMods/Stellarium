@@ -16,7 +16,7 @@ import stellarium.config.json.IJsonContainer;
 import stellarium.config.json.JsonCommentedObj;
 import stellarium.config.json.JsonConfigHandler;
 import stellarium.config.util.CfgIteWrapper;
-import stellarium.construct.CPropLangUtil;
+import stellarium.lang.CPropLangUtil;
 
 public class FileJsonContainer implements IJsonContainer {
 

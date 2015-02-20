@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import stellarium.catalog.IStellarCatalog;
-import stellarium.construct.CPropLangStrsCBody;
-import stellarium.construct.CTypeRegistry;
+import stellarium.lang.CPropLangStrsCBody;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -131,7 +130,7 @@ public class StellarMvFormatter {
 	{
 		if(orig.orbit() == null)
 		{
-			tar.setOrbit(CTypeRegistry.instance().getOrbType(CPropLangStrsCBody.storb).provideOrbit(tar));
+			tar.setOrbit(CMvTypeRegistry.instance().getOrbType(CPropLangStrsCBody.storb).provideOrbit(tar));
 		}
 		else{
 			tar.setOrbit(orig.orbit().getOrbitType().provideOrbit(tar));

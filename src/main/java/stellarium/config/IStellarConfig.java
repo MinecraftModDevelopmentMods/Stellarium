@@ -4,7 +4,10 @@ import java.util.List;
 
 public interface IStellarConfig {
 	
-	/**Sets category type of this configuration*/
+	/**
+	 * Sets category type of this configuration.
+	 * Should be called at first time.
+	 * */
 	public void setCategoryType(EnumCategoryType t);
 	
 	/**

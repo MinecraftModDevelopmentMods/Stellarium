@@ -72,7 +72,7 @@ public class CCatalogManager {
 	
 	public void setupCatalogs(ICatalogDataHandler handler)
 	{
-		for(IStellarCatalogData data : handler.getData())
+		for(IStellarCatalogData data : handler.getDefaultData())
 		{
 			IStellarCatalog cat = data.getProvider().provideCatalog(parent, data);
 			

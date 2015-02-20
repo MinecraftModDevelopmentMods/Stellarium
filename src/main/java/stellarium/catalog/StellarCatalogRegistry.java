@@ -1,38 +1,31 @@
 package stellarium.catalog;
 
-import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
 
-import stellarium.config.EnumCategoryType;
-import stellarium.config.IConfigCategory;
-import stellarium.config.IStellarConfig;
-import stellarium.render.StellarRenderingRegistry;
+import stellarium.objs.mv.StellarMvCatalog;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
-
-import cpw.mods.fml.relauncher.Side;
 
 public class StellarCatalogRegistry {
 	
-	private static EnumMap<Side, StellarCatalogRegistry> instance = Maps.newEnumMap(Side.class);
-	
-	public static StellarCatalogRegistry instance(Side side)
-	{
-		if(instance.get(side) == null)
-			instance.put(side, new StellarCatalogRegistry());
-		return instance.get(side);
-	}
-	
+	private static StellarCatalogRegistry instance = new StellarCatalogRegistry();
 	private List<IStellarCatalogProvider> providers = Lists.newArrayList();
 	
-	public void register(IStellarCatalogProvider prov)
+	public static void registerBase()
 	{
-		providers.add(prov);
+		register(new StellarMvCatalog());
+	}
+	
+	public static void register(IStellarCatalogProvider prov)
+	{
+		instance.providers.add(prov);
+	}
+	
+	public static ImmutableList<IStellarCatalogProvider> getProvList()
+	{
+		return ImmutableList.copyOf(instance.providers);
 	}
 	
 }

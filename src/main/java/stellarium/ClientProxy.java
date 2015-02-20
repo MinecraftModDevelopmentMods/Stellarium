@@ -6,7 +6,7 @@ import stellarium.catalog.StellarCatalogRegistry;
 import stellarium.stellars.OldStellarManager;
 
 
-public class ClientProxy extends BaseProxy{
+public class ClientProxy extends BaseProxy {
 
 	@Override
 	public void InitSided(OldStellarManager m) {
@@ -16,10 +16,5 @@ public class ClientProxy extends BaseProxy{
 
 		
 	}
-	    
-	@Override
-	public void endRegistry()
-	{
-		super.endRegistry();
-	}
+	
 }
