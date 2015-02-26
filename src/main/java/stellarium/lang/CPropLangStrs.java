@@ -9,6 +9,10 @@ public class CPropLangStrs {
 	public static final String orbtype = "OrbT";
 	public static final String cbtype = "CBT";
 	
+	//-------------------------------- Catalog Names -------------------------------//
+	public static final String catalog = "Catalog";
+	public static final String moving = "Moving";
+	
 	
 	//-------------------------- StellarMv Basic Properties ------------------------//
 	public static final String basicprops = "BRProps";
@@ -32,6 +36,8 @@ public class CPropLangStrs {
 	
 	public static void onRegister()
 	{
+		CPropLangRegistry.instance().register(moving, "cat.moving.name");
+		
 		CPropLangRegistry.instance().register(basicprops, "cmv.basicprops");
 		
 		//these has .expl
@@ -42,7 +48,7 @@ public class CPropLangStrs {
 		
 		CPropLangRegistry.instance().register(def, "cmv.def");
 		
-		//these has .expl
+		//these has .expl, which contains the name of entry.
 		CPropLangRegistry.instance().register(orbtype, "cmv.orbtype");
 		CPropLangRegistry.instance().register(cbtype, "cmv.cbtype");
 		

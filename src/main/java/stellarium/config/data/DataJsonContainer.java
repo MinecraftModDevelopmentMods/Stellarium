@@ -3,6 +3,7 @@ package stellarium.config.data;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import stellarium.config.ICfgMessage;
 import stellarium.config.file.FileJsonCmTypeAdapter;
 import stellarium.config.json.IJsonContainer;
 import stellarium.config.json.JsonCommentedObj;
@@ -53,7 +54,7 @@ public class DataJsonContainer implements IJsonContainer {
 	}
 
 	@Override
-	public void addLoadFailMessage(String title, String msg) {
+	public void addLoadFailMessage(String title, ICfgMessage msg) {
 		throw new IllegalDataException(level, title, msg);
 	}
 

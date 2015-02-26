@@ -3,6 +3,8 @@ package stellarium.config.json;
 import java.io.IOException;
 import java.util.List;
 
+import stellarium.config.ICfgMessage;
+
 import com.google.gson.JsonObject;
 
 public interface IJsonContainer {
@@ -41,5 +43,5 @@ public interface IJsonContainer {
 	public Iterable<String> getAllSubContainerNames();
 	
 	/**Adds load & fail message for this container*/
-	public void addLoadFailMessage(String title, String msg);
+	public void addLoadFailMessage(String title, ICfgMessage msg);
 }

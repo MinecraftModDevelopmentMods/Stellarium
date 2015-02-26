@@ -12,4 +12,10 @@ public interface IConfigurableData {
 	 * */
 	public void saveConfig(IStellarConfig config);
 	
+	/**
+	 * gives the sub-data of this data for certain category. 
+	 * Only used for config-list form of configuration.
+	 * */
+	public IConfigurableData getSubData(IConfigCategory cat);
+	
 }

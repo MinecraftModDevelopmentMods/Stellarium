@@ -13,6 +13,11 @@ public class StellarCatalogRegistry {
 	private static StellarCatalogRegistry instance = new StellarCatalogRegistry();
 	private List<IStellarCatalogProvider> providers = Lists.newArrayList();
 	
+	static
+	{
+		registerBase();
+	}
+	
 	public static void registerBase()
 	{
 		register(new StellarMvCatalog());

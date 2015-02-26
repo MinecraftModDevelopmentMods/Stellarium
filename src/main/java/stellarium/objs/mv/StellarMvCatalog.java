@@ -15,6 +15,7 @@ import stellarium.config.EnumCategoryType;
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
+import stellarium.lang.CPropLangStrs;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.objs.mv.cbody.CBodyRenderer;
@@ -92,6 +93,6 @@ public class StellarMvCatalog implements IStellarCatalogProvider<StellarMvLogica
 
 	@Override
 	public String getCatalogName() {
-		return "Moving";
+		return CPropLangStrs.moving;
 	}
 }

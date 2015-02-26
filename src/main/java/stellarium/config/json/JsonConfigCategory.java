@@ -15,14 +15,14 @@ import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
 import stellarium.config.core.ConfigEntry;
+import stellarium.config.core.StellarConfigCategory;
 import stellarium.config.json.JsonConfigProperty.CfgElement;
 
-public class JsonConfigCategory implements IConfigCategory {
+public class JsonConfigCategory extends StellarConfigCategory implements IConfigCategory {
 
-	protected String id, dispname;
-	protected JsonConfigHandler cfg;
-	protected JsonConfigCategory parcat;
 	protected boolean isImmutable;
+	
+	protected Map<String, JsonConfigProperty> propmap = Maps.newHashMap();
 	
 	protected JsonObject jobj;
 	
@@ -33,54 +33,9 @@ public class JsonConfigCategory implements IConfigCategory {
 	
 	public JsonConfigCategory(JsonConfigHandler pcfg, JsonConfigCategory pcat, JsonObject obj, String pid)
 	{
-		cfg = pcfg;
+		super(pcfg, pcat, pid);
 		jobj = obj;
-		parcat = pcat;
-		id = pid;
 	}
-	
-	@Override
-	public String getID() {
-		return id;
-	}
-
-	@Override
-	public String getDisplayName() {
-		return dispname;
-	}
-
-	@Override
-	public void setDisplayName(String name) {
-		if(!cfg.modifiable || isImmutable || dispname.equals(name))
-			return;
-		
-		String prev = dispname;
-		dispname = name;
-		
-		for(ICfgArrMListener list : cfg.listenList)
-			list.onDispNameChange(this, prev);
-	}
-
-	@Override
-	public IStellarConfig getConfig() {
-		return cfg;
-	}
-
-	@Override
-	public IConfigCategory getParCategory() {
-		return parcat;
-	}
-	
-	@Override
-	public ConfigEntry getConfigEntry() {
-		if(parcat != null)
-			return new ConfigEntry(parcat.getConfigEntry(), id);
-		else return new ConfigEntry(id);
-	}
-
-	
-	protected Map<String, JsonConfigProperty> propmap = Maps.newHashMap();
-	protected Map<String, List> proprels = Maps.newHashMap();
 
 	
 	@Override
@@ -131,7 +86,6 @@ public class JsonConfigCategory implements IConfigCategory {
 		
 		JsonConfigProperty jcp = propmap.get(propname);
 		propmap.remove(propname);
-		// TODO Something..?
 		
 		if(jcp.isSingular())
 		{
@@ -165,46 +119,6 @@ public class JsonConfigCategory implements IConfigCategory {
 	
 	public void setExpl(JsonConfigProperty jcp, String expl)
 	{
-		cfg.setExpl(new ConfigEntry(this.getConfigEntry(), jcp.getName()), expl);
-	}
-	
-	
-
-	@Override
-	public void addPropertyRelation(IPropertyRelation rel,
-			IConfigProperty... relprops) {
-		
-		PropertyRelation pr = new PropertyRelation(rel, relprops);
-		
-		List<IMConfigProperty> lp = Lists.newArrayList();
-		
-		for(IConfigProperty cp : relprops)
-		{
-			IMConfigProperty mp = (IMConfigProperty) cp;
-			lp.add(mp);
-		}
-		
-		IMConfigProperty[] mp = lp.toArray(new IMConfigProperty[0]);
-		rel.setProps(mp);
-		
-		for(IConfigProperty prop : relprops)
-		{
-			if(!proprels.containsKey(prop.getName()))
-				proprels.put(prop.getName(), Lists.newArrayList());
-			
-			List<PropertyRelation> l = proprels.get(prop.getName());
-			l.add(pr);
-		}
-	}
-
-	protected class PropertyRelation {
-		public IPropertyRelation proprel;
-		public IConfigProperty[] relprops;
-		
-		public PropertyRelation(IPropertyRelation propr, IConfigProperty... relp)
-		{
-			proprel = propr;
-			relprops = relp;
-		}
+		((JsonConfigHandler) handler).setExpl(new ConfigEntry(this.getConfigEntry(), jcp.getName()), expl);
 	}
 }

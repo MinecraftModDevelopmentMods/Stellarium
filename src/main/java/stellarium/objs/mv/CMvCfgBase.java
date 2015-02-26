@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import com.google.common.collect.Lists;
 
+import stellarium.config.EnumCategoryType;
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;
@@ -32,6 +33,8 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	
 	public void formatConfig(IStellarConfig cfg)
 	{	
+		cfg.setCategoryType(EnumCategoryType.Tree);
+		
 		{
 			IConfigCategory props = cfg.addCategory(CPropLangStrs.basicprops);
 
@@ -47,14 +50,6 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		cfg.addAMListener(this);
 		
 		cfg.loadCategories();
-		
-		for(IConfigCategory cat : getCfgIteWrapper(cfg))
-		{
-			if(cfg.isImmutable(cat))
-				continue;
-			if(findEntry(cat) == null)
-				onNew(cat);
-		}
 		
 		if(ins.root == null)
 		{
@@ -347,5 +342,4 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		return null;
 	}
 
-	
 }

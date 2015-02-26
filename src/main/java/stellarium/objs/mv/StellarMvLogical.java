@@ -9,6 +9,9 @@ import com.google.common.collect.Lists;
 
 import stellarium.catalog.IStellarCatalogData;
 import stellarium.catalog.IStellarCatalogProvider;
+import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigFormatter;
+import stellarium.config.IConfigurableData;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.util.math.SpCoord;
@@ -156,5 +159,12 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 	public IStellarCatalogProvider getProvider() {
 		return provider;
 	}
+
+	
+	@Override
+	public IConfigFormatter getSubFormatter(IConfigCategory cat) { return null; }
+
+	@Override
+	public IConfigurableData getSubData(IConfigCategory cat) { return null; }
 	
 }

@@ -75,16 +75,6 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 	public int getRUpTick() {
 		return 1;
 	}
-
-	@Override
-	public void applyConfig(IStellarConfig config) {
-		cfg.loadConfig(config);
-	}
-	
-	@Override
-	public void saveConfig(IStellarConfig subConfig) {
-		cfg.saveConfig(subConfig);
-	}
 	
 	
 	@Override

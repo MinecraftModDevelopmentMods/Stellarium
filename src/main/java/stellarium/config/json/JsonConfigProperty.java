@@ -10,132 +10,23 @@ import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.IConfigPropHandler;
 import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
+import stellarium.config.core.StellarConfigCategory;
+import stellarium.config.core.StellarConfigProperty;
 import stellarium.config.element.*;
-import stellarium.config.json.JsonConfigCategory.PropertyRelation;
 
-public class JsonConfigProperty<T> implements IMConfigProperty<T> {
-	
-	protected JsonConfigCategory par;
-	protected boolean singular = false;
+public class JsonConfigProperty<T> extends StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	public JsonConfigProperty(JsonConfigCategory cat, String ptype, String pname, T def)
 	{
-		par = cat;
-		name = pname;
-		handle = ConfigPropTypeRegistry.getHandler(ptype);
-		handle.onConstruct(this);
-		
-		if(namelist.size() == 1 && namelist.get(0).equals(pname))
-			singular = true;
-		
-		setVal(def);
-	}
-	
-	public boolean isSingular()
-	{
-		return this.singular;
-	}
-	
-	protected String name;
-	protected IConfigPropHandler<T> handle;
-	protected boolean enabled = true;
-
-	@Override
-	public T getVal() {
-		return handle.getValue(this);
-	}
-
-	@Override
-	public String getName() {
-		return name;
+		super(cat, ptype, pname, def);
 	}
 
 	@Override
 	public IConfigProperty<T> setExpl(String expl) {
-		par.setExpl(this, expl);
+		((JsonConfigCategory) par).setExpl(this, expl);
 		return this;
 	}
-
-	@Override
-	public void simSetVal(T val) {
-		if(!enabled)
-			return;
-		// TODO SetVal Simulation
-		
-		setVal(val);
-		
-		List<PropertyRelation> lr = par.proprels.get(name);
-		
-		if(lr != null)
-		{
-			for(PropertyRelation pr : lr)
-			{
-				for(int j = 0; j < pr.relprops.length; j++)
-					if(pr.relprops[j] == this)
-						pr.proprel.onValueChange(j);
-			}
-		}
-	}
-
-	@Override
-	public void simSetEnabled(boolean enabled) {
-		// TODO SetEnabled Simulation
-		
-		setEnabled(enabled);
-		
-		List<PropertyRelation> lr = par.proprels.get(name);
 	
-		if(lr != null)
-		{
-			for(PropertyRelation pr : lr)
-			{
-				for(int j = 0; j < pr.relprops.length; j++)
-				{
-					if(pr.relprops[j] == this)
-					{
-						if(enabled)
-							pr.proprel.onEnable(j);
-						else pr.proprel.onDisable(j);
-					}
-				}
-			}
-		}
-		
-	}
-
-	
-	@Override
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	@Override
-	public void setVal(T val) {
-		handle.onSetVal(this, val);
-	}
-
-	
-	
-	protected List<String> namelist = Lists.newArrayList();
-	protected List<IPropElement> ellist = Lists.newArrayList();
-	
-	@Override
-	public void addElement(String subname, EnumPropElement e) {
-		namelist.add(subname);
-		ellist.add(newElement(e));
-	}
-
-	@SuppressWarnings("hiding")
-	@Override
-	public <T extends IPropElement> T getElement(String subname) {
-		for(int i = 0; i < namelist.size(); i++)
-		{
-			if(namelist.get(i).equals(subname))
-				return (T) ellist.get(i);
-		}
-		
-		return null;
-	}
 	
 	protected CfgElement getElementProt(String subname) {
 		for(int i = 0; i < namelist.size(); i++)
@@ -148,7 +39,8 @@ public class JsonConfigProperty<T> implements IMConfigProperty<T> {
 	}
 
 	
-	protected IPropElement newElement(EnumPropElement e)
+	@Override
+	protected IPropElement newElement(String subname, EnumPropElement e)
 	{
 		switch(e)
 		{

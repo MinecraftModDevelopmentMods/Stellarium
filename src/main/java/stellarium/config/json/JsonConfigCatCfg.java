@@ -1,16 +1,23 @@
 package stellarium.config.json;
 
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.IConfigCatCfg;
 
-public class JsonConfigCatCfg extends JsonConfigCategory {
+public class JsonConfigCatCfg extends JsonConfigCategory implements IConfigCatCfg {
 
-	protected JsonConfigHandler handler;
+	protected IStellarConfig handler;
 	
-	public JsonConfigCatCfg(JsonConfigHandler pcfg, JsonConfigHandler handle, String pid) {
+	public JsonConfigCatCfg(JsonConfigHandler pcfg, String pid) {
 		super(pcfg, null, pid);
-		handler = handle;
 	}
 	
+	@Override
+	public void setHandler(IStellarConfig handle)
+	{
+		this.handler = handle;
+	}
+	
+	@Override
 	public IStellarConfig getHandler() {
 		return handler;
 	}

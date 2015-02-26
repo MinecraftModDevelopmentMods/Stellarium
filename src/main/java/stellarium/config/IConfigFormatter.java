@@ -8,4 +8,10 @@ public interface IConfigFormatter {
 	 * */
 	public void formatConfig(IStellarConfig cfg);
 	
+	/**
+	 * gives the sub-data formatter of this data formatter for certain category. 
+	 * Only used for config-list form of configuration.
+	 * */
+	public IConfigFormatter getSubFormatter(IConfigCategory cat);
+	
 }

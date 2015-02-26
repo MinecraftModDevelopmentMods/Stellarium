@@ -2,7 +2,7 @@ package stellarium;
 
 import java.util.Set;
 
-import stellarium.config.gui.StellarConfigGui;
+import stellarium.config.gui.gui.GuiStellarConfigMain;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import cpw.mods.fml.client.IModGuiFactory;
@@ -17,7 +17,7 @@ public class StellarGuiFactory implements IModGuiFactory {
 
 	@Override
 	public Class<? extends GuiScreen> mainConfigGuiClass() {
-		return StellarConfigGui.class;
+		return GuiStellarConfigMain.class;
 	}
 
 	@Override

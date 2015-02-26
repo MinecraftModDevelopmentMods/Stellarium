@@ -11,7 +11,9 @@ import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
 
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import stellarium.config.ICfgMessage;
 import stellarium.config.IConfigCategory;
+import stellarium.config.StrMessage;
 import stellarium.config.json.IJsonContainer;
 import stellarium.config.json.JsonCommentedObj;
 import stellarium.config.json.JsonConfigHandler;
@@ -61,7 +63,7 @@ public class FileJsonContainer implements IJsonContainer {
 			return new JsonCommentedObj();
 		} else if(file.isDirectory() || !file.canRead()) {
 			Exception e = new MalformedJsonException("This file is not a Json file:" + file);
-			addLoadFailMessage("MalformedJsonException", e.getLocalizedMessage());
+			addLoadFailMessage("MalformedJsonException", new StrMessage(e.getLocalizedMessage()));
 			isFailed = true;
 		} else {
 			FileReader fr;
@@ -73,7 +75,7 @@ public class FileJsonContainer implements IJsonContainer {
 				return gson.fromJson(reader, JsonCommentedObj.class);
 
 			} catch (FileNotFoundException e) {
-				addLoadFailMessage("FileNotFoundException", e.getLocalizedMessage());
+				addLoadFailMessage("FileNotFoundException", new StrMessage(e.getLocalizedMessage()));
 				isFailed = true;
 			}
 		}
@@ -93,7 +95,7 @@ public class FileJsonContainer implements IJsonContainer {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				addLoadFailMessage("IOException", e.getLocalizedMessage());
+				addLoadFailMessage("IOException", new StrMessage(e.getLocalizedMessage()));
 				isFailed = true;
 			}
 		}
@@ -105,7 +107,7 @@ public class FileJsonContainer implements IJsonContainer {
 			gson.toJson(obj, writer);
 			
 		} catch (IOException e) {
-			addLoadFailMessage("IOException", e.getLocalizedMessage());
+			addLoadFailMessage("IOException", new StrMessage(e.getLocalizedMessage()));
 			isFailed = true;
 		}
 	}
@@ -149,7 +151,7 @@ public class FileJsonContainer implements IJsonContainer {
 	}
 
 	@Override
-	public void addLoadFailMessage(String title, String msg) {
+	public void addLoadFailMessage(String title, ICfgMessage msg) {
 		
 		if(!logdir.exists() || logdir.isDirectory() || !logdir.canWrite())
 		{
@@ -168,8 +170,8 @@ public class FileJsonContainer implements IJsonContainer {
 			FileWriter fw = new FileWriter(logdir, true);
 			BufferedWriter writer = new BufferedWriter(fw);
 			
-			writer.append(String.format("<%s>[%s]: %s", lvl, title,
-					CPropLangUtil.getLocalizedString(msg)));
+			writer.append(String.format("<%s>[%s]: %s\n", lvl, title,
+					CPropLangUtil.getLocalizedMessage(msg)));
 			
 			writer.close();
 			

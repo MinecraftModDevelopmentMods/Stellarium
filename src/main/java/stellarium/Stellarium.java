@@ -11,9 +11,16 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.common.*;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import stellarium.catalog.CCatalogCfgData;
 import stellarium.catalog.StellarCatalogRegistry;
-import stellarium.catalog.cfgmanager.FileCfgManager;
+import stellarium.catalog.gui.GuiCatalogCfgProvider;
+import stellarium.config.ConfigDataRegistry;
+import stellarium.config.file.FileCfgManager;
+import stellarium.config.gui.gui.DefCfgGuiProvider;
+import stellarium.config.gui.gui.StellarCfgGuiRegistry;
 import stellarium.initials.CConstructManager;
+import stellarium.lang.CLangStrs;
+import stellarium.lang.CPropLangStrs;
 import stellarium.stellars.OldStellarManager;
 import stellarium.stellars.orbit.*;
 import stellarium.stellars.cbody.*;
@@ -34,8 +41,8 @@ import cpw.mods.fml.relauncher.Side;
 	guiFactory="stellarium.StellarGuiFactory")
 public class Stellarium {
 	
-		public static final String modid = "stellarcraft";
-		public static final String name = "StellarCraft";
+		public static final String modid = "stellarium";
+		public static final String name = "Stellarium";
 		public static final String version = "0.2.0";
 
         // The instance of Stellarium
@@ -48,12 +55,18 @@ public class Stellarium {
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
         
-        public FileCfgManager cfgmanager;
+        //Configuration
+        public FileCfgManager filemanager;
+        
+        //Catalog
+        public CCatalogCfgData catdata;
+        
+        public Configuration config;
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
         	//Initialize Objects
-            /*Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+            config = new Configuration(event.getSuggestedConfigurationFile());
             
             config.load();
             Property Mag_Limit=config.get(Configuration.CATEGORY_GENERAL, "Mag_Limit", 5.0);
@@ -73,15 +86,20 @@ public class Stellarium {
             		"Less fragments will increase FPS, but the moon become more defective\n";
             OldStellarManager.ImgFrac=Moon_Frac.getInt(16);
             
-            config.save();*/
-        	
-        	StellarCatalogRegistry.registerBase();
-        	
-        	cfgmanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
-        	
+            config.save();
+            
+            
+            filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
+
+            
+            //creates Logical Cfg Data. For GUI & Text Config.
+            catdata = new CCatalogCfgData(false);
+            ConfigDataRegistry.register(CPropLangStrs.catalog, catdata, catdata);
+ 
             
             manager = new OldStellarManager();
 			OldStellarManager.InitializeStars();
+			
 			proxy.InitSided(manager);
 			
 			MinecraftForge.EVENT_BUS.register(new StellarEventHook());
@@ -90,9 +108,8 @@ public class Stellarium {
         @EventHandler
         public void load(FMLInitializationEvent event) {
 
-        	cfgmanager.onFormat();
-        	cfgmanager.onApply();
-        	
+        	filemanager.onFormat();
+        	filemanager.onApply();
         	
 			OldStellarManager.Initialize();
         	

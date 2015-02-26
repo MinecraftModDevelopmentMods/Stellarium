@@ -4,8 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import stellarium.config.ICfgMessage;
 import stellarium.config.json.JsonConfigCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.StatCollector;
 
 import com.google.common.collect.Lists;
@@ -26,14 +28,20 @@ public class CPropLangUtil {
 		return getLocalizedString(CPropLangRegistry.instance().getLangfromID(id));
 	}
 	
-	public static String getLocalizedString(String tar)
+	public static String getLocalizedMessageFromID(ICfgMessage msg)
 	{
-		return LanguageRegistry.instance().getStringLocalization(tar);
+		return I18n.format(CPropLangRegistry.instance().getLangfromID(msg.getMessage()),
+				msg.getMsgObjects());
 	}
 	
-	public static String getLocalizedString(String tar, String lang)
+	public static String getLocalizedString(String tar)
 	{
-		return LanguageRegistry.instance().getStringLocalization(tar, lang);
+		return I18n.format(tar);
+	}
+	
+	public static String getLocalizedMessage(ICfgMessage msg)
+	{
+		return I18n.format(msg.getMessage(), msg.getMsgObjects());
 	}
 
 }

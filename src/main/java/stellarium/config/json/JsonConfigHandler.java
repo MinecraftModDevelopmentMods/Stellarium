@@ -9,52 +9,62 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.*;
 
+import stellarium.config.ConfigDataRegistry;
 import stellarium.config.EnumCategoryType;
 import stellarium.config.ICfgArrMListener;
+import stellarium.config.ICfgMessage;
 import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigFormatter;
+import stellarium.config.IConfigurableData;
 import stellarium.config.IStellarConfig;
 import stellarium.config.core.CategoryContainer;
 import stellarium.config.core.ConfigEntry;
+import stellarium.config.core.IConfigCatCfg;
+import stellarium.config.core.StellarConfigHandler;
 
-public class JsonConfigHandler implements IStellarConfig {
+public class JsonConfigHandler extends StellarConfigHandler implements IStellarConfig {
 	
 	private static String cat = "__category";
 	
-	protected List<ICfgArrMListener> listenList = Lists.newArrayList();
 	protected IJsonContainer con;
-	protected EnumCategoryType cattype = EnumCategoryType.List;
-	protected boolean modifiable = false;
-	
-	protected CategoryContainer catcon;
 	
 	protected JsonCommentedObj jobj;
 	
-	public JsonConfigHandler(IJsonContainer pcon)
+	public JsonConfigHandler(IJsonContainer pcon, ConfigDataRegistry.ConfigRegistryData data)
 	{
-		con = pcon;
+		super(data);
+		this.con = pcon;
 	}
 	
 	
+	public JsonConfigHandler(IJsonContainer pcon,
+			String cid, IConfigFormatter subFormatter, IConfigurableData subData) {
+		super(cid, subFormatter, subData);
+		this.con = pcon;
+	}
+	
+	@Override
+	public StellarConfigHandler newSubConfig(String cid, String title,
+			IConfigFormatter formatter, IConfigurableData data) {
+		return new JsonConfigHandler(con.makeSubContainer(cid), title,
+					formatter, data);
+	}
+
+
 	@Override
 	public void setCategoryType(EnumCategoryType t) {
-		cattype = t;
 		
-		catcon = CategoryContainer.newCatContainer(t);
+		super.setCategoryType(t);
+		
 		if(t != EnumCategoryType.ConfigList)
 		{
 			jobj = con.readJson();
 		}
 	}
+	
 
 	@Override
-	public void setModifiable(boolean modif, boolean warn) {
-		modifiable = modif;
-	}
-
-	@Override
-	public void addAMListener(ICfgArrMListener list) {
-		listenList.add(list);
-	}
+	public void setModifiable(boolean modif, boolean warn) { }
 
 	@Override
 	public void markImmutable(IConfigCategory cat) {
@@ -67,84 +77,43 @@ public class JsonConfigHandler implements IStellarConfig {
 		return ((JsonConfigCategory)cat).isImmutable;
 	}
 
+	
 	@Override
-	public IConfigCategory addCategory(String cid) {
-		if(!modifiable)
-			return null;
+	public IConfigCategory newCategory(String cid) {
+		JsonObject tobj;
 		
-		IConfigCategory jcat;
-		if(cattype == EnumCategoryType.ConfigList)
-		{
-			JsonConfigHandler handle = new JsonConfigHandler(con.makeSubContainer(cid));
-			jcat = new JsonConfigCatCfg(this, handle, cid);
-		}
+		if(jobj.getObj().has(cid))
+			tobj = jobj.getObj().getAsJsonObject(cid);
 		else {
-			JsonObject tobj;
-			
-			if(jobj.getObj().has(cid))
-				tobj = jobj.getObj().getAsJsonObject(cid);
-			else {
-				tobj = new JsonObject();
-				jobj.add(cid, tobj);
-				tobj.addProperty(cat, true);
-			}
-			
-			jcat = new JsonConfigCategory(this, tobj, cid);
+			tobj = new JsonObject();
+			jobj.add(cid, tobj);
+			tobj.addProperty(cat, true);
 		}
 		
-		catcon.addCategory(jcat);
-		
-		for(ICfgArrMListener list : listenList)
-			list.onNew(jcat);
-		
-		return jcat;
+		return new JsonConfigCategory(this, tobj, cid);
 	}
 
 	@Override
-	public void removeCategory(String cid) {
-		if(!modifiable)
-			return;
-		if(catcon.getCategory(cid) == null || ((JsonConfigCategory)catcon.getCategory(cid)).isImmutable)
-			return;
-		
-		JsonConfigCategory cat = (JsonConfigCategory) catcon.getCategory(cid);
-		
-		for(IConfigCategory sub : catcon.getAllSubCategories(cat))
-			this.removeSubCategory(cat, sub.getID());
-		
-		for(ICfgArrMListener list : listenList)
-			list.onRemove(cat);
-		
-		catcon.removeCategory(cid);
-		
+	public IConfigCatCfg newCfgCategory(String cid) {
+		return new JsonConfigCatCfg(this, cid);
+	}
+	
+	@Override
+	public void postAdded(IConfigCategory cat) {
+		if(cattype == EnumCategoryType.ConfigList)
+			((StellarConfigHandler)this.getSubConfig(cat)).onFormat();
+	}
+	
+	@Override
+	public void onRemoveCategory(String cid) {
 		if(cattype == EnumCategoryType.ConfigList)
 			con.removeSubContainer(cid);
 		else jobj.remove(cid);
-
 	}
 
-	@Override
-	public IConfigCategory getCategory(String cid) {
-		return catcon.getCategory(cid);
-	}
-
-	@Override
-	public List<IConfigCategory> getAllCategories() {
-		return catcon.getAllCategories();
-	}
-
-	@Override
-	public IStellarConfig getSubConfig(IConfigCategory cat) {
-		if(cattype != EnumCategoryType.ConfigList)
-			return null;
-		
-		return ((JsonConfigCatCfg)cat).getHandler();
-	}
 
 	@Override
 	public IConfigCategory addSubCategory(IConfigCategory parent, String subid) {
-		if(!modifiable)
-			return null;
 		
 		if(cattype != EnumCategoryType.Tree)
 			return null;
@@ -172,11 +141,8 @@ public class JsonConfigHandler implements IStellarConfig {
 
 	@Override
 	public void removeSubCategory(IConfigCategory parent, String subid) {
-		if(!modifiable)
-			return;
 		
-		if(catcon.getSubCategory(parent, subid) == null
-				|| ((JsonConfigCategory)catcon.getSubCategory(parent, subid)).isImmutable)
+		if(catcon.getSubCategory(parent, subid) == null)
 			return;
 		
 		JsonConfigCategory cat = (JsonConfigCategory) catcon.getSubCategory(parent, subid);
@@ -193,16 +159,7 @@ public class JsonConfigHandler implements IStellarConfig {
 		par.jobj.remove(subid);
 		
 	}
-
-	@Override
-	public IConfigCategory getSubCategory(IConfigCategory parent, String subid) {
-		return catcon.getSubCategory(parent, subid);
-	}
-
-	@Override
-	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent) {
-		return catcon.getAllSubCategories(parent);
-	}
+	
 	
 	public void setExpl(ConfigEntry ent, String expl)
 	{
@@ -211,7 +168,7 @@ public class JsonConfigHandler implements IStellarConfig {
 
 	
 	@Override
-	public void addLoadFailMessage(String title, String msg) {
+	public void addLoadFailMessage(String title, ICfgMessage msg) {
 		con.addLoadFailMessage(title, msg);
 	}
 
@@ -222,10 +179,7 @@ public class JsonConfigHandler implements IStellarConfig {
 		{
 		case ConfigList:
 			for(String scid : con.getAllSubContainerNames())
-			{
-				JsonConfigHandler cjh = new JsonConfigHandler(con.getSubContainer(scid));
-				catcon.addCategory(new JsonConfigCatCfg(this, cjh, scid));
-			}
+				this.addCategory(scid);
 			
 			break;
 			
@@ -235,7 +189,7 @@ public class JsonConfigHandler implements IStellarConfig {
 			for(Entry<String, JsonElement> ent: jobj.getObj().entrySet())
 			{
 				if(ent.getValue().isJsonObject() && ent.getValue().getAsJsonObject().has(cat))
-					catcon.addCategory(new JsonConfigCategory(this, ent.getValue().getAsJsonObject(), ent.getKey()));
+					this.addCategory(ent.getKey());
 			}
 			
 			break;
@@ -249,14 +203,12 @@ public class JsonConfigHandler implements IStellarConfig {
 		}
 	}
 	
-	public void saveJson()
-	{
-		if(this.cattype == EnumCategoryType.ConfigList)
-		{
-			for(IConfigCategory cat : this.getAllCategories())
-				((JsonConfigHandler) cat.getConfig()).saveJson();
-		}
-		else con.writeJson(jobj);
+	@Override
+	public void onSave() {
+		super.onSave();
+		
+		if(this.cattype != EnumCategoryType.ConfigList)
+			con.writeJson(jobj);
 	}
 		
 	private void addSubCategories(JsonConfigCategory ca, JsonObject jo)
@@ -272,14 +224,9 @@ public class JsonConfigHandler implements IStellarConfig {
 					JsonConfigCategory subc;
 					
 					if(ca != null)
-					{
-						catcon.addSubCategory(ca, new JsonConfigCategory(this, ca, je, ent.getKey()));
-						subc = (JsonConfigCategory) catcon.getSubCategory(ca, ent.getKey());
-					}
-					else {
-						catcon.addCategory(new JsonConfigCategory(this, je, ent.getKey()));
-						subc = (JsonConfigCategory) catcon.getCategory(ent.getKey());
-					}
+						subc = (JsonConfigCategory) this.addSubCategory(ca, ent.getKey());
+					else subc = (JsonConfigCategory) this.addCategory(ent.getKey());
+					
 					addSubCategories(subc, je);
 				}
 			}

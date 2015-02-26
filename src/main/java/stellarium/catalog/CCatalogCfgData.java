@@ -39,7 +39,9 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 
 	@Override
 	public ICCatalogDataSet getDefaultData() {
-		return def;
+		if(datamap.isEmpty())
+			throw new IllegalStateException("Empty Catalog Data; Might be connection error");
+		return (ICCatalogDataSet) datamap.values().toArray()[0];
 	}
 
 	
@@ -51,36 +53,35 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 		
 		cfg.loadCategories();
 		
-		for(IConfigCategory cat : cfg.getAllCategories())
-		{
-			CCatalogData newData = new CCatalogData(isPhysical);
-			datamap.put(cat.getDisplayName(), newData);
-			
-			newData.formatConfig(cfg.getSubConfig(cat));
-		}
+		//TODO default working.
 		
 		cfg.addAMListener(this);
 	}
 
 	@Override
-	public void applyConfig(IStellarConfig config) {
-		for(IConfigCategory cat : config.getAllCategories())
-			getDataRawType(cat.getDisplayName()).applyConfig(config.getSubConfig(cat));
+	public void applyConfig(IStellarConfig config) { }
+
+	@Override
+	public void saveConfig(IStellarConfig config) { }
+	
+	
+	@Override
+	public IConfigFormatter getSubFormatter(IConfigCategory cat) {
+		return getDataRawType(cat.getDisplayName());
 	}
 
 	@Override
-	public void saveConfig(IStellarConfig config) {
-		for(IConfigCategory cat : config.getAllCategories())
-			getDataRawType(cat.getDisplayName()).saveConfig(config.getSubConfig(cat));
+	public IConfigurableData getSubData(IConfigCategory cat) {
+		return getDataRawType(cat.getDisplayName());
 	}
 
 	
 	@Override
 	public void onNew(IConfigCategory cat) {
-		CCatalogData newData = new CCatalogData(isPhysical);
-		datamap.put(cat.getDisplayName(), newData);
+		if(datamap.containsKey(cat.getDisplayName()))
+			return;
 		
-		newData.formatConfig(cat.getConfig().getSubConfig(cat));
+		datamap.put(cat.getDisplayName(), new CCatalogData(isPhysical));		
 	}
 
 	@Override
@@ -109,14 +110,14 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	public class CCatalogData implements ICCatalogDataSet, IConfigurableData, IConfigFormatter {
 		
 		private boolean isPhysical;
-		private List<IStellarCatalogData> datalist = Lists.newArrayList();
+		private Map<String, IStellarCatalogData> datamap = Maps.newHashMap();
 		
 		public CCatalogData(boolean isPhysical)
 		{
 			this.isPhysical = isPhysical;
 			
 			for(IStellarCatalogProvider prov : StellarCatalogRegistry.getProvList())
-				datalist.add(prov.provideCatalogData(isPhysical));
+				datamap.put(prov.getCatalogName(), prov.provideCatalogData(isPhysical));
 		}
 
 		@Override
@@ -124,33 +125,29 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 			cfg.setCategoryType(EnumCategoryType.ConfigList);
 			
 			for(IStellarCatalogData data : this)
-			{
-				IConfigCategory datacat = cfg.addCategory(data.getProvider().getCatalogName());
-				data.formatConfig(cfg.getSubConfig(datacat));
-			}
+				cfg.addCategory(data.getProvider().getCatalogName());
 		}
 
 		@Override
-		public void applyConfig(IStellarConfig config) {
-			for(IStellarCatalogData data : this)
-			{
-				IConfigCategory datacat = config.getCategory(data.getProvider().getCatalogName());
-				data.applyConfig(config.getSubConfig(datacat));
-			}
-		}
+		public void applyConfig(IStellarConfig config) { }
 
 		@Override
-		public void saveConfig(IStellarConfig config) {
-			for(IStellarCatalogData data : this)
-			{
-				IConfigCategory datacat = config.getCategory(data.getProvider().getCatalogName());
-				data.saveConfig(config.getSubConfig(datacat));
-			}
-		}
+		public void saveConfig(IStellarConfig config) { }
 
 		@Override
 		public Iterator<IStellarCatalogData> iterator() {
-			return datalist.iterator();
+			return datamap.values().iterator();
+		}
+
+		
+		@Override
+		public IConfigFormatter getSubFormatter(IConfigCategory cat) {
+			return datamap.get(cat.getID());
+		}
+
+		@Override
+		public IConfigurableData getSubData(IConfigCategory cat) {
+			return datamap.get(cat.getID());
 		}
 	}
 

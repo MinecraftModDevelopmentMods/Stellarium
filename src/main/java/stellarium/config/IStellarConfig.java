@@ -6,12 +6,13 @@ public interface IStellarConfig {
 	
 	/**
 	 * Sets category type of this configuration.
-	 * Should be called at first time.
+	 * Should be called at first time, on format.
 	 * */
 	public void setCategoryType(EnumCategoryType t);
 	
 	/**
-	 * Sets whether category is modifiable or not
+	 * Sets whether category is modifiable or not.
+	 * Only be effective on formatting phase.
 	 * @param modif modifiability flag
 	 * @param warn warning flag. when it is enabled, any modification will be warned.
 	 * */
@@ -65,11 +66,14 @@ public interface IStellarConfig {
 	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent);
 	
 	
-	/**Detects and Loads Categories*/
+	/**
+	 * Detects and Loads Categories.
+	 * NOTE: this will call addCategory/addSubCategory.
+	 * */
 	public void loadCategories();
 	
 	/**
 	 * Adds loading-failure message.
 	 * */
-	public void addLoadFailMessage(String title, String msg);
+	public void addLoadFailMessage(String title, ICfgMessage msg);
 }
