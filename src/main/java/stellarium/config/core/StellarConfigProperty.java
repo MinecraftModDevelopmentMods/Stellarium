@@ -8,39 +8,93 @@ import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.IConfigPropHandler;
 import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
-import stellarium.config.element.EnumPropElement;
-import stellarium.config.element.IPropElement;
+import stellarium.config.core.handler.IPropertyHandler;
+import stellarium.config.element.*;
 
-public abstract class StellarConfigProperty<T> implements IMConfigProperty<T> {
+public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	protected StellarConfigCategory par; 
 	protected String name;
 	protected IConfigPropHandler<T> handle;
 	protected boolean singular = false;
 	
-	public List<String> namelist = Lists.newArrayList();
+	protected IPropertyHandler prophandler, propinvhandler;
+	
+	protected List<String> namelist = Lists.newArrayList();
 	protected List<IPropElement> ellist = Lists.newArrayList();
 	
 	protected boolean enabled = true;
+	protected T def;
 	
 	public StellarConfigProperty(StellarConfigCategory cat, String ptype, String pname, T def)
 	{
 		this.par = cat;
 		this.name = pname;
 		this.handle = ConfigPropTypeRegistry.getHandler(ptype);
+		if(handle == null)
+			throw new IllegalArgumentException("The Property Type: " + ptype + "Does Not Exist!");
+		this.def = def;
+	}
+	
+	public void onConstruct() {
 		handle.onConstruct(this);
 		
-		if(namelist.size() == 1 && namelist.get(0).equals(pname))
+		if(namelist.size() == 1 && namelist.get(0).equals(name))
 			singular = true;
 		
 		setVal(def);
+		
+		for(int i = 0; i < namelist.size(); i++) {
+			String subname = namelist.get(i);
+			IPropElement propel = ellist.get(i);
+			
+			if(propel instanceof IDoubleElement)
+			{
+				prophandler.onElementAdded(subname, (IDoubleElement) propel);
+				if(propinvhandler != null)
+					propinvhandler.onElementAdded(subname, (IDoubleElement) propel);
+			} else if(propel instanceof IIntegerElement) {
+				prophandler.onElementAdded(subname, (IIntegerElement) propel);
+				if(propinvhandler != null)
+					propinvhandler.onElementAdded(subname, (IIntegerElement) propel);
+			} else if(propel instanceof IStringElement) {
+				prophandler.onElementAdded(subname, (IStringElement) propel);
+				if(propinvhandler != null)
+					propinvhandler.onElementAdded(subname, (IStringElement) propel);
+			} else if(propel instanceof IEnumElement) {
+				prophandler.onElementAdded(subname, (IEnumElement) propel);
+				if(propinvhandler != null)
+					propinvhandler.onElementAdded(subname, (IEnumElement) propel);
+			}
+		}
 	}
 	
 	public boolean isSingular()
 	{
 		return this.singular;
 	}
+	
+	public IPropertyHandler getHandler() {
+		return this.prophandler;
+	}
+	
+	public void setHandler(IPropertyHandler prophandler) {
+		this.prophandler = prophandler;
+	}
+	
+	public void setInvHandler(IPropertyHandler propinvhandler) {
+		this.propinvhandler = propinvhandler;
+	}
+	
+	public StellarConfigCategory getCategory() {
+		return this.par;
+	}
 
+	
+	public List<String> getNameList() {
+		return this.namelist;
+	}
+	
 	@Override
 	public T getVal() {
 		return handle.getValue(this);
@@ -98,22 +152,30 @@ public abstract class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	@Override
 	public void setVal(T val) {
 		handle.onSetVal(this, val);
+		
+		prophandler.onValueUpdate();
+		if(propinvhandler != null)
+			propinvhandler.onValueUpdate();
 	}
 	
 	@Override
 	public void setEnabled(boolean enable) {
 		enabled = enable;
+		
+		prophandler.setEnabled(enable);
+		if(propinvhandler != null)
+			propinvhandler.setEnabled(enable);
 	}
 	
 	
-	abstract protected IPropElement newElement(String subname, EnumPropElement e);
-
 	@Override
-	public void addElement(String subname, EnumPropElement e) {
-		namelist.add(subname);
-		ellist.add(newElement(subname, e));
+	public IConfigProperty<T> setExpl(String expl) {
+		prophandler.setExpl(expl);
+		if(propinvhandler != null)
+			propinvhandler.setExpl(expl);
+		return this;
 	}
-
+	
 	@SuppressWarnings("hiding")
 	@Override
 	public <T extends IPropElement> T getElement(String subname) {
@@ -124,6 +186,117 @@ public abstract class StellarConfigProperty<T> implements IMConfigProperty<T> {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public void addElement(String subname, EnumPropElement e) {
+		namelist.add(subname);
+		ellist.add(newElement(subname, e));
+	}
+
+	private IPropElement newElement(String subname, EnumPropElement e) {
+		switch(e)
+		{
+		case Double:
+			return new DoubleElement();
+
+		case Enum:
+			return new EnumElement();
+			
+		case Integer:
+			return new IntegerElement();
+			
+		case String:
+			return new StringElement();
+		
+		default:
+			return null;
+		}
+	}
+	
+	protected class DoubleElement implements IDoubleElement {
+
+		double currentValue;
+		
+		@Override
+		public void setValue(double val) {
+			currentValue = val;
+		}
+
+		@Override
+		public double getValue() {
+			return currentValue;
+		}
+		
+	}
+
+	protected class IntegerElement implements IIntegerElement {
+
+		int currentValue;
+		
+		@Override
+		public void setValue(int val) {
+			currentValue = val;
+		}
+
+		@Override
+		public int getValue() {
+			return currentValue;
+		}
+	
+	}
+
+	protected class StringElement implements IStringElement {
+
+		String currentValue;
+		
+		@Override
+		public void setValue(String val) {
+			currentValue = val;
+		}
+
+		@Override
+		public String getValue() {
+			return currentValue;
+		}
+	
+	}
+	
+	protected class EnumElement implements IEnumElement {
+
+		String valrange[];
+		int ind = 0;
+		
+		@Override
+		public void setValRange(String... str) {
+			valrange = str;
+		}
+
+		@Override
+		public void setValue(int index) {
+			ind = index;
+		}
+
+		@Override
+		public void setValue(String val) {
+			for(int i = 0; i < valrange.length; i++)
+				if(valrange[i].equals(val))
+				{
+					ind = i;
+					return;
+				}
+		}
+
+		@Override
+		public String getValue() {
+			return valrange[ind];
+		}
+
+		@Override
+		public int getIndex() {
+			return ind;
+		}
+		
 	}
 
 }

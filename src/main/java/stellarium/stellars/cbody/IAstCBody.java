@@ -1,6 +1,6 @@
 package stellarium.stellars.cbody;
 
-import stellarium.stellars.OldStellarManager;
+import stellarium.settings.StellarSettings;
 
 public class IAstCBody extends NonStarBody {
 

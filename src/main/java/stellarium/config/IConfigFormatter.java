@@ -11,7 +11,8 @@ public interface IConfigFormatter {
 	/**
 	 * gives the sub-data formatter of this data formatter for certain category. 
 	 * Only used for config-list form of configuration.
+	 * called when formatter is added to the category.
 	 * */
-	public IConfigFormatter getSubFormatter(IConfigCategory cat);
+	public IConfigFormatter getSubFormatter(String name);
 	
 }

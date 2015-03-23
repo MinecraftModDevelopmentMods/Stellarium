@@ -1,6 +1,6 @@
 package stellarium.stellars.cbody;
 
-import stellarium.stellars.OldStellarManager;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.stellars.orbit.OrbitMv;
 import stellarium.stellars.orbit.OrbitSt;

@@ -13,17 +13,19 @@ import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigFormatter;
 import stellarium.config.IConfigurableData;
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.EnumPosOption;
+import stellarium.config.core.ICategoryEntry;
 
 public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, IConfigFormatter, ICfgArrMListener {
 	
-	public CCatalogData def;
 	public Map<String, CCatalogData> datamap = Maps.newHashMap();
 	public boolean isPhysical;
 	
 	public CCatalogCfgData(boolean isPhysical)
 	{
 		this.isPhysical = isPhysical;
-		def = new CCatalogData(isPhysical);
+		
+		datamap.put("Default", new CCatalogData(isPhysical));
 	}
 	
 	@Override
@@ -48,14 +50,19 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	@Override
 	public void formatConfig(IStellarConfig cfg) {
 		cfg.setCategoryType(EnumCategoryType.ConfigList);
-
+		
 		cfg.setModifiable(true, true);
+		
+		cfg.addAMListener(this);
 		
 		cfg.loadCategories();
 		
-		//TODO default working.
+		for(String name : datamap.keySet())
+		{
+			cfg.getRootEntry().createCategory(name, EnumPosOption.Child);
+		}
 		
-		cfg.addAMListener(this);
+		//TODO default working.
 	}
 
 	@Override
@@ -66,44 +73,42 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	
 	
 	@Override
-	public IConfigFormatter getSubFormatter(IConfigCategory cat) {
-		return getDataRawType(cat.getDisplayName());
+	public IConfigFormatter getSubFormatter(String name) {
+		return getDataRawType(name);
 	}
 
 	@Override
-	public IConfigurableData getSubData(IConfigCategory cat) {
-		return getDataRawType(cat.getDisplayName());
+	public IConfigurableData getSubData(String name) {
+		return getDataRawType(name);
 	}
 
 	
 	@Override
-	public void onNew(IConfigCategory cat) {
-		if(datamap.containsKey(cat.getDisplayName()))
+	public void onNew(ICategoryEntry parent, String name) {
+		if(datamap.containsKey(name))
 			return;
 		
-		datamap.put(cat.getDisplayName(), new CCatalogData(isPhysical));		
+		datamap.put(name, new CCatalogData(isPhysical));
 	}
-
+	
 	@Override
 	public void onRemove(IConfigCategory cat) {
-		datamap.remove(cat.getDisplayName());
+		datamap.remove(cat.getName());
 	}
 
 	@Override
-	public void onChangeParent(IConfigCategory cat, IConfigCategory from,
-			IConfigCategory to) {
-		//Cannot Be Called.
-	}
+	public void onPostCreated(IConfigCategory cat) { }
 
 	@Override
-	public void onChangeOrder(IConfigCategory cat, int before, int after) {
-		//Not Needed.
-	}
+	public void onMigrate(IConfigCategory cat, ICategoryEntry before) { }
 
 	@Override
-	public void onDispNameChange(IConfigCategory cat, String before) {
+	public void onNameChange(IConfigCategory cat, String before) {
+		if(!datamap.containsKey(before))
+			return;
+		
 		CCatalogData data = datamap.remove(before);
-		datamap.put(cat.getDisplayName(), data);
+		datamap.put(cat.getName(), data);
 	}
 	
 	
@@ -125,7 +130,7 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 			cfg.setCategoryType(EnumCategoryType.ConfigList);
 			
 			for(IStellarCatalogData data : this)
-				cfg.addCategory(data.getProvider().getCatalogName());
+				cfg.getRootEntry().createCategory(data.getProvider().getCatalogName(), EnumPosOption.Child);
 		}
 
 		@Override
@@ -141,13 +146,13 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 
 		
 		@Override
-		public IConfigFormatter getSubFormatter(IConfigCategory cat) {
-			return datamap.get(cat.getID());
+		public IConfigFormatter getSubFormatter(String name) {
+			return datamap.get(name);
 		}
 
 		@Override
-		public IConfigurableData getSubData(IConfigCategory cat) {
-			return datamap.get(cat.getID());
+		public IConfigurableData getSubData(String name) {
+			return datamap.get(name);
 		}
 	}
 

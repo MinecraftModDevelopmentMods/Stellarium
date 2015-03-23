@@ -1,6 +1,7 @@
 package stellarium.objs.mv.orbit;
 
 import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 
@@ -29,7 +30,11 @@ public class TypeOrbitRelation implements IPropertyRelation {
 	@Override
 	public void onDisable(int i) {
 		if(prop.getVal() != null)
+		{
+			IConfigProperty prep = cat.setPropAddEntry(prop);
 			prop.getVal().formatConfig(cat);
+			cat.setPropAddEntry(prep);
+		}
 	}
 
 	@Override

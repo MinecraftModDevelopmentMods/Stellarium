@@ -8,6 +8,7 @@ import sciapi.api.value.numerics.DDouble;
 import sciapi.api.value.numerics.IReal;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
+import stellarium.settings.StellarSettings;
 import stellarium.util.math.Rotate;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
@@ -16,8 +17,13 @@ import stellarium.util.math.VecMath;
 public class Moon extends Satellite {
 		
 	//Additional Orbital Elements for Moon
-	double a0, e0, I0, w0, Omega0, M0_0;
-	double wd, Omegad;
+	public double a0;
+	public double e0;
+	public double I0;
+	public double w0;
+	public double Omega0;
+	public double M0_0;
+	public double wd, Omegad;
 
 	double brightness;
 	
@@ -85,7 +91,7 @@ public class Moon extends Satellite {
 	public void UpdateMagnitude(){
 		double dist=Spmath.getD(VecMath.size(EcRPosG));
 		double distS=Spmath.getD(VecMath.size(EcRPos));
-		double distE=Spmath.getD(VecMath.size(OldStellarManager.Earth.EcRPos));
+		double distE=Spmath.getD(VecMath.size(StellarSettings.Earth.EcRPos));
 		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}

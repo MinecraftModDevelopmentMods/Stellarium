@@ -2,6 +2,7 @@ package stellarium;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.item.Item;
@@ -13,15 +14,15 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import stellarium.catalog.CCatalogCfgData;
 import stellarium.catalog.StellarCatalogRegistry;
-import stellarium.catalog.gui.GuiCatalogCfgProvider;
 import stellarium.config.ConfigDataRegistry;
 import stellarium.config.file.FileCfgManager;
+import stellarium.config.gui.StellarConfigGuiProvider;
 import stellarium.config.gui.gui.DefCfgGuiProvider;
 import stellarium.config.gui.gui.StellarCfgGuiRegistry;
 import stellarium.initials.CConstructManager;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangStrs;
-import stellarium.stellars.OldStellarManager;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.orbit.*;
 import stellarium.stellars.cbody.*;
 import stellarium.world.StellarWorldProvider;
@@ -50,12 +51,15 @@ public class Stellarium {
         public static Stellarium instance;
         
 //        public static ITickHandler tickhandler=new StellarTickHandler();
-        public OldStellarManager manager;
+        public StellarSettings manager;
         
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
         
-        //Configuration
+        //Default Configuration
+        public StellarConfigHook cfghook;
+        
+        //Stellar Configuration
         public FileCfgManager filemanager;
         
         //Catalog
@@ -65,59 +69,53 @@ public class Stellarium {
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
-        	//Initialize Objects
+        	//Default Configurations
             config = new Configuration(event.getSuggestedConfigurationFile());
+            cfghook = new StellarConfigHook(config);
             
             config.load();
-            Property Mag_Limit=config.get(Configuration.CATEGORY_GENERAL, "Mag_Limit", 5.0);
-            Mag_Limit.comment="Limit of magnitude can be seen on naked eye.\n" +
-            		"If you want to increase FPS, you can set this property a bit little (e.g. 0.3)\n" +
-            		"and FPS will be exponentially improved";
-            OldStellarManager.Mag_Limit=(float)Mag_Limit.getDouble(5.0);
-            
-            config.load();
-            Property turb=config.get(Configuration.CATEGORY_GENERAL, "Twinkling(Turbulance)", 0.3);
-            turb.comment="Degree of the twinkling effect of star.\n"
-            		+ "It determines the turbulance of atmosphere, which actually cause the twinkling effect";
-            OldStellarManager.Turb=(float)turb.getDouble(0.3);
-            
-            Property Moon_Frac=config.get(Configuration.CATEGORY_GENERAL, "Moon_Fragments_Number", 16);
-            Moon_Frac.comment="Moon is drawn with fragments\n" +
-            		"Less fragments will increase FPS, but the moon become more defective\n";
-            OldStellarManager.ImgFrac=Moon_Frac.getInt(16);
-            
+            cfghook.onLoad();
             config.save();
             
+            FMLCommonHandler.instance().bus().register(cfghook);
             
+            
+            //File Side Configuration Manager
             filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
-
+ 
+            //Loads Catalog
+            StellarCatalogRegistry.onLoad();
             
-            //creates Logical Cfg Data. For GUI & Text Config.
+            //creates Logical Catalog Cfg Data. For GUI & Text Config.            
             catdata = new CCatalogCfgData(false);
             ConfigDataRegistry.register(CPropLangStrs.catalog, catdata, catdata);
- 
             
-            manager = new OldStellarManager();
-			OldStellarManager.InitializeStars();
+            
+            manager = new StellarSettings();
+			StellarSettings.InitializeStars();
 			
-			proxy.InitSided(manager);
+			
+			proxy.initSided(manager);
+			proxy.initCfgGui(filemanager);
+			
 			
 			MinecraftForge.EVENT_BUS.register(new StellarEventHook());
         }
         
         @EventHandler
         public void load(FMLInitializationEvent event) {
-
+        	
+        	ConfigDataRegistry.onFormat();
         	filemanager.onFormat();
         	filemanager.onApply();
         	
-			OldStellarManager.Initialize();
+			StellarSettings.Initialize();
         	
         }
         
         @EventHandler
         public void postInit(FMLPostInitializationEvent event) {
-        	
+        	        	
         	DimensionManager.unregisterDimension(0);
         	DimensionManager.unregisterProviderType(0);
         	DimensionManager.registerProviderType(0, StellarWorldProvider.class, true);

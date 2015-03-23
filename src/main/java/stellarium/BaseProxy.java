@@ -2,17 +2,13 @@ package stellarium;
 
 import cpw.mods.fml.relauncher.Side;
 import stellarium.catalog.StellarCatalogRegistry;
-import stellarium.stellars.OldStellarManager;
+import stellarium.config.file.FileCfgManager;
+import stellarium.settings.StellarSettings;
 
-public class BaseProxy {
+public interface BaseProxy {
 	
-	public void InitSided(OldStellarManager m)
-	{
-
-	}
+	public void initSided(StellarSettings m);
 	
-	public void endRegistry()
-	{
-	}
+	public void initCfgGui(FileCfgManager fm);
 	
 }

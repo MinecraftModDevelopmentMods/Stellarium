@@ -4,8 +4,8 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.EVectorSet;
 import sciapi.api.value.util.COp;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.ExtinctionRefraction;
-import stellarium.stellars.OldStellarManager;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import net.minecraft.world.WorldProviderSurface;
@@ -14,12 +14,12 @@ public class StellarWorldProvider extends WorldProviderSurface {
 		
     public float calculateCelestialAngle(long par1, float par3)
     {
-    	if(OldStellarManager.Earth.EcRPos == null)
-    		OldStellarManager.Update(par1+par3, isSurfaceWorld());
+    	if(StellarSettings.Earth.EcRPos == null)
+    		StellarSettings.Update(par1+par3, isSurfaceWorld());
     	
     	IValRef<EVector> sun = EVectorSet.ins(3).getSTemp();
     	
-    	sun.set(OldStellarManager.Sun.GetPosition());
+    	sun.set(StellarSettings.Sun.GetPosition());
     	sun.set(ExtinctionRefraction.Refraction(sun, true));
     	sun.set(VecMath.normalize(sun));
     	
@@ -35,9 +35,9 @@ public class StellarWorldProvider extends WorldProviderSurface {
 
     public int getMoonPhase(long par1)
     {
-    	if(OldStellarManager.Earth.EcRPos==null)
-    		OldStellarManager.Update(par1, isSurfaceWorld());
-    	return (int)(OldStellarManager.Moon.Phase_Time()*8);
+    	if(StellarSettings.Earth.EcRPos==null)
+    		StellarSettings.Update(par1, isSurfaceWorld());
+    	return (int)(StellarSettings.Moon.Phase_Time()*8);
     }
 
 }

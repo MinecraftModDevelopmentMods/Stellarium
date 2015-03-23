@@ -2,16 +2,20 @@ package stellarium.config;
 
 import java.util.List;
 
+import stellarium.config.core.ICategoryEntry;
+
 public interface IStellarConfig {
 	
 	/**
-	 * Sets category type of this configuration.
+	 * Sets category type of this configuration.<p>
 	 * Should be called at first time, on format.
+	 * @param t the category arrangement type
 	 * */
 	public void setCategoryType(EnumCategoryType t);
 	
 	/**
-	 * Sets whether category is modifiable or not.
+	 * Sets whether category is modifiable or not, in configuration editer's manner.<p>
+	 *  ('Modifiable' means it can be added/removed/copy-pasted and name change is available)<p>
 	 * Only be effective on formatting phase.
 	 * @param modif modifiability flag
 	 * @param warn warning flag. when it is enabled, any modification will be warned.
@@ -21,56 +25,27 @@ public interface IStellarConfig {
 	/**Adds Configuration Arrangement Modification Listener.*/
 	public void addAMListener(ICfgArrMListener list);
 	
-	/**Marks a Category as Immutable.*/
-	public void markImmutable(IConfigCategory cat);
-	
-	/**Checks if this category is Immutable.*/
-	public boolean isImmutable(IConfigCategory cat);
-	
 	
 	/**
-	 * Adds category for this configuration.
-	 * NOTE: Some Category will already exist before for Text Configuration.
+	 * Gets the root entry for this configuration.<p>
+	 *  Note: a root entry is kind of invalidated entry, so it cannot be modified.
+	 * @param entry the root category entry
 	 * */
-	public IConfigCategory addCategory(String cid);
-	
-	/**Removes category for this configuration.*/
-	public void removeCategory(String cid);
-	
-	/**Gets category for this configuration.*/
-	public IConfigCategory getCategory(String cid);
-	
-	/**
-	 * Gets all non-sub categories for this configuration.
-	 * */
-	public List<IConfigCategory> getAllCategories();
+	public ICategoryEntry getRootEntry();
 	
 	
 	/**
-	 * Gets sub-configuration from category.
+	 * Gets sub-configuration from category.<p>
 	 * Only valid for <code>{@link EnumCategoryType#ConfigList}</code> 
 	 * */
 	public IStellarConfig getSubConfig(IConfigCategory cat);
 	
 	
-	/**Adds sub-category for this configuration.*/
-	public IConfigCategory addSubCategory(IConfigCategory parent, String subid);
-
-	/**Removes sub-category for this configuration.*/
-	public void removeSubCategory(IConfigCategory parent, String subid);
-	
-	/**Gets sub-category for this configuration.*/
-	public IConfigCategory getSubCategory(IConfigCategory parent, String subid);
-
-	/**Gets all sub-categories with certain parent for this configuration.*/
-	public List<IConfigCategory> getAllSubCategories(IConfigCategory parent);
-	
-	
 	/**
-	 * Detects and Loads Categories.
-	 * NOTE: this will call addCategory/addSubCategory.
+	 * Automatically detects and loads Categories from this configuration.
 	 * */
 	public void loadCategories();
+	
 	
 	/**
 	 * Adds loading-failure message.

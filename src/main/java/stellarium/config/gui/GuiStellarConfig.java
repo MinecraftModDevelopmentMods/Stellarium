@@ -1,84 +1,98 @@
 package stellarium.config.gui;
 
+import java.util.List;
+
 import org.lwjgl.input.Keyboard;
 
-import stellarium.config.ILoadSaveHandler;
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.client.config.GuiButtonExt;
-import cpw.mods.fml.client.config.GuiConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import stellarium.config.EnumCategoryType;
+import stellarium.config.ICfgMessage;
+import stellarium.config.core.ICategoryEntry;
+import stellarium.config.core.StellarConfigCategory;
+import stellarium.config.core.StellarConfiguration;
+import stellarium.config.core.handler.ICategoryHandler;
+import stellarium.config.core.handler.IConfigHandler;
+import stellarium.config.gui.gui.GuiDetailedMessage;
+import stellarium.lang.CPropLangUtil;
 
-public class GuiStellarConfig extends GuiScreen {
-	
+public class GuiStellarConfig extends GuiScreen implements IConfigHandler {
+
 	private GuiScreen parentScreen;
-	private String title;
-	private GuiConfigHandler handler;
-	private boolean needsRefresh;
+	protected String title;
 	
-	public GuiStellarConfig(GuiScreen parentScreen, GuiConfigHandler handler, String title)
-	{
+	private GuiConfigBase handler;
+	
+	protected StellarConfiguration config;
+	
+	protected boolean needsRefresh = true;
+	
+	public GuiStellarConfig(GuiScreen parScreen, StellarConfiguration config,
+			String title) {
 		this.mc = Minecraft.getMinecraft();
-        this.parentScreen = parentScreen;
+		this.parentScreen = parScreen;
+		this.config = config;
         this.title = title;
-        this.handler = handler;
+	}
+
+	
+	@Override
+	public void setCategoryType(EnumCategoryType t) {
+		handler = ConfigGuiUtil.getCfgHandler(parentScreen, this, config, title, t);
+		handler.setCategoryType(t);
+	}
+
+	@Override
+	public void setModifiable(boolean modif, boolean warn) {
+		handler.setModifiable(modif, warn);
+	}
+	
+	public void setTitle(String title)
+	{
+		this.title = title;
+		handler.setTitle(title);
+	}
+	
+	public FontRenderer getFontRenderer() {
+		return mc.fontRenderer;
 	}
 	
     @Override
     public void initGui()
     {
-    	handler.onFormat();
-    	handler.onSave();
-    	
-    	if(this.needsRefresh)
-    	{
-    		this.needsRefresh = false;
-    	}
-    	
-        Keyboard.enableRepeatEvents(true);
-        
-        int textWidth = Math.max(mc.fontRenderer.getStringWidth(I18n.format("gui.done")) + 60, 200);
-        int buttonWidthHalf = textWidth / 2;
-        this.buttonList.add(new GuiButtonExt(2000, this.width / 2 - buttonWidthHalf, this.height - 29, textWidth, 20, I18n.format("gui.done")));
+    	handler.initGui(this.needsRefresh);
+    	this.needsRefresh = false;
     }
     
     @Override
     public void onGuiClosed()
     {
-        if (this.parentScreen instanceof GuiStellarConfig)
+    	handler.onGuiClosed();
+
+    	if (this.parentScreen instanceof GuiStellarConfig)
         {
-        	GuiStellarConfig parentGuiConfig = (GuiStellarConfig) this.parentScreen;
-            parentGuiConfig.needsRefresh = true;
+    		GuiStellarConfig parentGuiConfig = (GuiStellarConfig) this.parentScreen;
+        	parentGuiConfig.needsRefresh = true;
             parentGuiConfig.initGui();
         }
         else Keyboard.enableRepeatEvents(false);
-    	
     }
+    
+
+	public void addToButtonList(GuiButton guiButton) {
+		buttonList.add(guiButton);
+	}
     
     @Override
     protected void actionPerformed(GuiButton button)
     {
-    	if (button.id == 2000)
-    	{
-    		handler.onApply();
-    		
-    		if(handler.hasLoadFailMessages())
-    		{
-    			StringBuilder builder = new StringBuilder();
-    			
-    			for(String str : handler.getLoadFailMessages())
-    				builder.append(String.format("- %s\n", str));
-    			
-    			String built = builder.toString();
-    			
-        		// TODO Exception Handling
-    			
-    			return;
-    		}
-    		
-    		this.mc.displayGuiScreen(this.parentScreen);
-    	}
+    	handler.actionPerformed(button);
     }
 
     /**
@@ -87,7 +101,7 @@ public class GuiStellarConfig extends GuiScreen {
     @Override
     protected void mouseClicked(int x, int y, int mouseEvent)
     {
-    	super.mouseClicked(x, y, mouseEvent);
+    	handler.mouseClicked(x, y, mouseEvent);
     }
 
     /**
@@ -97,8 +111,8 @@ public class GuiStellarConfig extends GuiScreen {
     @Override
     protected void mouseMovedOrUp(int x, int y, int mouseEvent)
     {
-    	super.mouseMovedOrUp(x, y, mouseEvent);
-    }
+    	handler.mouseMovedOrUp(x, y, mouseEvent);
+	}
 
     /**
      * Fired when a key is typed. This is the equivalent of KeyListener.keyTyped(KeyEvent e).
@@ -106,8 +120,7 @@ public class GuiStellarConfig extends GuiScreen {
     @Override
     protected void keyTyped(char eventChar, int eventKey)
     {
-        if (eventKey == Keyboard.KEY_ESCAPE)
-            this.mc.displayGuiScreen(parentScreen);
+        handler.keyTyped(eventChar, eventKey);
     }
 
     /**
@@ -116,7 +129,7 @@ public class GuiStellarConfig extends GuiScreen {
     @Override
     public void updateScreen()
     {
-        super.updateScreen();
+        handler.updateScreen();
     }
 
     /**
@@ -125,9 +138,88 @@ public class GuiStellarConfig extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, 8, 16777215);
-
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        handler.drawScreen(mouseX, mouseY, partialTicks);
     }
+    
+
+	@Override
+	public ICategoryHandler getNewCat(StellarConfigCategory cat) {
+		return handler.getNewCat(cat);
+	}
+
+	@Override
+	public IConfigHandler getNewSubCfg(StellarConfiguration subConfig) {
+		return handler.getNewSubCfg(subConfig);
+	}
+
+	@Override
+	public void onPostCreated(StellarConfigCategory cat) {
+		handler.onPostCreated(cat);
+	}
+
+	@Override
+	public void onRemove(StellarConfigCategory cat) {
+		handler.onRemove(cat);
+	}
+
+	@Override
+	public void onMigrate(StellarConfigCategory cat, ICategoryEntry before) {
+		handler.onMigrate(cat, before);
+	}
+
+	@Override
+	public boolean isValidNameChange(StellarConfigCategory cat, String postName) {
+		return handler.isValidNameChange(cat, postName);
+	}
+
+	@Override
+	public void onNameChange(StellarConfigCategory cat, String before) {
+		handler.onNameChange(cat, before);
+	}
+
+	@Override
+	public void onMarkImmutable(StellarConfigCategory cat) {
+		handler.onMarkImmutable(cat);
+	}
+
+	@Override
+	public void loadCategories(StellarConfiguration config) {
+		//Not Used.
+	}
+
+	@Override
+	public void addLoadFailMessage(String title, ICfgMessage msg) {
+		handler.addLoadFailMessage(title, msg);
+	}
+
+	@Override
+	public void onSave(StellarConfiguration config) {
+		handler.onSave(config);
+	}
+
+
+	public void mouseClickedSuper(int x, int y, int mouseEvent) {
+		super.mouseClicked(x, y, mouseEvent);
+	}
+
+
+	public void mouseMovedOrUpSuper(int x, int y, int mouseEvent) {
+		super.mouseMovedOrUp(x, y, mouseEvent);
+	}
+
+
+	public void updateScreenSuper() {
+		super.updateScreen();
+	}
+
+
+	public void drawScreenSuper(int mouseX, int mouseY, float partialTicks) {
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+	
+	public void drawToolTip(List stringList, int x, int y)
+    {
+        this.func_146283_a(stringList, x, y);
+    }
+
 }

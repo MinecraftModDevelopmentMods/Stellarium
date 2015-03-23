@@ -42,14 +42,14 @@ public class CRenderEngine {
 	public double con = 1.0;
 	
 	public CRenderEngine(){
-		InitShader("pointy", "point", "point");
+/*		InitShader("pointy", "point", "point");
 		InitShader("pointyatm", "pointatm", "pointatm");
 		InitShader("fuzzy","point","fuzzy");
 		InitShader("fuzzyatm","pointatm","fuzzyatm");
 		InitShader("dsobj", "dsobj", "dsobj");
 		InitShader("dsobj", "dsobjatm", "dsobjatm");
 		InitShader("img", "img", "img");
-		InitShader("imgatm", "imgatm", "imgatm");
+		InitShader("imgatm", "imgatm", "imgatm");*/
 	}
 	
 	
@@ -192,7 +192,7 @@ public class CRenderEngine {
 		FileInputStream in = new FileInputStream(filename);
 			 
 		Exception exception = null;
-			 
+		
 		BufferedReader reader;
 		try{
 			reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));

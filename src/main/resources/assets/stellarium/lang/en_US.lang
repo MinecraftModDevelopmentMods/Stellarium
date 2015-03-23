@@ -1,0 +1,58 @@
+﻿
+cat.moving.name=Planetary System
+
+
+//Basic Properties
+cmv.basicprops=Basic Properties
+
+cmv.msun=Solar Mass
+cmv.msun.expl=Unit of Solar Mass, as 'kg'.
+
+cmv.yr=Year per Day
+cmv.yr.expl=Unit of Year, as Day.
+
+cmv.day=Day per Tick
+cmv.day.expl=Unit of Day, as Minecraft Tick.
+
+cmv.au=Astronomical Unit
+cmv.au.expl=Astronomical Unit, as meter. It is basic unit for planetary distance measurement.
+
+//Moving Catalog Default
+cmv.def=Default
+
+//Orbit, CBody Types
+cmv.orbtype=Orbit Type
+cmv.orbtype.expl=The type of this Orbit. Mainly they are expressions of elliptic orbit.
+
+cmv.cbtype=Celestial Body Type
+cmv.cbtype.expl=The type of this Celestial Body. Terrestial or Jovian, etc.
+
+//Moving Entry Properties
+cmv.ent.name=Name
+cmv.ent.name.expl=Name of this Body.
+
+cmv.ent.mass=Mass
+cmv.ent.mass.expl=Mass of this Body, in Solar Mass.
+
+//Entry Errors
+cmv.ent.err.missingorbit=Missing Orbit
+cmv.ent.err.missingorbit.expl=%s is Missing Orbit! Fix the Orbit Type.
+
+cmv.ent.err.missingcbody=Missing Celestial Body
+cmv.ent.err.missingcbody.expl=%s is Missing Celestial Body! Fix the C.B. Type.
+
+
+//GUIs
+gui.config.general=General Settings
+gui.config.catalog=Catalog Settings
+
+gui.config.namechange=Changing Name
+gui.config.namechange.sub=Do you really want to Change the name of this category?
+
+gui.config.removecategory=Removing Category
+gui.config.removecategory.sub=Do you really want to Remove this category?
+
+gui.config.copycategory=Copying Category
+gui.config.copycategory.sub=Do you really want to Copy-Paste this category?
+
+gui.config.lock.tooltip=Use this button to Lock/Unlock this property.

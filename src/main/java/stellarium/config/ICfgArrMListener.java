@@ -1,26 +1,25 @@
 package stellarium.config;
 
+import stellarium.config.core.ICategoryEntry;
+
 /**
  * Category Arrangement Modification Listener.
  * */
 public interface ICfgArrMListener {
 
-	/**
-	 * called after a category is added in any ways.
-	 * for configlist, this method is called before sub-config is formatted.
-	 * */
-	public void onNew(IConfigCategory cat);
+	/**called before a category is created in any ways.*/
+	public void onNew(ICategoryEntry parent, String name);
 	
-	/**called before a category is removed in any ways. (all of sub-configurations will be removed)*/
+	/**called after a category is created in any ways.*/
+	public void onPostCreated(IConfigCategory cat);
+	
+	/**called before a category is removed in any ways.*/
 	public void onRemove(IConfigCategory cat);
 	
-	/**called after a category changed its parent, only for tree-type arrangement*/
-	public void onChangeParent(IConfigCategory cat, IConfigCategory from, IConfigCategory to);
+	/**called after a category is migrated or copied in any ways.*/
+	public void onMigrate(IConfigCategory cat, ICategoryEntry before);
 	
-	/**called after a category changed its order*/
-	public void onChangeOrder(IConfigCategory cat, int before, int after);
-	
-	/**Always called when display name of category is changed.*/
-	public void onDispNameChange(IConfigCategory cat, String before);
+	/**Always called when the name of category is changed.*/
+	public void onNameChange(IConfigCategory cat, String before);
 	
 }

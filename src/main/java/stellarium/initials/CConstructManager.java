@@ -3,7 +3,8 @@ package stellarium.initials;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import stellarium.stellars.OldStellarManager;
+
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.cbody.AiryCBody;
 import stellarium.stellars.cbody.CBody;
 import stellarium.stellars.cbody.IAstCBody;

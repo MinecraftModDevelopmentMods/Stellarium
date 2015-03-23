@@ -13,24 +13,31 @@ public class StellarCatalogRegistry {
 	private static StellarCatalogRegistry instance = new StellarCatalogRegistry();
 	private List<IStellarCatalogProvider> providers = Lists.newArrayList();
 	
-	static
-	{
+	static {
 		registerBase();
 	}
 	
-	public static void registerBase()
-	{
+	public static void registerBase() {
 		register(new StellarMvCatalog());
 	}
 	
-	public static void register(IStellarCatalogProvider prov)
-	{
+	public static void register(IStellarCatalogProvider prov) {
 		instance.providers.add(prov);
 	}
 	
-	public static ImmutableList<IStellarCatalogProvider> getProvList()
-	{
+	public static ImmutableList<IStellarCatalogProvider> getProvList() {
 		return ImmutableList.copyOf(instance.providers);
+	}
+	
+	public static int getProvSize()
+	{
+		return instance.providers.size();
+	}
+	
+	public static void onLoad()
+	{
+		for(IStellarCatalogProvider provider : instance.providers)
+			provider.load();
 	}
 	
 }

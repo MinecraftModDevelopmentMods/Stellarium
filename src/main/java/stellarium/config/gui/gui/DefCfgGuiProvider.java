@@ -18,9 +18,9 @@ public class DefCfgGuiProvider implements IGuiCfgProvider {
 	}
 
 	@Override
-	public GuiScreen getCfgGui(GuiScreen parScreen) {
+	public GuiScreen getCfgGui(GuiStellarConfigMain parScreen) {
 		return new GuiConfig(parScreen, new ConfigElement(Stellarium.instance.config.getCategory(category)).getChildElements(),
-				Stellarium.modid, false, false, I18n.format(CLangStrs.defaultConfig));
+				Stellarium.modid, Stellarium.name, false, false, I18n.format(CLangStrs.defaultConfig));
 	}
 
 	@Override

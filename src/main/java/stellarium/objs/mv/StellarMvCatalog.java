@@ -55,7 +55,7 @@ public class StellarMvCatalog implements IStellarCatalogProvider<StellarMvLogica
 	public void load() {
 		ConfigPropTypeRegistry.register("typeOrbit", new TypeOrbitPropHandler());
 		ConfigPropTypeRegistry.register("typeCBody", new TypeCBodyPropHandler());
-				
+		
 		renderId = StellarRenderingRegistry.nextRenderId();
 		StellarRenderingRegistry.registerRenderer(renderId, new CBodyRenderer());
 	}

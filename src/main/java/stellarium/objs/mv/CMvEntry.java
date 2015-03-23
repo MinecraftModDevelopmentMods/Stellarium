@@ -12,9 +12,9 @@ public class CMvEntry {
 	
 	public CMvEntry(StellarMvLogical main, CMvEntry par, String pname)
 	{
-		mv = main;
-		parent = par;
-		name = pname;
+		this.mv = main;
+		this.parent = par;
+		this.name = pname;
 	}
 
 	private final StellarMvLogical mv;

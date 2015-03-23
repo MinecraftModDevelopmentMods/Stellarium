@@ -19,7 +19,7 @@ public class CCatalogManager {
 	
 	private List<IStellarCatalog> findlist = Lists.newArrayList();
 	private PriorityQueue<IStellarCatalog> finds = new PriorityQueue(
-			0, new Comparator<IStellarCatalog>() {
+			StellarCatalogRegistry.getProvSize(), new Comparator<IStellarCatalog>() {
 
 				@Override
 				public int compare(IStellarCatalog arg0, IStellarCatalog arg1) {
@@ -32,7 +32,7 @@ public class CCatalogManager {
 	
 	private List<IStellarCatalog> renderlist = Lists.newArrayList();
 	private PriorityQueue<IStellarCatalog> renders = new PriorityQueue(
-			0, new Comparator<IStellarCatalog>() {
+			StellarCatalogRegistry.getProvSize(), new Comparator<IStellarCatalog>() {
 
 				@Override
 				public int compare(IStellarCatalog arg0, IStellarCatalog arg1) {
@@ -43,8 +43,7 @@ public class CCatalogManager {
 				
 			}); 
 		
-	public CCatalogManager(StellarManager par)
-	{
+	public CCatalogManager(StellarManager par) {
 		parent = par;
 	}
 	

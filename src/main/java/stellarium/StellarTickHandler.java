@@ -2,7 +2,7 @@ package stellarium;
 
 import java.util.EnumSet;
 
-import stellarium.stellars.OldStellarManager;
+import stellarium.settings.StellarSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public class StellarTickHandler {
 	public void tickStart(TickEvent.WorldTickEvent e) {
 		if(e.phase == Phase.START && side == Side.SERVER){
 			World world = e.world;
-			OldStellarManager.Update(world.getWorldTime(), world.provider.isSurfaceWorld());
+			StellarSettings.Update(world.getWorldTime(), world.provider.isSurfaceWorld());
 		}
 	}
 	
@@ -34,7 +34,7 @@ public class StellarTickHandler {
 			World world = Minecraft.getMinecraft().theWorld;
 			
 			if(world != null)
-				OldStellarManager.Update(world.getWorldTime(), world.provider.isSurfaceWorld());
+				StellarSettings.Update(world.getWorldTime(), world.provider.isSurfaceWorld());
 		}
 	}
 

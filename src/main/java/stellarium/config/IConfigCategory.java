@@ -1,33 +1,31 @@
 package stellarium.config;
 
-import stellarium.config.core.ConfigEntry;
+import stellarium.config.core.ICategoryEntry;
 
 public interface IConfigCategory {
 	
-	/**Gets category id.*/
-	public String getID();
-
-	
-	/**Gets displayed name of this category.*/
-	public String getDisplayName();
-	
-	/**Sets displayed name of this category. (Not will be changed if the name is same)*/
-	public void setDisplayName(String name);
+	/**Gets the name of this category.*/
+	public String getName();
 	
 	
-	/**Gets configuration this category belongs to*/
+	/**Gets configuration this category belongs to.*/
 	public IStellarConfig getConfig();
 	
-	/**
-	 * Gets (current) parent category of this category.
-	 * gives null when this category has no parent.
-	 * */
-	public IConfigCategory getParCategory();
+	/**Gets the Entry for this category.*/
+	public ICategoryEntry getCategoryEntry();
+	
 	
 	/**
-	 * Gets the Entry for this Category.
+	 * Marks this category as Immutable. (in configuration editor's manner)
+	 * So this category should not be migrated or removed.
 	 * */
-	public ConfigEntry getConfigEntry();
+	public void markImmutable();
+	
+	/**
+	 * Checks if the category is Immutable.
+	 * @return the Immutable flag of the category
+	 * */
+	public boolean isImmutable();
 	
 	
 	/**Adds property in this category.*/
@@ -38,6 +36,14 @@ public interface IConfigCategory {
 	
 	/**Gets property in this category.*/
 	public <T> IConfigProperty<T> getProperty(String propname);
+	
+	
+	/**
+	 * Sets property addition entry. every property would be added after this property.
+	 * if the parameter is null, then it sets addition entry to the end.
+	 * @return the previous entry.
+	 * */
+	public IConfigProperty setPropAddEntry(IConfigProperty prop);
 	
 	
 	/**Adds property relation in this category.*/

@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import stellarium.objs.mv.cbody.CBodyTStar;
 import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.orbit.IOrbitType;
 import stellarium.objs.mv.orbit.OrbTStationary;
@@ -28,6 +29,8 @@ public class CMvTypeRegistry {
 	public CMvTypeRegistry()
 	{
 		this.registerOrbType(new OrbTStationary());
+		
+		this.registerCBodyType(new CBodyTStar());
 	}
 	
 	public void registerOrbType(IOrbitType orbt)

@@ -14,9 +14,14 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.EnumPosOption;
+import stellarium.config.core.ICategoryEntry;
+import stellarium.config.util.CConfigUtil;
 import stellarium.config.util.CfgIteWrapper;
+import stellarium.config.util.ICfgTreeWalker;
 import stellarium.lang.CPropLangRegistry;
 import stellarium.lang.CPropLangStrs;
+import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.cbody.TypeCBodyRelation;
 import stellarium.objs.mv.orbit.IOrbitType;
@@ -28,7 +33,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	
 	public CMvCfgBase(StellarMvLogical pins)
 	{
-		ins = pins;
+		this.ins = pins;
 	}
 	
 	public void formatConfig(IStellarConfig cfg)
@@ -36,9 +41,9 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		cfg.setCategoryType(EnumCategoryType.Tree);
 		
 		{
-			IConfigCategory props = cfg.addCategory(CPropLangStrs.basicprops);
-
-			cfg.markImmutable(props);
+			IConfigCategory props = cfg.getRootEntry().createCategory(CPropLangStrs.basicprops, EnumPosOption.Child);
+			
+			props.markImmutable();
 			
 			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.msun, 1.0);
 			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.yr, 365.2564);
@@ -53,69 +58,95 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		
 		if(ins.root == null)
 		{
-			cfg.addCategory("Base Orbit");
-			addEntry("Base Orbit", null);
-			formatEntryCategory(cfg.getCategory("Base Orbit"));
+			CMvEntry ent = addEntry("Main Star", null);
+			IConfigCategory cat = cfg.getRootEntry().createCategory("Main Star", EnumPosOption.Child);
+			
+			IConfigProperty<ICBodyType> typeCBody = cat.getProperty(CPropLangStrs.cbtype);
+
+			typeCBody.simSetEnabled(true);
+			typeCBody.simSetVal(CMvTypeRegistry.instance().getCBodyType(CPropLangStrsCBody.starbody));
+			typeCBody.simSetEnabled(false);
 		}
 		else
 		{
 			for(CMvEntry entry : ins)
 			{
-				IConfigCategory encat, tmp;
+				ICategoryEntry parent;
+				ICategoryEntry child;
 				
 				if(entry.hasParent())
 				{
-					encat = findCategory(cfg, entry.getParent());
+					parent = findCategory(cfg, entry.getParent());
+					child = parent.getChildEntry(entry.getName());
 					
-					if((tmp = findSubCategory(cfg, encat, entry.getName())) != null)
-						encat = tmp;
-					else encat = cfg.addSubCategory(encat, entry.getName());
+					if(child == null)
+						parent.createCategory(entry.getName(), EnumPosOption.Child);
 				}
 				else
 				{
-					if((tmp = findCategory(cfg, entry.getName())) != null)
-						encat = tmp;
-					else encat = cfg.addCategory(entry.getName());
+					if((child = findCategory(cfg, entry)) == null)
+						cfg.getRootEntry().createCategory(entry.getName(), EnumPosOption.Child);
 				}
-				
-				formatEntryCategory(encat);
 			}
 		}
 	}
 	
 	public void loadConfig(IStellarConfig subConfig) {
 		
-		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
+		IConfigCategory props = subConfig.getRootEntry().getChildEntry(CPropLangStrs.basicprops).getCategory();
 		
 		IConfigProperty<Double> mu = props.getProperty(CPropLangStrs.msun);
 		IConfigProperty<Double> yr = props.getProperty(CPropLangStrs.yr);
 		IConfigProperty<Double> day = props.getProperty(CPropLangStrs.day);
 		IConfigProperty<Double> au = props.getProperty(CPropLangStrs.au);
-
+		
 		ins.Msun = mu.getVal();
 		ins.yr = yr.getVal();
 		ins.day = day.getVal();
 		ins.Au = au.getVal();
 		
-		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
-		{
-			if(subConfig.isImmutable(cat))
-				continue;
+		CConfigUtil.walkConfigTree(subConfig, new LoadWalker());
+		
+		postLoad(subConfig);
+	}
+	
+	public class LoadWalker implements ICfgTreeWalker<CMvEntry> {
+
+		@Override
+		public CMvEntry getRepresentation(ICategoryEntry entry, CMvEntry parent) {
 			
-			CMvEntry ent = findEntry(cat);
+			if(entry.getCategory().isImmutable())
+				return null;
 			
+			CMvEntry ent = CMvCfgBase.this.findEntry(parent, entry.getName());
 			if(ent == null)
-				addEntry(cat.getDisplayName(), findEntry(cat.getParCategory()));
+				ent = addEntry(entry.getName(), parent);
+			
+			return ent;
+		}
+		
+		@Override
+		public WalkState onPreWalk(ICategoryEntry entry, CMvEntry ent) {
+			
+			if(entry.getCategory().isImmutable())
+				return WalkState.Pass;
+
+			IConfigCategory cat = entry.getCategory();
 			
 			IConfigProperty<Double> pmass = cat.getProperty(CPropLangStrs.mass);
 			ent.setMass(pmass.getVal());
 			
 			IConfigProperty<IOrbitType> torb = cat.getProperty(CPropLangStrs.orbtype);
 			
-			if(cat.getParCategory() != null && torb.getVal() == null)
+			if(cat.getCategoryEntry().getParentEntry().isRootEntry())
+			{
+				ent.setOrbit(CMvTypeRegistry.instance().getOrbType(CPropLangStrsCBody.storb)
+						.provideOrbit(ent));
+			}
+			else if(torb.getVal() == null)
 			{
 				if(handleOrbitMissing(ent, cat))
-					return;
+					return WalkState.Terminate;
 			}
 			else ent.setOrbit(torb.getVal().provideOrbit(ent));
 			
@@ -124,26 +155,24 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			if(tcb.getVal() == null)
 			{
 				if(handleCBodyMissing(ent, cat))
-					return;
+					return WalkState.Terminate;
 			}
 			else ent.setCBody(tcb.getVal().provideCBody(ent));
-		}
-		
-		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
-		{
-			if(subConfig.isImmutable(cat))
-				continue;
 			
-			CMvEntry ent = findEntry(cat);
+			return WalkState.Normal;
+		}
 
+		@Override
+		public void onPostWalk(ICategoryEntry entry, CMvEntry ent) {
+
+			IConfigCategory cat = entry.getCategory();
+			
 			if(ent.orbit() != null)
 				ent.orbit().getOrbitType().apply(ent.orbit(), cat);
 			
 			if(!ent.isVirtual())
 				ent.cbody().getCBodyType().apply(ent.cbody(), cat);
 		}
-		
-		postLoad(subConfig);
 	}
 	
 	/**@return <code>false</code> to continue loading.*/
@@ -157,7 +186,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	
 	public void saveConfig(IStellarConfig subConfig) {
 		
-		IConfigCategory props = subConfig.getCategory(CPropLangStrs.basicprops);
+		IConfigCategory props = subConfig.getRootEntry().getChildEntry(CPropLangStrs.basicprops).getCategory();
 		
 		IConfigProperty<Double> mu = props.getProperty(CPropLangStrs.msun);
 		IConfigProperty<Double> yr = props.getProperty(CPropLangStrs.yr);
@@ -169,22 +198,42 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		day.simSetVal(ins.yr);
 		au.simSetVal(ins.Au);
 		
-		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
-		{
-			if(subConfig.isImmutable(cat))
-				continue;
+		CConfigUtil.walkConfigTree(subConfig, new SaveWalker());
+
+	}
+	
+	public class SaveWalker implements ICfgTreeWalker<CMvEntry> {
+
+		@Override
+		public CMvEntry getRepresentation(ICategoryEntry entry, CMvEntry parent) {
 			
-			CMvEntry ent = findEntry(cat);
+			if(entry.getCategory().isImmutable())
+				return null;
+			
+			return CMvCfgBase.this.findEntry(parent, entry.getName());
+		}
+		
+		@Override
+		public WalkState onPreWalk(ICategoryEntry entry, CMvEntry ent) {
+			if(entry.getCategory().isImmutable())
+				return WalkState.Pass;
+			
+			IConfigCategory cat = entry.getCategory();
 			
 			IConfigProperty<IOrbitType> typeOrbit = cat.getProperty(CPropLangStrs.orbtype);
 			
-			if(typeOrbit != null && ent.orbit() != null)
+			if(typeOrbit == null)
+			{
+				if(ent.hasParent())
+					if(handleOrbitMissing(ent, cat))
+						return WalkState.Terminate;
+			}
+			else if(ent.orbit() != null)
 			{
 				typeOrbit.simSetEnabled(true);
 				typeOrbit.simSetVal(ent.orbit().getOrbitType());
 				typeOrbit.simSetEnabled(false);
-				
-				ent.orbit().getOrbitType().formatConfig(cat);
+				 
 				ent.orbit().getOrbitType().save(ent.orbit(), cat);
 			} else {
 				typeOrbit.simSetEnabled(true);
@@ -200,18 +249,22 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 				typeCBody.simSetVal(ent.cbody().getCBodyType());
 				typeCBody.simSetEnabled(false);
 
-				ent.cbody().getCBodyType().formatConfig(cat);
 				ent.cbody().getCBodyType().save(ent.cbody(), cat);
 			} else {
 				typeCBody.simSetEnabled(true);
 				typeCBody.simSetVal(null);
 			}
+			
+			return WalkState.Normal;
 		}
+
+		@Override
+		public void onPostWalk(ICategoryEntry entry, CMvEntry ent) { }
 	}
 	
 	public void formatEntryCategory(IConfigCategory cat)
 	{
-		IConfigProperty name = CPropLangStrs.addProperty(cat, "string", CPropLangStrs.name, cat.getDisplayName());
+		IConfigProperty name = CPropLangStrs.addProperty(cat, "string", CPropLangStrs.name, cat.getName());
 		
 		EntryNameRelation rel = new EntryNameRelation();
 		rel.setCategory(cat);
@@ -219,7 +272,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		
 		CPropLangStrs.addProperty(cat, "udouble", CPropLangStrs.mass, 1.0);
 		
-		if(cat.getParCategory() != null)
+		if(!cat.getCategoryEntry().getParentEntry().isRootEntry())
 		{
 			IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
 			cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
@@ -236,39 +289,52 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	}
 	
 	@Override
-	public void onNew(IConfigCategory cat) {
+	public void onNew(ICategoryEntry parent, String name) { }
+	
+	@Override
+	public void onPostCreated(IConfigCategory cat) {
 		formatEntryCategory(cat);
 		
-		CMvEntry par = findEntry(cat.getParCategory());
-		CMvEntry added = addEntry(cat.getDisplayName(), par);
+		if(findEntry(cat.getCategoryEntry()) == null)
+			onRenew(cat);
 	}
 	
-	public void onRenew(IConfigCategory cat) {		
-		CMvEntry par = findEntry(cat.getParCategory());
-		CMvEntry added = addEntry(cat.getDisplayName(), par);
+	public void onRenew(IConfigCategory cat) {
+		CMvEntry added;
+		
+		if(cat.getCategoryEntry().getParentEntry().isRootEntry())
+			added = addEntry(cat.getName(), null);
+		else {
+			CMvEntry par = findEntry(cat.getCategoryEntry().getParentEntry());
+			added = addEntry(cat.getName(), par);
+		}
 	}
 	
 	@Override
 	public void onRemove(IConfigCategory cat) {
-		ins.removeEntry(findEntry(cat));
+		this.onRemoveRaw(cat.getCategoryEntry());
 	}
-
+	
+	public void onRemoveRaw(ICategoryEntry ent) {
+		CMvEntry entry = findEntry(ent);
+		
+		if(entry != null)
+			ins.removeEntry(entry);
+	}
+	
 	@Override
-	public void onChangeParent(IConfigCategory cat, IConfigCategory from,
-			IConfigCategory to) {
-		onRemove(cat);
+	public void onMigrate(IConfigCategory cat, ICategoryEntry before) {
+		onRemoveRaw(before);
 		onRenew(cat);
 	}
 
 	@Override
-	public void onChangeOrder(IConfigCategory cat, int before, int after) { }
-
-	@Override
-	public void onDispNameChange(IConfigCategory cat, String before) {
+	public void onNameChange(IConfigCategory cat, String before) {
 		IConfigProperty<String> name = cat.getProperty(CPropLangStrs.name);
 		
 		//This will call EntryNameRelation.onValueChange(0) if name is not same
-		name.simSetVal(cat.getDisplayName());
+		if(!name.getVal().equals(cat.getName()))
+			name.simSetVal(cat.getName());
 		
 		onRemove(cat);
 		onRenew(cat);
@@ -299,47 +365,47 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		public void onValueChange(int i) {
 			if(i == 0)
 			{
-				//This will call StellarMv.onDispNameChange()
-				cat.setDisplayName(name.getVal());
+				//This will call onNameChange()
+				cat.getCategoryEntry().changeName(name.getVal());
 			}
 		}
 
 	}
 	
-	public CfgIteWrapper getCfgIteWrapper(IStellarConfig cfg)
+	
+	public CMvEntry findEntry(CMvEntry par, String name)
 	{
-		return new CfgIteWrapper(cfg);
+		if(par == null)
+		{
+			if(name.equals(ins.root.getName()))
+				return ins.root;
+		}
+		else
+		{
+			for(CMvEntry sat : par.getSatelliteList())
+			if(sat.getName().equals(name))
+				return sat;
+		}
+		
+		return null;
 	}
 	
-	
-	public CMvEntry findEntry(IConfigCategory cat)
+	public CMvEntry findEntry(ICategoryEntry entry)
 	{
-		return ins.findEntry(cat.getDisplayName());
+		if(entry == null || entry.getParentEntry() == null)
+		{
+			System.err.println("Fail!");
+		}
+		if(entry.getParentEntry().isRootEntry())
+			return ins.root;
+		else return findEntry(findEntry(entry.getParentEntry()), entry.getName());
 	}
 	
-	public IConfigCategory findCategory(IStellarConfig cfg, CMvEntry ent)
+	public ICategoryEntry findCategory(IStellarConfig cfg, CMvEntry ent)
 	{
 		if(ent.hasParent())
-			return findSubCategory(cfg, findCategory(cfg, ent.getParent()), ent.getName());
-		return findCategory(cfg, ent.getName());
-	}
-	
-	public IConfigCategory findCategory(IStellarConfig cfg, String dispname)
-	{
-		for(IConfigCategory sub : cfg.getAllCategories())
-			if(sub.getDisplayName().equals(dispname))
-				return sub;
-		
-		return null;
-	}
-	
-	public IConfigCategory findSubCategory(IStellarConfig cfg, IConfigCategory cat, String dispname)
-	{
-		for(IConfigCategory sub : cfg.getAllSubCategories(cat))
-			if(sub.getDisplayName().equals(dispname))
-				return sub;
-		
-		return null;
+			return findCategory(cfg, ent.getParent()).getChildEntry(ent.getName());
+		return cfg.getRootEntry().getChildEntry(ent.getName());
 	}
 
 }

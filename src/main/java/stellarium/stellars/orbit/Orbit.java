@@ -10,6 +10,7 @@ import stellarium.util.*;
 import stellarium.util.math.*;
 import stellarium.initials.*;
 import stellarium.initials.CConstructReader.*;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.*;
 import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
@@ -33,7 +34,7 @@ public abstract class Orbit {
 	public EVector Pos;
 	
 	
-	public OldStellarManager manager;
+	public StellarSettings manager;
 	
 	public CConstructReader conreader = new CConstructReader();
 	

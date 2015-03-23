@@ -4,20 +4,26 @@ import java.util.Iterator;
 
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.ICategoryEntry;
 
 public class CfgIteWrapper implements Iterable<IConfigCategory>
 {
 	
-	IStellarConfig cfg;
+	ICategoryEntry rentry;
 	
-	public CfgIteWrapper(IStellarConfig pcfg)
+	public CfgIteWrapper(IStellarConfig cfg)
 	{
-		cfg = pcfg;
+		rentry = cfg.getRootEntry();
+	}
+	
+	public CfgIteWrapper(ICategoryEntry rentry)
+	{
+		this.rentry = rentry;
 	}
 
 	@Override
 	public Iterator<IConfigCategory> iterator() {
-		return new CfgCategoryIterator(cfg);
+		return new CfgCategoryIterator(rentry);
 	}
 	
 }

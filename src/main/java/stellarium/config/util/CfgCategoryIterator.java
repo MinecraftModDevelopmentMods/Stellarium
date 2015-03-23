@@ -1,77 +1,55 @@
 package stellarium.config.util;
 import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Stack;
+import java.util.NoSuchElementException;
 
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
+import stellarium.config.core.ICategoryEntry;
 
 
+/**
+ * DFS Category Iterator for Configuration.
+ * NOTE: Not removable with this iterator!
+ * */
 public class CfgCategoryIterator implements Iterator<IConfigCategory> {
 
-	IStellarConfig cfg;
-	IConfigCategory now = null;
+	private ICategoryEntry now;
 		
-	Stack<ListIterator> ites = new Stack();
-		
-	public CfgCategoryIterator(IStellarConfig pcfg)
+	public CfgCategoryIterator(IStellarConfig cfg)
 	{
-		cfg = pcfg;
+		this(cfg.getRootEntry());
 	}
-		
-	public boolean hasNextRec()
+	
+	public CfgCategoryIterator(ICategoryEntry rentry)
 	{
-		if(ites.isEmpty())
-			return false;
-						
-		ListIterator ite = ites.pop();
-		boolean hn = ite.hasNext() || hasNextRec();
-		ites.push(ite);
-			
-		return hn;
+		this.now = rentry;
 	}
 	
 	@Override
 	public boolean hasNext() {
-			
-		if(ites.isEmpty())
-			return true;
 		
-		if(now != null && !cfg.getAllSubCategories(now).isEmpty())
+		if(now.hasChildEntry())
 			return true;
-			
-		return hasNextRec();
-			
+		else if(now.hasNextEntry())
+			return true;
+		else return false;
 	}
 
 	@Override
 	public IConfigCategory next() {
 		
-		if(ites.isEmpty())
+		if(now.hasChildEntry())
 		{
-			ListIterator<IConfigCategory> rt = cfg.getAllCategories().listIterator();
-			ites.push(rt);
-			return now = rt.next();
+			now = now.getFirstChildEntry();
+			return now.getCategory();
 		}
-			
-		if(!cfg.getAllSubCategories(now).isEmpty())
+		else if(now.hasNextEntry())
 		{
-			ListIterator<IConfigCategory> ite = cfg.getAllSubCategories(now).listIterator();
-			ites.push(ite);
-			return now = ite.next();
+			now = now.getNextEntry();
+			return now.getCategory();
 		}
-			
-		while(!ites.isEmpty())
-		{
-			ListIterator<IConfigCategory> ite = ites.pop();
-			if(ite.hasNext())
-			{
-				ites.push(ite);
-				return now = ite.next();
-			}
-		}
-			
-		return null;
+		else throw new NoSuchElementException();
 	}
 
 	@Override

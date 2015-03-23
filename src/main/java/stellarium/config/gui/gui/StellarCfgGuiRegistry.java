@@ -11,22 +11,7 @@ public class StellarCfgGuiRegistry {
 	
 	private static StellarCfgGuiRegistry instance = new StellarCfgGuiRegistry();
 	private List<IGuiCfgMultipleProvider> providers = Lists.newArrayList();
-	
-	static {
-		register(new IGuiCfgProvider() {
 
-			@Override
-			public GuiScreen getCfgGui(GuiScreen parScreen) {
-				return new GuiStellarConfigMain(parScreen, ((GuiStellarConfigMain)parScreen).title + "!");
-			}
-
-			@Override
-			public String getUnlocalizedName() {
-				return "Haha!";
-			}
-			
-		});
-	}
 	
 	public static void register(IGuiCfgMultipleProvider prov)
 	{

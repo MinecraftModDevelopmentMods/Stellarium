@@ -2,17 +2,20 @@ package stellarium;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import stellarium.stellars.OldStellarManager;
+import stellarium.config.file.FileCfgManager;
+import stellarium.settings.StellarSettings;
 
-public class ServerProxy extends BaseProxy {
+public class ServerProxy implements BaseProxy {
 
 	@Override
-	public void InitSided(OldStellarManager m) {
+	public void initSided(StellarSettings m) {
 		m.side = Side.CLIENT;
 		
 		FMLCommonHandler.instance().bus().register(new StellarTickHandler(m.side));
-
 	}
+
+	@Override
+	public void initCfgGui(FileCfgManager fm) { }
 
 
 }

@@ -20,6 +20,7 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.numerics.DFloatSet;
 import sciapi.api.value.util.VOp;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.*;
 import stellarium.stellars.background.BrStar;
 import stellarium.util.math.Spmath;
@@ -242,8 +243,8 @@ public class DrawSky extends IRenderHandler {
             f10 = 30.0F;
  
             EVector pos = new EVector(3);
-            pos.set(OldStellarManager.Sun.GetPosition());
-            double size=OldStellarManager.Sun.Radius/Spmath.getD(VecMath.size(pos))*99.0*20;
+            pos.set(StellarSettings.Sun.GetPosition());
+            double size=StellarSettings.Sun.Radius/Spmath.getD(VecMath.size(pos))*99.0*20;
             pos.set(VecMath.normalize(pos));
         	dif.set(VOp.normalize(CrossUtil.cross((IEVector)pos, (IEVector)new EVector(0.0,0.0,1.0))));
         	dif2.set((IValRef)CrossUtil.cross((IEVector)dif, (IEVector)pos));
@@ -268,7 +269,7 @@ public class DrawSky extends IRenderHandler {
             
             //Rendering Moon
             
-            int latn=OldStellarManager.ImgFrac, longn=2*OldStellarManager.ImgFrac;
+            int latn=StellarSettings.ImgFrac, longn=2*StellarSettings.ImgFrac;
             EVector moonvec[][];
             double moonilum[][];
             moonvec=new EVector[longn][latn+1];
@@ -278,9 +279,9 @@ public class DrawSky extends IRenderHandler {
             int latc, longc;
             for(longc=0; longc<longn; longc++){
             	for(latc=0; latc<=latn; latc++){
-            		Buf.set(OldStellarManager.Moon.PosLocalM((double)longc/(double)longn*360.0, (double)latc/(double)latn*180.0-90.0, Transforms.time));
-            		moonilum[longc][latc]=OldStellarManager.Moon.Illumination(Buf);
-            		Buf.set(OldStellarManager.Moon.PosLocalG(Buf));
+            		Buf.set(StellarSettings.Moon.PosLocalM((double)longc/(double)longn*360.0, (double)latc/(double)latn*180.0-90.0, Transforms.time));
+            		moonilum[longc][latc]=StellarSettings.Moon.Illumination(Buf);
+            		Buf.set(StellarSettings.Moon.PosLocalG(Buf));
             		Buf.set(VecMath.mult(50000.0, Buf));
             		Buff.set(VecMath.getX(Buf),VecMath.getY(Buf),VecMath.getZ(Buf));
             		IValRef ref=Transforms.ZTEctoNEc.transform((IEVector)Buff);
@@ -316,10 +317,10 @@ public class DrawSky extends IRenderHandler {
             EVector posm = new EVector(3);
             
             
-            posm.set(ExtinctionRefraction.Refraction(OldStellarManager.Moon.GetPosition(), true));
+            posm.set(ExtinctionRefraction.Refraction(StellarSettings.Moon.GetPosition(), true));
             
             if(VecMath.getZ(posm)>0.0f){
-            double sizem=OldStellarManager.Moon.Radius.asDouble()/Spmath.getD(VecMath.size(posm))*98.0*5.0;
+            double sizem=StellarSettings.Moon.Radius.asDouble()/Spmath.getD(VecMath.size(posm))*98.0*5.0;
            
             posm.set(VOp.normalize(posm));
         	difm.set(VOp.normalize(CrossUtil.cross((IEVector)posm, (IEVector)new EVector(0.0,0.0,1.0))));
@@ -329,7 +330,7 @@ public class DrawSky extends IRenderHandler {
         	difm.set(VecMath.mult(sizem, difm));
         	difm2.set(VecMath.mult(sizem, difm2));
         	
-        	float alpha=Optics.GetAlphaFromMagnitude(-17.0-OldStellarManager.Moon.Mag,bglight);
+        	float alpha=Optics.GetAlphaFromMagnitude(-17.0-StellarSettings.Moon.Mag,bglight);
         	
             GL11.glColor4d(1.0, 1.0, 1.0, f4*alpha);
             
@@ -375,13 +376,13 @@ public class DrawSky extends IRenderHandler {
             //Moon
             
             renderEngine.bindTexture(locationStarPng);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Mercury.AppPos,OldStellarManager.Mercury.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Venus.AppPos,OldStellarManager.Venus.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Mars.AppPos,OldStellarManager.Mars.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Jupiter.AppPos,OldStellarManager.Jupiter.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Saturn.AppPos,OldStellarManager.Saturn.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Uranus.AppPos,OldStellarManager.Uranus.App_Mag);
-            this.DrawStellarObj(f1+f2+f3, f4, OldStellarManager.Neptune.AppPos,OldStellarManager.Neptune.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Mercury.AppPos,StellarSettings.Mercury.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Venus.AppPos,StellarSettings.Venus.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Mars.AppPos,StellarSettings.Mars.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Jupiter.AppPos,StellarSettings.Jupiter.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Saturn.AppPos,StellarSettings.Saturn.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Uranus.AppPos,StellarSettings.Uranus.App_Mag);
+            this.DrawStellarObj(f1+f2+f3, f4, StellarSettings.Neptune.AppPos,StellarSettings.Neptune.App_Mag);
             
             
             GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -467,10 +468,10 @@ public class DrawSky extends IRenderHandler {
         	float Mag=star.App_Mag;
         	float B_V=star.App_B_V;
         	
-        	if(Mag > OldStellarManager.Mag_Limit)
+        	if(Mag > StellarSettings.Mag_Limit)
         		continue;
         	
-        	float Turb = OldStellarManager.Turb *(float) random.nextGaussian();
+        	float Turb = StellarSettings.Turb *(float) random.nextGaussian();
         	Mag+=Turb;
         	
         	if(VecMath.getZ(pos)<0) continue;
@@ -515,7 +516,7 @@ public class DrawSky extends IRenderHandler {
 		
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		
-		if(Mag > OldStellarManager.Mag_Limit) return;
+		if(Mag > StellarSettings.Mag_Limit) return;
 		if(VecMath.getZ(pos)<0) return;
 		
 		float size=0.6f;

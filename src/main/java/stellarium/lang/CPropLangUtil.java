@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import stellarium.config.ICfgMessage;
-import stellarium.config.json.JsonConfigCategory;
+import stellarium.config.json.JsonCfgCatHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.StatCollector;

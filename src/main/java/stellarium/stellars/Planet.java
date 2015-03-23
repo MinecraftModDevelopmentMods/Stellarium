@@ -6,6 +6,7 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
+import stellarium.settings.StellarSettings;
 import stellarium.util.math.Rotate;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
@@ -13,14 +14,17 @@ import stellarium.util.math.VecMath;
 
 public class Planet extends SolarObj{
 	
-	Planet(){
+	public Planet(){
 		b=c=s=f=0.0;
 	}
 	
 	//Orbital Elements of Planet
-	double a0, e0, I0, L0, wbar0, Omega0;
-	double ad, ed, Id, Ld, wbard, Omegad;
-	double b, c, s, f;
+	public double a0, e0, I0;
+	public double L0;
+	public double wbar0;
+	public double Omega0;
+	public double ad, ed, Id, Ld, wbard, Omegad;
+	public double b, c, s, f;
 	
 	//Planet's Pole(Ecliptic Coord)
 	EVector Pole;
@@ -32,13 +36,13 @@ public class Planet extends SolarObj{
 	EVector East;
 	
 	//Rotating angular velocity
-	double Rot;
+	public double Rot;
 	
 	//Mass of Planet
-	double Mass;
+	public double Mass;
 	
 	//Albedo of Planet
-	double Albedo;
+	public double Albedo;
 	
 	//Satellites
 	ArrayList<Satellite> satellites=new ArrayList(1);
@@ -85,7 +89,7 @@ public class Planet extends SolarObj{
 	public void UpdateMagnitude(){
 		double dist=Spmath.getD(VecMath.size(EcRPosE));
 		double distS=Spmath.getD(VecMath.size(EcRPos));
-		double distE=Spmath.getD(VecMath.size(OldStellarManager.Earth.EcRPos));
+		double distE=Spmath.getD(VecMath.size(StellarSettings.Earth.EcRPos));
 		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}
@@ -96,7 +100,7 @@ public class Planet extends SolarObj{
 	@Override
 	public void Update() {
 		EcRPos.set(GetEcRPos(Transforms.time));
-		EcRPosE.set(VecMath.sub(this.EcRPos, OldStellarManager.Earth.EcRPos));
+		EcRPosE.set(VecMath.sub(this.EcRPos, StellarSettings.Earth.EcRPos));
 		
 		for(int i=0; i<satellites.size(); i++)
 			satellites.get(i).Update();

@@ -23,7 +23,6 @@ public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 		List<String> nameList = Lists.newArrayList(CMvTypeRegistry.instance().getRegCBodyTypeNames());
 		nameList.add(0, CPropLangStrs.def);
 		pee.setValRange(nameList.toArray(new String[0]));
-		
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class TypeCBodyPropHandler implements IConfigPropHandler<ICBodyType> {
 		IEnumElement pee = prop.getElement(prop.getName());
 		if(val == null)
 			pee.setValue(0);
-		pee.setValue(val.getTypeName());
+		else pee.setValue(val.getTypeName());
 	}
 
 }

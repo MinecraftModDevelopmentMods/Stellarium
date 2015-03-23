@@ -12,6 +12,7 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.*;
+import stellarium.settings.StellarSettings;
 import stellarium.stellars.*;
 import stellarium.stellars.local.*;
 import stellarium.stellars.orbit.*;
@@ -65,7 +66,7 @@ public abstract class CBody {
 	public String ImgTexLoc;
 		
 	//StellarManager
-	public OldStellarManager manager;
+	public StellarSettings manager;
 	
 	
 	

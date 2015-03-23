@@ -6,7 +6,7 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.EVectorSet;
 import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.util.VOp;
-import stellarium.stellars.OldStellarManager;
+import stellarium.settings.StellarSettings;
 
 public class Transforms {
 	
@@ -47,7 +47,7 @@ public class Transforms {
 		ZenD.set(REqtoNEq.transform(ZenD));
 		ZenD.set(EqtoEc.transform(ZenD));
 		ZenD.set(NEctoZTEc.transform(ZenD));
-		Zen.set(VOp.mult(OldStellarManager.Earth.Radius, ZenD));
+		Zen.set(VOp.mult(StellarSettings.Earth.Radius, ZenD));
 	}
 	
 	

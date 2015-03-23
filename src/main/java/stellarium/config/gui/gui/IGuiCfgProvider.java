@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiScreen;
 
 public interface IGuiCfgProvider {
 	
-	public GuiScreen getCfgGui(GuiScreen parScreen);
+	public GuiScreen getCfgGui(GuiStellarConfigMain parScreen);
 	
 	public String getUnlocalizedName();
 

@@ -92,7 +92,7 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 			{
 				ListIterator<CMvEntry> rt = root.getSatelliteList().listIterator();
 				ites.push(rt);
-				return now = rt.next();
+				return now = root;
 			}
 			
 			if(now.hasSatellites())
@@ -162,9 +162,8 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 
 	
 	@Override
-	public IConfigFormatter getSubFormatter(IConfigCategory cat) { return null; }
-
+	public IConfigFormatter getSubFormatter(String name) { return null; }
 	@Override
-	public IConfigurableData getSubData(IConfigCategory cat) { return null; }
+	public IConfigurableData getSubData(String name) { return null; }
 	
 }

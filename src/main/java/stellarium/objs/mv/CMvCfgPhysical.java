@@ -7,6 +7,7 @@ import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
 import stellarium.config.StrMessage;
+import stellarium.config.util.CConfigUtil;
 import stellarium.lang.CPropLangRegistry;
 import stellarium.lang.CPropLangStrs;
 import stellarium.objs.mv.cbody.ICBodyType;
@@ -26,7 +27,7 @@ public class CMvCfgPhysical extends CMvCfgBase implements ICfgArrMListener {
 	@Override
 	public boolean handleOrbitMissing(CMvEntry ent, IConfigCategory cat) {
 		cat.getConfig().addLoadFailMessage(CPropLangStrs.orbmissing,
-				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbmissing), cat.getDisplayName()));
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbmissing), cat.getName()));
 		return true;
 	}
 
@@ -38,12 +39,12 @@ public class CMvCfgPhysical extends CMvCfgBase implements ICfgArrMListener {
 
 	@Override
 	public void postLoad(IStellarConfig subConfig) {
-		for(IConfigCategory cat : getCfgIteWrapper(subConfig))
+		for(IConfigCategory cat : CConfigUtil.getCfgIteWrapper(subConfig))
 		{
-			if(subConfig.isImmutable(cat))
+			if(cat.isImmutable())
 				continue;
 			
-			CMvEntry ent = findEntry(cat);
+			CMvEntry ent = findEntry(cat.getCategoryEntry());
 
 			ent.orbit().getOrbitType().formOrbit(ent.orbit());
 			if(!ent.isVirtual())

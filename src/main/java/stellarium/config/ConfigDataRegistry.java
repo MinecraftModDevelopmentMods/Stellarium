@@ -1,15 +1,20 @@
 package stellarium.config;
 
 import java.util.List;
+import java.util.Map;
+
+import stellarium.config.core.StellarConfiguration;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ConfigDataRegistry {
 	
 	private static ConfigDataRegistry ins = new ConfigDataRegistry();
 	
 	public List<ConfigRegistryData> cfglist = Lists.newArrayList();
+	private Map<ConfigRegistryData, StellarConfiguration> cfgmap = Maps.newHashMap();
 	
 	/**
 	 * Registers Configurable Data Form.
@@ -25,6 +30,25 @@ public class ConfigDataRegistry {
 	public static ImmutableList<ConfigRegistryData> getImmutableList()
 	{
 		return ImmutableList.copyOf(ins.cfglist);
+	}
+	
+	public static ImmutableList<StellarConfiguration> getImmutableCfgList()
+	{
+		return ImmutableList.copyOf(ins.cfgmap.values());
+	}
+	
+	public static StellarConfiguration getConfig(ConfigRegistryData data)
+	{
+		return ins.cfgmap.get(data);
+	}
+	
+	
+	public static void onFormat() {
+		for(ConfigRegistryData data : ins.cfglist)
+		{
+			StellarConfiguration config = new StellarConfiguration(data);
+			ins.cfgmap.put(data, config);
+		}
 	}
 	
 	public static class ConfigRegistryData {

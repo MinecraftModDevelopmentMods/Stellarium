@@ -5,6 +5,7 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.numerics.DDouble;
 import sciapi.api.value.util.BOp;
+import stellarium.settings.StellarSettings;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
 import stellarium.util.math.VecMath;
@@ -40,7 +41,7 @@ public abstract class SolarObj extends StellarObj {
 	@Override
 	public void Update(){
 		EcRPos.set(GetEcRPos(Transforms.time));
-		EcRPosE.set(VecMath.sub(this.EcRPos, OldStellarManager.Earth.EcRPos));
+		EcRPosE.set(VecMath.sub(this.EcRPos, StellarSettings.Earth.EcRPos));
 		super.Update();
 		
 		this.UpdateMagnitude();
@@ -50,7 +51,7 @@ public abstract class SolarObj extends StellarObj {
 	public void UpdateMagnitude(){
 		double dist=Spmath.getD(VecMath.size(EcRPosE));
 		double distS=Spmath.getD(VecMath.size(EcRPos));
-		double distE=Spmath.getD(VecMath.size(OldStellarManager.Earth.EcRPos));
+		double distE=Spmath.getD(VecMath.size(StellarSettings.Earth.EcRPos));
 		double LvsSun=this.Radius.asDouble()*this.Radius.asDouble()*this.GetPhase()*distE*distE*Albedo*1.4/(dist*dist*distS*distS);
 		this.Mag=-26.74-2.5*Math.log10(LvsSun);
 	}

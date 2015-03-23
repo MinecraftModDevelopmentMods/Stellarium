@@ -21,8 +21,7 @@ public class CPropLangRegistry {
 		return ins;
 	}
 	
-	public CPropLangRegistry()
-	{
+	static{
 		CPropLangStrs.onRegister();
 	}
 	
@@ -33,11 +32,15 @@ public class CPropLangRegistry {
 	
 	public String getLangfromID(String id)
 	{
-		return lmap.get(id);
+		if(lmap.containsKey(id))
+			return lmap.get(id);
+		return id;
 	}
 	
 	public String getIDfromLang(String lang)
 	{
-		return lmap.inverse().get(lang);
+		if(lmap.containsValue(lang))
+			return lmap.inverse().get(lang);
+		return lang;
 	}
 }

@@ -27,14 +27,14 @@ public class CMvCfgLogical extends CMvCfgBase implements ICfgArrMListener {
 	@Override
 	public boolean handleOrbitMissing(CMvEntry ent, IConfigCategory cat) {
 		cat.getConfig().addLoadFailMessage(CPropLangStrs.orbmissing,
-				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbmissing), cat.getDisplayName()));
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbmissing), cat.getName()));
 		return true;
 	}
 
 	@Override
 	public boolean handleCBodyMissing(CMvEntry ent, IConfigCategory cat) {
 		cat.getConfig().addLoadFailMessage(CPropLangStrs.cbmissing,
-				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.cbmissing), cat.getDisplayName()));
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.cbmissing), cat.getName()));
 		return true;
 	}
 
