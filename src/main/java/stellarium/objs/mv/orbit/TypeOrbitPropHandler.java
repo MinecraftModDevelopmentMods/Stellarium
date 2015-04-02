@@ -39,7 +39,7 @@ public class TypeOrbitPropHandler implements IConfigPropHandler<IOrbitType> {
 		IEnumElement pee = prop.getElement(prop.getName());
 		if(val == null)
 			pee.setValue(0);
-		pee.setValue(val.getTypeName());
+		else pee.setValue(val.getTypeName());
 	}
 
 }

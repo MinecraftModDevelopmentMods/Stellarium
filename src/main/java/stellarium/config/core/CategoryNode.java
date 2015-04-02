@@ -2,6 +2,7 @@ package stellarium.config.core;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
@@ -16,7 +17,10 @@ public class CategoryNode implements ICategoryEntry {
 	protected CategoryNode firstChild, lastChild;
 	
 	protected StellarConfigCategory theCategory;
-		
+	
+	private UUID id = null;
+	private String name;
+	private boolean idEnabled = true;
 	
 	public CategoryNode(StellarConfiguration cfg, StellarConfigCategory theCategory, CategoryNode parent, CategoryNode previous, CategoryNode next)
 	{
@@ -25,6 +29,9 @@ public class CategoryNode implements ICategoryEntry {
 		this.parent = parent;
 		this.previous = previous;
 		this.next = next;
+		
+		if(parent != null)
+			this.id = UUID.randomUUID();
 	}
 	
 	public CategoryNode(StellarConfiguration cfg, StellarConfigCategory theCategory, CategoryNode parent)
@@ -88,7 +95,7 @@ public class CategoryNode implements ICategoryEntry {
 				
 		for(ICategoryEntry find = this.firstChild; find != null; find = find.getNextEntry())
 		{
-			if(name.equals(find.getCategory().getName()))
+			if(name.equals(find.getName()))
 				return find;
 		}
 		
@@ -114,7 +121,23 @@ public class CategoryNode implements ICategoryEntry {
 	public ICategoryEntry getNextEntry() {
 		return this.next;
 	}
-
+	
+	
+	@Override
+	public boolean canCreateCategory(String name, EnumPosOption option) {
+		if(option.isOnSameLevel() && this.isRootEntry())
+			return false;
+		
+		else if(option.isOnSameLevel() && parent.getChildEntry(name) != null)
+			return false;
+		
+		else if(!option.isOnSameLevel() && this.getChildEntry(name) != null)
+			return false;
+		
+		CategoryNode parent = option.isOnSameLevel()? this.parent : this;
+		
+		return cfg.canMakeCategory(parent, name);
+	}
 	
 	@Override
 	public IConfigCategory createCategory(String name, EnumPosOption option) {
@@ -132,12 +155,33 @@ public class CategoryNode implements ICategoryEntry {
 		CategoryNode parent = option.isOnSameLevel()? this.parent : this;
 		
 		StellarConfigCategory category = cfg.newCategory(parent, name);
+		
+		if(category == null)
+			return null;
 
-		addNewNode(category, option);
+		addNewNode(category, option, null);
 		
 		cfg.postCreated(category);
 		
 		return category;
+	}
+	
+	@Override
+	public boolean canRemoveCategory() {
+		if(this.theCategory == null)
+			return false;
+		
+		if(this.isRootEntry())
+			return false;
+		
+		//Removes child categories
+		for(ICategoryEntry entry = this.firstChild; entry != null; entry = entry.getNextEntry())
+		{
+			if(!entry.removeCategory())
+				return false;
+		}
+		
+		return true;
 	}
 
 	@Override
@@ -154,35 +198,12 @@ public class CategoryNode implements ICategoryEntry {
 		{
 			if(!entry.removeCategory())
 				return false;
-			
-			entry = entry.getNextEntry();
 		}
 		
 		
 		cfg.preRemoved(theCategory);
 		
-		
-		boolean hasPrevious = this.hasPreviousEntry();
-		boolean hasNext = this.hasNextEntry();
-		
-		if(hasPrevious) {
-			if(hasNext)	{
-				previous.next = this.next;
-				next.previous = this.previous;
-			} else {
-				previous.next = null;
-				parent.lastChild = this.previous;
-			}
-		} else {
-			if(hasNext) {
-				next.previous = null;
-				parent.firstChild = this.previous;
-			} else {
-				parent.firstChild = parent.lastChild = null;
-			}
-		}
-		
-		this.theCategory = null;
+		this.removeNode();
 		
 		return true;
 	}
@@ -190,9 +211,20 @@ public class CategoryNode implements ICategoryEntry {
 	@Override
 	public String getName() {
 		if(this.theCategory == null)
-			throw new IllegalStateException("Cannot get the name from the Invalidated Entry!");
+			return this.name;
 		
 		return theCategory.getName();
+	}
+	
+	@Override
+	public boolean canChangeName(String name) {
+		if(this.theCategory == null)
+			return false;
+			
+		else if(parent.getChildEntry(name) != null)
+			return false;
+		
+		return true;
 	}
 	
 	@Override
@@ -210,21 +242,34 @@ public class CategoryNode implements ICategoryEntry {
 	public IConfigCategory copyCategory(IConfigCategory category, String name,
 			EnumPosOption option) {
 		
-		if(option.isOnSameLevel() && this.isRootEntry())
-			throw new IllegalArgumentException("Option " + option.name() + " is not available for root entry.");
+		if(option.isOnSameLevel()) {
+			if(this.isRootEntry())
+				throw new IllegalArgumentException("Option " + option.name() + " is not available for root entry.");
 		
-		else if(option.isOnSameLevel() && parent.getChildEntry(name) != null)
-			return parent.getChildEntry(name).getCategory();
+			else if(parent.getChildEntry(name) != null)
+				return parent.getChildEntry(name).getCategory();
+			
+			else if(!parent.isRootEntry() && parent.getCategory().isImmutable())
+				return null;
+		}
 		
-		else if(!option.isOnSameLevel() && this.getChildEntry(name) != null)
-			return this.getChildEntry(name).getCategory();
-		
+		else if(!option.isOnSameLevel()) {
+			if(this.getChildEntry(name) != null)
+				return this.getChildEntry(name).getCategory();
+			
+			else if(this.getCategory().isImmutable())
+				return null;
+		}
+				
 		
 		CategoryNode parent = option.isOnSameLevel()? this.parent : this;
 		
 		StellarConfigCategory copiedCategory = cfg.newCategory(parent, name);
 		
-		addNewNode(copiedCategory, option);
+		if(copiedCategory == null)
+			return null;
+		
+		addNewNode(copiedCategory, option, null);
 		
 		cfg.postCreated(copiedCategory);
 		
@@ -232,29 +277,111 @@ public class CategoryNode implements ICategoryEntry {
 		
 		return copiedCategory;
 	}
+	
+	@Override
+	public boolean canMigrateCategory(IConfigCategory category,
+			EnumPosOption option) {
+		if(category.isImmutable())
+			return false;
+		
+		else if(option.isOnSameLevel())
+		{
+			if(this.isRootEntry())
+				return false;
+			
+			ICategoryEntry entry = parent.getChildEntry(category.getName());
+			
+			if(entry != null && entry.getCategory() != category)
+				return false;
+			else if(!parent.isRootEntry() && parent.getCategory().isImmutable())
+				return false;
+			else {
+				ICategoryEntry ent = this;
+				while(!ent.isRootEntry()) {
+					ent = ent.getParentEntry();
+					if(ent.equals(category.getCategoryEntry()))
+						return false;
+				}
+			}
+		}
+		
+		else if(!option.isOnSameLevel()) {
+			if(this.getChildEntry(category.getName()) != null || this.getCategory().isImmutable())
+				return false;
+			
+			else {
+				ICategoryEntry ent = this;
+				while(!ent.isRootEntry()) {
+					if(ent.equals(category.getCategoryEntry()))
+						return false;
+					ent = ent.getParentEntry();
+				}
+			}
+		}
+		
+		return cfg.canMigrate(option.isOnSameLevel()? this.parent : this, category.getName(), category.getCategoryEntry());
+	}
 
 	@Override
 	public boolean migrateCategory(IConfigCategory category,
 			EnumPosOption option) {
 		
-		if(option.isOnSameLevel() && this.isRootEntry())
+		if(category.isImmutable())
 			return false;
 		
-		else if(option.isOnSameLevel() && parent.getChildEntry(category.getName()) != null)
-			return false;
+		else if(option.isOnSameLevel())
+		{
+			if(this.isRootEntry())
+				return false;
+			
+			ICategoryEntry entry = parent.getChildEntry(category.getName());
+			
+			if(entry != null && entry.getCategory() != category)
+				return false;
+			else if(!parent.isRootEntry() && parent.getCategory().isImmutable())
+				return false;
+			else {
+				ICategoryEntry ent = this;
+				while(!ent.isRootEntry()) {
+					ent = ent.getParentEntry();
+					if(ent.equals(category.getCategoryEntry()))
+						return false;
+				}
+			}
+		}
 		
-		else if(!option.isOnSameLevel() && this.getChildEntry(category.getName()) != null)
-			return false;
+		else if(!option.isOnSameLevel()) {
+			if(this.getChildEntry(category.getName()) != null || this.getCategory().isImmutable())
+				return false;
+			
+			else {
+				ICategoryEntry ent = this;
+				while(!ent.isRootEntry()) {
+					if(ent.equals(category.getCategoryEntry()))
+						return false;
+					ent = ent.getParentEntry();
+				}
+			}
+		}
 		
+		if(!cfg.canMigrate(option.isOnSameLevel()? this.parent : this, category.getName(), category.getCategoryEntry()))
+			return false;
 		
 		StellarConfigCategory mcategory = (StellarConfigCategory) category;
 		
-		//Invalidates this entry
-		((CategoryNode)mcategory.getCategoryEntry()).theCategory = null;
+		//Invalidates the entry.
+		CategoryNode node = ((CategoryNode)mcategory.getCategoryEntry());
+		node.removeNode();
 		
 		try {
-			addNewNode(mcategory, option);
-		} catch(Exception e) {
+			CategoryNode newNode = addNewNode(mcategory, option, node.id);
+			newNode.firstChild = node.firstChild;
+			if(newNode.firstChild != null)
+				newNode.firstChild.parent = newNode;
+			if(newNode.lastChild != null)
+				newNode.lastChild.parent = newNode;
+			newNode.lastChild = node.lastChild;
+		} catch(IllegalArgumentException e) {
 			return false;
 		}
 		
@@ -262,7 +389,7 @@ public class CategoryNode implements ICategoryEntry {
 	}
 	
 	
-	private void addNewNode(StellarConfigCategory category, EnumPosOption option)
+	private CategoryNode addNewNode(StellarConfigCategory category, EnumPosOption option, UUID nid)
 	{
 		CategoryNode node;
 		
@@ -309,7 +436,41 @@ public class CategoryNode implements ICategoryEntry {
 			throw new IllegalArgumentException("Invalid Option: " + option);
 		}
 		
+		if(nid != null)
+			node.id = nid;
+		
 		category.setEntry(node);
+		return node;
+	}
+	
+	private void removeNode() {
+		boolean hasPrevious = this.hasPreviousEntry();
+		boolean hasNext = this.hasNextEntry();
+		
+		if(hasPrevious) {
+			if(hasNext)	{
+				previous.next = this.next;
+				next.previous = this.previous;
+			} else {
+				previous.next = null;
+				parent.lastChild = this.previous;
+			}
+		} else {
+			if(hasNext) {
+				next.previous = null;
+				parent.firstChild = this.next;
+			} else {
+				parent.firstChild = parent.lastChild = null;
+			}
+		}
+		
+		this.name = theCategory.name;
+		this.theCategory = null;
+	}
+	
+	@Override
+	public void setIDEnabled(boolean idEnabled) {
+		this.idEnabled = idEnabled;
 	}
 	
 	@Override
@@ -324,8 +485,12 @@ public class CategoryNode implements ICategoryEntry {
 			else if(node.isRootEntry())
 				return false;
 			
-			return this.parent.equals(node.parent) &&
-					this.getName().equals(node.getName());
+			if(!parent.equals(node.parent))
+				return false;
+			
+			if(!this.idEnabled)
+				return this.getName().equals(node.getName());
+			else return this.id.equals(node.id);
 		}
 		return false;
 	}
@@ -336,7 +501,9 @@ public class CategoryNode implements ICategoryEntry {
 		if(this.isRootEntry())
 			return 0;
 		
-		return parent.hashCode() + this.getName().hashCode();
+		if(!this.idEnabled)
+			return parent.hashCode() + this.getName().hashCode();
+		else return parent.hashCode() + id.hashCode();
 	}
 
 	

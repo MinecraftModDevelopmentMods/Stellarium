@@ -20,7 +20,6 @@ public class CombinedPropElement implements IGuiCfgPropElement {
 
 	private static int VER_SIZE= 18;
 	private static int SPACING = 2;
-	private static int TOOLTIP_TIMING = 400;
 	
 	private GuiStellarConfig screen;
 	private GuiPropertyHandler property;
@@ -30,6 +29,7 @@ public class CombinedPropElement implements IGuiCfgPropElement {
 	private IGuiCfgPropContent headerContent;
 	
 	private boolean isSubContent;
+	private boolean hasSetup = false;
 	
 	private int xLabel;
 	
@@ -46,10 +46,11 @@ public class CombinedPropElement implements IGuiCfgPropElement {
 		this.screen = screen;
 		this.property = property;
 		this.xLabel = xLabel;
+		this.hasSetup = true;
 		
 		label.setup(screen, list, property, xLabel, xContent);
 		content.setup(screen, list, property, xContent);
-		headerContent.setup(screen, list, property, xContent);
+		headerContent.setup(screen, list, property, xContent + content.getContentWidth());
 	}
 
 	@Override
@@ -76,8 +77,11 @@ public class CombinedPropElement implements IGuiCfgPropElement {
 
 	@Override
 	public void onValueUpdate(IPropElement element) {
-		content.onValueUpdate(element);
-		headerContent.onValueUpdate(element);
+		if(this.hasSetup)
+		{
+			content.onValueUpdate(element);
+			headerContent.onValueUpdate(element);
+		}
 	}
 
 	@Override

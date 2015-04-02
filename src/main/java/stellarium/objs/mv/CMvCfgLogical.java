@@ -37,6 +37,20 @@ public class CMvCfgLogical extends CMvCfgBase implements ICfgArrMListener {
 				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.cbmissing), cat.getName()));
 		return true;
 	}
+	
+	@Override
+	public boolean handleOrbitNotLocked(CMvEntry ent, IConfigCategory cat) {
+		cat.getConfig().addLoadFailMessage(CPropLangStrs.orbNotLocked,
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbNotLocked), cat.getName()));
+		return true;
+	}
+
+	@Override
+	public boolean handleCBodyNotLocked(CMvEntry ent, IConfigCategory cat) {
+		cat.getConfig().addLoadFailMessage(CPropLangStrs.cbNotLocked,
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.cbNotLocked), cat.getName()));
+		return true;
+	}
 
 	@Override
 	public void postLoad(IStellarConfig subConfig) { }

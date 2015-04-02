@@ -39,6 +39,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	public void formatConfig(IStellarConfig cfg)
 	{	
 		cfg.setCategoryType(EnumCategoryType.Tree);
+		cfg.setModifiable(true, true);
 		
 		{
 			IConfigCategory props = cfg.getRootEntry().createCategory(CPropLangStrs.basicprops, EnumPosOption.Child);
@@ -148,6 +149,11 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 				if(handleOrbitMissing(ent, cat))
 					return WalkState.Terminate;
 			}
+			else if(torb.isEnabled())
+			{
+				if(handleOrbitNotLocked(ent, cat))
+					return WalkState.Terminate;
+			}
 			else ent.setOrbit(torb.getVal().provideOrbit(ent));
 			
 			IConfigProperty<ICBodyType> tcb = cat.getProperty(CPropLangStrs.cbtype);
@@ -155,6 +161,11 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			if(tcb.getVal() == null)
 			{
 				if(handleCBodyMissing(ent, cat))
+					return WalkState.Terminate;
+			}
+			else if(tcb.isEnabled())
+			{
+				if(handleCBodyNotLocked(ent, cat))
 					return WalkState.Terminate;
 			}
 			else ent.setCBody(tcb.getVal().provideCBody(ent));
@@ -179,7 +190,15 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	public abstract boolean handleOrbitMissing(CMvEntry ent, IConfigCategory cat);
 	
 	/**@return <code>false</code> to continue loading.*/
+	public abstract boolean handleOrbitNotLocked(CMvEntry ent, IConfigCategory cat);
+	
+	
+	/**@return <code>false</code> to continue loading.*/
 	public abstract boolean handleCBodyMissing(CMvEntry ent, IConfigCategory cat);
+	
+	/**@return <code>false</code> to continue loading.*/
+	public abstract boolean handleCBodyNotLocked(CMvEntry ent, IConfigCategory cat);
+	
 	
 	public abstract void postLoad(IStellarConfig subConfig);
 	
@@ -199,7 +218,6 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		au.simSetVal(ins.Au);
 		
 		CConfigUtil.walkConfigTree(subConfig, new SaveWalker());
-
 	}
 	
 	public class SaveWalker implements ICfgTreeWalker<CMvEntry> {
@@ -275,10 +293,12 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		if(!cat.getCategoryEntry().getParentEntry().isRootEntry())
 		{
 			IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
+			typeOrbit.simSetEnabled(false);
 			cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
 		}
 		
 		IConfigProperty typeCBody = CPropLangStrs.addProperty(cat, "typeCBody", CPropLangStrs.cbtype, null);
+		typeCBody.simSetEnabled(false);
 		cat.addPropertyRelation(new TypeCBodyRelation(cat), typeCBody);
 	}
 	
@@ -289,7 +309,17 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	}
 	
 	@Override
-	public void onNew(ICategoryEntry parent, String name) { }
+	public boolean canCreate(ICategoryEntry parent, String name) {
+		if(parent.isRootEntry())
+		{
+			if(ins.root != null && parent.getChildEntry(ins.root.getName()) != null)
+				return false;
+		}
+		else if(parent.getCategory().isImmutable())
+			return false;
+		
+		return true;
+	}
 	
 	@Override
 	public void onPostCreated(IConfigCategory cat) {
@@ -297,6 +327,17 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		
 		if(findEntry(cat.getCategoryEntry()) == null)
 			onRenew(cat);
+	}
+	
+	@Override
+	public boolean canMigrate(ICategoryEntry parent, String name, ICategoryEntry before) {
+		if(parent.isRootEntry())
+			return false;
+		else if(before.getParentEntry().isRootEntry())
+			return false;
+		else if(parent.getCategory().isImmutable())
+			return false;
+		else return true;
 	}
 	
 	public void onRenew(IConfigCategory cat) {
@@ -368,6 +409,11 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 				//This will call onNameChange()
 				cat.getCategoryEntry().changeName(name.getVal());
 			}
+		}
+
+		@Override
+		public String getRelationToolTip() {
+			return CPropLangStrs.nameRelationTooltip;
 		}
 
 	}

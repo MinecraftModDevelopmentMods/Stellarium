@@ -17,5 +17,8 @@ public interface IPropertyRelation {
 	
 	/**called when property value is changed.*/
 	public void onValueChange(int i);
+	
+	/**Tooltip String for Property Relation. Can be localized via CPropLangRegistry.*/
+	public String getRelationToolTip();
 
 }

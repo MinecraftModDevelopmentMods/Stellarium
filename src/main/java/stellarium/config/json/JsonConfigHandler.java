@@ -1,6 +1,7 @@
 package stellarium.config.json;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -130,6 +131,7 @@ public class JsonConfigHandler implements IConfigHandler {
 		{
 			con.moveSubContainer(before, cat.getName());
 		} else {
+			
 			ICategoryEntry entry = cat.getCategoryEntry();
 			
 			if(entry.getParentEntry().isRootEntry())

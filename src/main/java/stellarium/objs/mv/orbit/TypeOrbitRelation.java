@@ -4,6 +4,7 @@ import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
+import stellarium.lang.CPropLangStrs;
 
 public class TypeOrbitRelation implements IPropertyRelation {
 
@@ -40,6 +41,11 @@ public class TypeOrbitRelation implements IPropertyRelation {
 	@Override
 	public void onValueChange(int i) {
 		//Does Nothing!
+	}
+
+	@Override
+	public String getRelationToolTip() {
+		return CPropLangStrs.orbTypeRelation;
 	}
 
 }

@@ -1,99 +1,114 @@
 package stellarium.config.gui.entry;
 
+import org.lwjgl.input.Keyboard;
+
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
+import stellarium.config.core.StellarConfigProperty;
 import stellarium.config.element.IDoubleElement;
 import stellarium.config.element.IPropElement;
+import stellarium.config.gui.ConfigGuiUtil;
 import stellarium.config.gui.GuiConfigCatEntry;
 import stellarium.config.gui.GuiPropertyHandler;
 import stellarium.config.gui.GuiStellarConfig;
 
 public class DoubleContent implements IGuiCfgPropContent {
+	
+	private final IDoubleElement theElement;
+    private final StellarConfigProperty property;
 
-	public DoubleContent(IDoubleElement element) {
-		// TODO Auto-generated constructor stub
+    private GuiTextField textFieldValue;
+    private boolean isEnabled;
+    protected int scrWidth;
+	
+	public DoubleContent(StellarConfigProperty property, IDoubleElement element) {
+		this.theElement = element;
+		this.property = property;
+		this.isEnabled = property.isEnabled();
 	}
 
 	@Override
 	public void setup(GuiStellarConfig screen, GuiConfigCatEntry list,
 			GuiPropertyHandler property, int xContent) {
-		// TODO Auto-generated method stub
-
+		this.scrWidth = screen.width;
+		
+		this.textFieldValue = new GuiTextField(screen.getFontRenderer(), xContent, 0, this.getContentWidth(), ConfigGuiUtil.VER_SIZE);
+		textFieldValue.setText(String.valueOf(theElement.getValue()));
 	}
 
 	@Override
 	public int getContentWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return ConfigGuiUtil.getContentWidth(scrWidth);
 	}
 
 	@Override
 	public boolean isNull() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setEnabled(boolean enable) {
-		// TODO Auto-generated method stub
-
+		isEnabled = enable;
 	}
 
 	@Override
 	public void onValueUpdate(IPropElement element) {
-		// TODO Auto-generated method stub
-
+		textFieldValue.setText(String.valueOf(theElement.getValue()));
 	}
 
 	@Override
 	public void updateCursorCounter() {
-		// TODO Auto-generated method stub
-
+		textFieldValue.updateCursorCounter();
 	}
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int mouseEvent) {
-		// TODO Auto-generated method stub
-
+		textFieldValue.mouseClicked(mouseX, mouseY, mouseEvent);
 	}
 
 	@Override
 	public void keyTyped(char eventChar, int eventKey) {
-		// TODO Auto-generated method stub
-
+        if (this.isEnabled || eventKey == Keyboard.KEY_LEFT || eventKey == Keyboard.KEY_RIGHT || eventKey == Keyboard.KEY_HOME || eventKey == Keyboard.KEY_END)
+        {
+            String validChars = "0123456789";
+            String before = this.textFieldValue.getText();
+            if (validChars.contains(String.valueOf(eventChar)) ||
+                    (!before.startsWith("-") && this.textFieldValue.getCursorPosition() == 0 && eventChar == '-')
+                    || (!before.contains(".") && eventChar == '.')
+                    || (!before.contains("E") && !before.contains("e") && (eventChar == 'E' || eventChar == 'e'))
+                    || eventKey == Keyboard.KEY_BACK || eventKey == Keyboard.KEY_DELETE || eventKey == Keyboard.KEY_LEFT || eventKey == Keyboard.KEY_RIGHT
+                    || eventKey == Keyboard.KEY_HOME || eventKey == Keyboard.KEY_END) {
+                this.textFieldValue.textboxKeyTyped((this.isEnabled ? eventChar : Keyboard.CHAR_NONE), eventKey);
+            
+                theElement.setValue(Double.valueOf(textFieldValue.getText()));
+                property.updateValue();
+            }
+        }
 	}
 
 	@Override
 	public boolean mousePressed(int index, int mouseX, int mouseY,
 			int mouseEvent, int relativeX, int relativeY) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void mouseReleased(int index, int mouseX, int mouseY,
-			int mouseEvent, int relativeX, int relativeY) {
-		// TODO Auto-generated method stub
-
-	}
+			int mouseEvent, int relativeX, int relativeY) { }
 
 	@Override
 	public void drawEntry(int slotIndex, int x, int y, int listWidth,
 			int slotHeight, Tessellator tessellator, int mouseX, int mouseY,
 			boolean isSelected) {
-		// TODO Auto-generated method stub
-
+		textFieldValue.setEnabled(isEnabled);
+		textFieldValue.yPosition = y;
+		textFieldValue.drawTextBox();
 	}
 
 	@Override
-	public void onGuiClosed() {
-		// TODO Auto-generated method stub
-
-	}
+	public void onGuiClosed() { }
 
 	@Override
-	public void drawToolTip(int mouseX, int mouseY, float partialTicks) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void drawToolTip(int mouseX, int mouseY, float partialTicks) { }
 
 }

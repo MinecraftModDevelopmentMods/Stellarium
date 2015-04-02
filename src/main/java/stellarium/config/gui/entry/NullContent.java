@@ -54,9 +54,6 @@ public class NullContent implements IGuiCfgPropContent {
 	public void onGuiClosed() { }
 
 	@Override
-	public void drawToolTip(int mouseX, int mouseY, float partialTicks) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void drawToolTip(int mouseX, int mouseY, float partialTicks) { }
 
 }

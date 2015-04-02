@@ -110,8 +110,20 @@ public class StellarConfigCategory implements IConfigCategory {
 	
 	
 	public void copy(IConfigCategory category) {
-		// TODO Auto-generated method stub
+		StellarConfigCategory rcat = (StellarConfigCategory) category;
+		boolean temp;
 		
+		if(rcat.isImmutable)
+			this.markImmutable();
+		
+		for(StellarConfigProperty fromProp : rcat.getPropList()) {
+			IConfigProperty toProp = this.addProperty(fromProp.type, fromProp.name, fromProp.def);
+			
+			temp = toProp.isEnabled();
+			toProp.simSetEnabled(true);
+			toProp.simSetVal(fromProp.getVal());
+			toProp.simSetEnabled(temp);
+		}
 	}
 
 	
@@ -148,13 +160,6 @@ public class StellarConfigCategory implements IConfigCategory {
 		
 		StellarConfigProperty prop = propmap.get(propname);
 		
-		handler.onRemoveProp(prop);
-		if(invhandler != null)
-			invhandler.onRemoveProp(prop);
-		
-		propmap.remove(propname);
-		proplist.remove(prop);
-		
 		//Clear Relations
 		List<PropertyRelation> lr = proprels.get(propname);
 		
@@ -167,6 +172,13 @@ public class StellarConfigCategory implements IConfigCategory {
 			for(IConfigProperty rprop : pr.relprops)
 				proprels.get(prop.getName()).remove(pr);
 		}
+		
+		handler.onRemoveProp(prop);
+		if(invhandler != null)
+			invhandler.onRemoveProp(prop);
+		
+		propmap.remove(propname);
+		proplist.remove(prop);
 
 	}
 

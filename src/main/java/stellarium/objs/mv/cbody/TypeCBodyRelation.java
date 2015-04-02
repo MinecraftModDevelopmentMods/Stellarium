@@ -4,9 +4,9 @@ import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
+import stellarium.lang.CPropLangStrs;
 
 public class TypeCBodyRelation implements IPropertyRelation {
-	
 	
 	IConfigCategory cat;
 	
@@ -41,6 +41,11 @@ public class TypeCBodyRelation implements IPropertyRelation {
 	@Override
 	public void onValueChange(int i) {
 		//Does Nothing!
+	}
+
+	@Override
+	public String getRelationToolTip() {
+		return CPropLangStrs.cbTypeRelation;
 	}
 
 }

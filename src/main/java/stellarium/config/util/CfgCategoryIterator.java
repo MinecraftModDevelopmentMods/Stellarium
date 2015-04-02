@@ -31,9 +31,17 @@ public class CfgCategoryIterator implements Iterator<IConfigCategory> {
 		
 		if(now.hasChildEntry())
 			return true;
-		else if(now.hasNextEntry())
-			return true;
-		else return false;
+
+		ICategoryEntry entry = now;
+		
+		while(!entry.isRootEntry())
+		{
+			if(entry.hasNextEntry())
+				return true;
+			entry = entry.getParentEntry();
+		}
+		
+		return false;
 	}
 
 	@Override
@@ -44,12 +52,20 @@ public class CfgCategoryIterator implements Iterator<IConfigCategory> {
 			now = now.getFirstChildEntry();
 			return now.getCategory();
 		}
-		else if(now.hasNextEntry())
+		
+		ICategoryEntry entry = now;
+
+		while(!entry.isRootEntry())
 		{
-			now = now.getNextEntry();
-			return now.getCategory();
+			if(entry.hasNextEntry())
+			{
+				now = entry.getNextEntry();
+				return now.getCategory();
+			}
+			entry = entry.getParentEntry();
 		}
-		else throw new NoSuchElementException();
+		
+		throw new NoSuchElementException();
 	}
 
 	@Override

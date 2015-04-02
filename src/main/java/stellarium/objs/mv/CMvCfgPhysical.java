@@ -36,6 +36,20 @@ public class CMvCfgPhysical extends CMvCfgBase implements ICfgArrMListener {
 		ent.setCBody(null);
 		return false;
 	}
+	
+
+	@Override
+	public boolean handleOrbitNotLocked(CMvEntry ent, IConfigCategory cat) {
+		cat.getConfig().addLoadFailMessage(CPropLangStrs.orbNotLocked,
+				new StrMessage(CPropLangStrs.getExpl(CPropLangStrs.orbNotLocked), cat.getName()));
+		return true;
+	}
+
+	@Override
+	public boolean handleCBodyNotLocked(CMvEntry ent, IConfigCategory cat) {
+		return false;
+	}
+	
 
 	@Override
 	public void postLoad(IStellarConfig subConfig) {

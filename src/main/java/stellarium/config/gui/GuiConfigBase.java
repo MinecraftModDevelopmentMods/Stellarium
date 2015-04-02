@@ -66,6 +66,9 @@ public abstract class GuiConfigBase extends GuiScreen implements IConfigHandler 
     	super.mouseMovedOrUp(x, y, mouseEvent);
 	}
     
+    @Override
+	protected void mouseClickMove(int mouseX, int mouseY, int lastButtonClicked, long timeSinceMouseClick) { }
+    
     /**
      * Fired when a key is typed. This is the equivalent of KeyListener.keyTyped(KeyEvent e).
      */

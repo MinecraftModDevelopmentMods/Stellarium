@@ -30,7 +30,7 @@ public class GuiDetailedMessage extends GuiScreen {
      */
     public void initGui()
     {
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 105, this.height / 6 + 100, this.doneButtonText));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 105, this.height / 2 + 50, this.doneButtonText));
     }
 
     protected void actionPerformed(GuiButton button)
@@ -47,11 +47,11 @@ public class GuiDetailedMessage extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, 60, 0xffffff);
+        this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, this.height / 2 - 50, 0xffffff);
         
         float f = 0.9f;
         int centerx = (int) ((this.width / 2) / f);
-        int centery = (int) (80 / f);
+        int centery = (int) (((this.height / 2) - 40) / f);
         
         GL11.glPushMatrix();
         GL11.glScaled(f, f, f);
@@ -76,7 +76,7 @@ public class GuiDetailedMessage extends GuiScreen {
     }
     
     public void drawLog(int centerx, int centery, String str)
-    {    	
+    {
     	String[] strs = str.split("\\[");
     	String first = strs[0];
     	strs = strs[1].split("\\]");

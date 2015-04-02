@@ -33,6 +33,8 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	protected EnumCategoryType cattype = EnumCategoryType.List;
 	protected ICategoryEntry root;
 	
+	private boolean loadingSuccess = true;
+	
 	public StellarConfiguration(ConfigDataRegistry.ConfigRegistryData regdata)
 	{
 		this(regdata.title, regdata.formatter, regdata.data);
@@ -112,15 +114,28 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 		return null;
 	}
 	
+	public boolean canMakeCategory(ICategoryEntry parent,
+			String name) {
+		for(ICfgArrMListener list : listenList)
+		{
+			if(!list.canCreate(parent, name))
+				return false;
+		}
+		
+		return true;
+	}
 	
 	public StellarConfigCategory newCategory(ICategoryEntry parent, String name)
 	{
+		for(ICfgArrMListener list : listenList)
+		{
+			if(!list.canCreate(parent, name))
+				return null;
+		}
+		
 		if(cattype.isConfigList())
 		{
 			StellarConfigCatCfg category = new StellarConfigCatCfg(this, name);
-			
-			for(ICfgArrMListener list : listenList)
-				list.onNew(parent, name);
 			
 			StellarConfiguration subConfig = new StellarConfiguration(name, 
 					formatter.getSubFormatter(name), data.getSubData(name));
@@ -135,9 +150,6 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 			return category;
 		} else {
 			StellarConfigCategory category = new StellarConfigCategory(this, name);
-						
-			for(ICfgArrMListener list : listenList)
-				list.onNew(parent, name);
 			
 			return category;
 		}
@@ -164,6 +176,14 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 		for(ICfgArrMListener list : listenList)
 			list.onRemove(theCategory);
 	}
+	
+	public boolean canMigrate(ICategoryEntry parentEntry, String name, ICategoryEntry prevEntry) {
+		for(ICfgArrMListener list : listenList)
+			if(!list.canMigrate(parentEntry, name, prevEntry))
+				return false;
+		return true;
+	}
+
 	
 	public void onMigrate(StellarConfigCategory theCategory, ICategoryEntry prevEntry) {
 		handler.onMigrate(theCategory, prevEntry);
@@ -196,6 +216,7 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	@Override
 	public void addLoadFailMessage(String title, ICfgMessage msg) {
 		handler.addLoadFailMessage(title, msg);
+		loadingSuccess = false;
 	}
 	
 	
@@ -207,8 +228,9 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	@Override
 	public void onApply() {
 		data.applyConfig(this);
-		if(invhandler != null)
+		if(loadingSuccess && invhandler != null)
 			invhandler.onSave(this);
+		this.loadingSuccess = true;
 	}
 
 	@Override

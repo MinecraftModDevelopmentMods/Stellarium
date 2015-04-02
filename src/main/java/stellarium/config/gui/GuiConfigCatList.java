@@ -1,6 +1,7 @@
 package stellarium.config.gui;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -19,6 +20,7 @@ import stellarium.config.core.StellarConfigCategory;
 import stellarium.config.core.StellarConfiguration;
 import stellarium.config.core.handler.ICategoryHandler;
 import stellarium.config.core.handler.IConfigHandler;
+import stellarium.config.gui.GuiCfgCatViewTree.GuiCategoryEntry;
 import stellarium.config.gui.gui.GuiDetailedMessage;
 import stellarium.lang.CPropLangUtil;
 
@@ -86,7 +88,6 @@ public class GuiConfigCatList extends GuiConfigBase {
 	public void onSelectChange(StellarConfigCategory newSelected) {
 		GuiConfigCatHandler handler;
 		
-		//Why is it null?
 		handler = (newSelected != null)? handlerMap.get(newSelected.getCategoryEntry()) : null;
 		
 		cfgList.setCategory(newSelected, handler);
@@ -104,9 +105,11 @@ public class GuiConfigCatList extends GuiConfigBase {
     			List<String> strs = Lists.newArrayList();
     			
     			for(String str : this.loadFails)
+    			{
     				strs.add(String.format("- %s", str));
-    			
-    			this.mc.displayGuiScreen(new GuiDetailedMessage(this, "Invalid Configuration", strs));
+    			}
+    				
+    			this.mc.displayGuiScreen(new GuiDetailedMessage(this.guiConfig, "Invalid Configuration", strs));
     			
     			loadFails.clear();
     			
@@ -120,25 +123,39 @@ public class GuiConfigCatList extends GuiConfigBase {
 	@Override
 	protected void mouseClicked(int x, int y, int mouseEvent) {
     	if(mouseEvent != 0 || !cfgList.func_148179_a(x, y, mouseEvent))
+    	{
+    		viewList.mousePressed(x, y, mouseEvent);
+            cfgList.mouseClicked(x, y, mouseEvent);
     		guiConfig.mouseClickedSuper(x, y, mouseEvent);
+    	}
 	}
 
 	@Override
 	protected void mouseMovedOrUp(int x, int y, int mouseEvent) {
+		viewList.mouseMovedOrUp(x, y, mouseEvent);
     	if(mouseEvent != 0 || !cfgList.func_148181_b(x, y, mouseEvent))
     		guiConfig.mouseMovedOrUpSuper(x, y, mouseEvent);
+	}
+	
+	@Override
+	protected void mouseClickMove(int mouseX, int mouseY, int lastButtonClicked, long timeSinceMouseClick) {
+		viewList.mouseClickMove(mouseX, mouseY, lastButtonClicked, timeSinceMouseClick);
 	}
 
 	@Override
 	protected void keyTyped(char eventChar, int eventKey) {
         if (eventKey == Keyboard.KEY_ESCAPE)
             this.close();
-        else cfgList.onKeyPressed(eventChar, eventKey);
+        else {
+        	viewList.keyPressed(eventChar, eventKey);
+        	cfgList.onKeyPressed(eventChar, eventKey);
+        }
 	}
 
 	@Override
 	public void updateScreen() {
 		cfgList.updateScreen();
+		viewList.updateCursorCounter();
 		guiConfig.updateScreenSuper();
 	}
 
@@ -157,7 +174,6 @@ public class GuiConfigCatList extends GuiConfigBase {
 
 	@Override
 	public ICategoryHandler getNewCat(StellarConfigCategory cat) {
-		// TODO Auto-generated method stub
 		GuiConfigCatHandler catHandler = new GuiConfigCatHandler(this, cat);
 		handlerMap.put(cat.getCategoryEntry(), catHandler);
 		return catHandler;
@@ -171,15 +187,12 @@ public class GuiConfigCatList extends GuiConfigBase {
 
 	@Override
 	public void onPostCreated(StellarConfigCategory cat) {
-		// TODO Auto-generated method stub
 		if(viewList != null)
 			viewList.onCreateCategory(cat);
 	}
 
 	@Override
-	public void onRemove(StellarConfigCategory cat) {
-		// TODO Auto-generated method stub
-		
+	public void onRemove(StellarConfigCategory cat) {		
 		if(this.selectedCategory != null && cat.getCategoryEntry().equals(selectedCategory.getCategoryEntry()))
 			this.onSelectChange(null);
 		
@@ -190,9 +203,7 @@ public class GuiConfigCatList extends GuiConfigBase {
 	}
 
 	@Override
-	public void onMigrate(StellarConfigCategory cat, ICategoryEntry before) {
-		// TODO Auto-generated method stub
-		
+	public void onMigrate(StellarConfigCategory cat, ICategoryEntry before) {		
 		if(this.selectedCategory != null && selectedCategory.getCategoryEntry().equals(before))
 			this.onSelectChange(cat);
 		
@@ -204,18 +215,16 @@ public class GuiConfigCatList extends GuiConfigBase {
 
 	@Override
 	public boolean isValidNameChange(StellarConfigCategory cat, String postName) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public void onNameChange(StellarConfigCategory cat, String before) { }
+	public void onNameChange(StellarConfigCategory cat, String before) {
+		viewList.onNameChange(cat, before);
+	}
 
 	@Override
-	public void onMarkImmutable(StellarConfigCategory cat) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onMarkImmutable(StellarConfigCategory cat) { }
 
 	@Override
 	public void loadCategories(StellarConfiguration config) { }
@@ -227,8 +236,5 @@ public class GuiConfigCatList extends GuiConfigBase {
 	}
 
 	@Override
-	public void onSave(StellarConfiguration config) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onSave(StellarConfiguration config) { }
 }

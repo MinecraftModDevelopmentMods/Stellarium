@@ -30,9 +30,16 @@ public class CPropLangStrs {
 	public static final String name = "Name";
 	public static final String mass = "Mass";
 	
+	//------------------------------ MvEntry Relations -----------------------------//
+	public static final String nameRelationTooltip = "Name Relation";
+	public static final String orbTypeRelation = "Orbit Type Relation";
+	public static final String cbTypeRelation = "Celestial Body Type Relation";
+	
 	//--------------------------- Loading Failure Messages -------------------------//
 	public static final String orbmissing = "Missing Orbit";
 	public static final String cbmissing = "Missing CBody";
+	public static final String orbNotLocked = "Orbit Type Not Locked";
+	public static final String cbNotLocked = "CBody Type Not Locked";
 	
 	public static void onRegister()
 	{
@@ -55,10 +62,16 @@ public class CPropLangStrs {
 		//these has .expl
 		CPropLangRegistry.instance().register(name, "cmv.ent.name");
 		CPropLangRegistry.instance().register(mass, "cmv.ent.mass");
+		
+		CPropLangRegistry.instance().register(nameRelationTooltip, "cmv.ent.rel.name");
+		CPropLangRegistry.instance().register(orbTypeRelation, "cmv.ent.rel.orbtype");
+		CPropLangRegistry.instance().register(cbTypeRelation, "cmv.ent.rel.cbtype");
 
 		//these has .expl
 		CPropLangRegistry.instance().register(orbmissing, "cmv.ent.err.missingorbit");
 		CPropLangRegistry.instance().register(cbmissing, "cmv.ent.err.missingcbody");
+		CPropLangRegistry.instance().register(orbNotLocked, "cmv.ent.err.orbitnotlocked");
+		CPropLangRegistry.instance().register(cbNotLocked, "cmv.ent.err.cbodynotlocked");
 	}
 	
 	

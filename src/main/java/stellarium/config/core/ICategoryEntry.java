@@ -97,6 +97,15 @@ public interface ICategoryEntry extends Iterable<ICategoryEntry> {
 	
 	
 	/**
+	 * Checks if Category Creation would fail or not.
+	 * @param name the name of the category being created
+	 * @param option the position option the category will be on
+	 * @return <code>true</code> if the category can be successfully created,
+	 * 	 or <code>false</code> otherwise
+	 * */
+	public boolean canCreateCategory(String name, EnumPosOption option);
+	
+	/**
 	 * Creates category on the specific position denoted by {@link EnumPosOption},
 	 * Or there already exists a category with same name in same entry,
 	 *   then just returns the pre-existing category.
@@ -108,7 +117,13 @@ public interface ICategoryEntry extends Iterable<ICategoryEntry> {
 	 * */
 	public IConfigCategory createCategory(String name, EnumPosOption option);
 	
-	
+	/**
+	 * Check if this category can be removed.
+	 * @return <code>true</code> if the category can be successfully removed,
+	 * 	 or <code>false</code> otherwise
+	 * */
+	public boolean canRemoveCategory();
+
 	/**
 	 * Removes the category (and all its child categories) for this entry.
 	 * This will remove the category and invalidates this entry,
@@ -126,6 +141,14 @@ public interface ICategoryEntry extends Iterable<ICategoryEntry> {
 	public String getName();
 	
 	/**
+	 * Check if the category of this category can be changed.
+	 * @param name the name for this entry.
+	 * @return <code>true</code> if the category name can be successfully changed,
+	 * 	 or <code>false</code> otherwise
+	 * */
+	public boolean canChangeName(String name);
+	
+	/**
 	 * Changes the name of the category for this entry.
 	 * @param name the name for this entry.
 	 * @return <code>true</code> if the category name is successfully changed,
@@ -137,13 +160,24 @@ public interface ICategoryEntry extends Iterable<ICategoryEntry> {
 	/**
 	 * Copies the category to specific position denoted by {@link EnumPosOption}.
 	 * If there already exists category with same name in same entry,
-	 *   then this copy doesn't have any effect and returns the pre-existing category.
+	 *   then this copy doesn't have any effect and returns the pre-existing category. <p>
+	 * NOTE: This method will not copy child categories of this category.
 	 * @param category the category to copy
 	 * @param name the name for the copied category on new entry
 	 * @param option the position option the category will be on
 	 * @return the copied category on new entry
 	 * */
 	public IConfigCategory copyCategory(IConfigCategory category, String name, EnumPosOption option);
+	
+	/**
+	 * Checks if Migration would fail or not. <p>
+	 * see {@link #migrateCategory(IConfigCategory, EnumPosOption)}.
+	 * @param category the category to migrate
+	 * @param option the position option the category will be on
+	 * @return <code>true</code> if the category can be successfully migrated,
+	 * 	 or <code>false</code> otherwise
+	 * */
+	public boolean canMigrateCategory(IConfigCategory category, EnumPosOption option);
 	
 	/**
 	 * Migrates the category to specific position denoted by {@link EnumPosOption}.
@@ -157,6 +191,16 @@ public interface ICategoryEntry extends Iterable<ICategoryEntry> {
 	 * */
 	public boolean migrateCategory(IConfigCategory category, EnumPosOption option);
 	
+	
+	/**
+	 * Sets if Unique ID is enabled for {@link #equals(Object)} and {@link #hashCode()}.
+	 * When it is enabled, constant ID (this never changes) instead of name is used for both method.
+	 * Disable Unique ID when comparing by name is needed.<p>
+	 * Note: {@link #hashCode()} could vary for its parent is involved. <p>
+	 * Default: ID is enabled.
+	 * @param idEnabled parameter indicating enable/disable.
+	 */
+	public void setIDEnabled(boolean idEnabled);
 	
 	public boolean equals(Object o);
 	

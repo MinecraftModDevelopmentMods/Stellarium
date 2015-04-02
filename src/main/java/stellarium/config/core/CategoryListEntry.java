@@ -1,6 +1,7 @@
 package stellarium.config.core;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
@@ -12,11 +13,17 @@ public class CategoryListEntry implements ICategoryEntry {
 	protected CategoryListRoot root;
 	protected CategoryListEntry previous, next;
 
+	private UUID id;
+	private String name;
+	private boolean idEnabled = true;
+
 	public CategoryListEntry(StellarConfigCategory category, CategoryListRoot root, CategoryListEntry previous, CategoryListEntry next) {
 		this.theCategory = category;
 		this.root = root;
 		this.previous = previous;
 		this.next = next;
+		
+		this.id = UUID.randomUUID();
 	}
 
 	@Override
@@ -88,6 +95,17 @@ public class CategoryListEntry implements ICategoryEntry {
 	public ICategoryEntry getNextEntry() {
 		return this.next;
 	}
+	
+	@Override
+	public boolean canCreateCategory(String name, EnumPosOption option) {
+		if(!option.isOnSameLevel())
+			return false;
+		
+		else if(option.isOnSameLevel() && root.getChildEntry(name) != null)
+			return false;
+		
+		return root.config.canMakeCategory(this.root, name);
+	}
 
 	@Override
 	public IConfigCategory createCategory(String name, EnumPosOption option) {
@@ -99,14 +117,24 @@ public class CategoryListEntry implements ICategoryEntry {
 		
 		
 		StellarConfigCategory category = root.config.newCategory(this.root, name);
+		
+		if(category == null)
+			return null;
 
-		addNewEntry(category, option);
+		addNewEntry(category, option, null);
 		
 		root.config.postCreated(category);
 		
 		return category;
 	}
 
+	@Override
+	public boolean canRemoveCategory() {
+		if(this.theCategory == null)
+			return false;
+		return true;
+	}
+	
 	@Override
 	public boolean removeCategory() {
 		
@@ -115,28 +143,7 @@ public class CategoryListEntry implements ICategoryEntry {
 		
 		root.config.preRemoved(theCategory);
 		
-		
-		boolean hasPrevious = this.hasPreviousEntry();
-		boolean hasNext = this.hasNextEntry();
-		
-		if(hasPrevious) {
-			if(hasNext)	{
-				previous.next = this.next;
-				next.previous = this.previous;
-			} else {
-				previous.next = null;
-				root.lastChild = this.previous;
-			}
-		} else {
-			if(hasNext) {
-				next.previous = null;
-				root.firstChild = this.previous;
-			} else {
-				root.firstChild = root.lastChild = null;
-			}
-		}
-		
-		this.theCategory = null;
+		this.removeEntry();
 		
 		return true;
 	}
@@ -144,9 +151,20 @@ public class CategoryListEntry implements ICategoryEntry {
 	@Override
 	public String getName() {
 		if(this.theCategory == null)
-			throw new IllegalStateException("Cannot get the name from the Invalidated Entry!");
+			return this.name;
 		
 		return theCategory.getName();
+	}
+	
+	@Override
+	public boolean canChangeName(String name) {
+		if(this.theCategory == null)
+			return false;
+		
+		else if(root.getChildEntry(name) != null)
+			return false;
+		
+		return true;
 	}
 
 	@Override
@@ -163,16 +181,22 @@ public class CategoryListEntry implements ICategoryEntry {
 	@Override
 	public IConfigCategory copyCategory(IConfigCategory category, String name,
 			EnumPosOption option) {
+		
 		if(!option.isOnSameLevel())
 			throw new IllegalArgumentException("Option " + option.name() + " is not available for list entry.");
 		
 		else if(root.getChildEntry(name) != null)
 			return root.getChildEntry(name).getCategory();
 		
+		else if(category.isImmutable())
+			return null;
 		
 		StellarConfigCategory copiedCategory = root.config.newCategory(this.root, name);
 		
-		addNewEntry(copiedCategory, option);
+		if(copiedCategory == null)
+			return null;
+		
+		addNewEntry(copiedCategory, option, null);
 		
 		root.config.postCreated(copiedCategory);
 		
@@ -180,24 +204,55 @@ public class CategoryListEntry implements ICategoryEntry {
 		
 		return copiedCategory;
 	}
+	
+	@Override
+	public boolean canMigrateCategory(IConfigCategory category,
+			EnumPosOption option) {
+		if(category.isImmutable())
+			return false;
+		
+		if(!option.isOnSameLevel())
+			return false;
+		
+		else if(option.isOnSameLevel())
+		{
+			ICategoryEntry entry = root.getChildEntry(category.getName());
+			if(entry != null && entry.getCategory() != category)
+				return false;
+		}
+		
+		return root.config.canMigrate(root, category.getName(), category.getCategoryEntry());
+	}
 
 	@Override
 	public boolean migrateCategory(IConfigCategory category,
 			EnumPosOption option) {
 		
+		if(category.isImmutable())
+			return false;
+		
 		if(!option.isOnSameLevel())
 			return false;
 		
-		else if(option.isOnSameLevel() && root.getChildEntry(category.getName()) != null)
-			return false;		
+		else if(option.isOnSameLevel())
+		{
+			ICategoryEntry entry = root.getChildEntry(category.getName());
+			if(entry != null && entry.getCategory() != category)
+				return false;
+		}
+		
+		if(!root.config.canMigrate(root, category.getName(), category.getCategoryEntry()))
+			return false;
 		
 		StellarConfigCategory mcategory = (StellarConfigCategory) category;
 		
+		CategoryListEntry bentry = ((CategoryListEntry)mcategory.getCategoryEntry());
+		
 		//Invalidates this entry
-		((CategoryListEntry)mcategory.getCategoryEntry()).theCategory = null;
+		bentry.removeEntry();
 		
 		try {
-			addNewEntry(mcategory, option);
+			addNewEntry(mcategory, option, bentry.id);
 		} catch(Exception e) {
 			return false;
 		}
@@ -205,7 +260,7 @@ public class CategoryListEntry implements ICategoryEntry {
 		return true;
 	}
 	
-	private void addNewEntry(StellarConfigCategory category, EnumPosOption option) {
+	private void addNewEntry(StellarConfigCategory category, EnumPosOption option, UUID nid) {
 		CategoryListEntry list;
 		
 		switch(option)
@@ -238,16 +293,49 @@ public class CategoryListEntry implements ICategoryEntry {
 			throw new IllegalArgumentException("Invalid Option: " + option);
 		}
 		
+		if(nid != null)
+			list.id = nid;
 		category.setEntry(list);
 	}
 	
+	protected void removeEntry() {
+		boolean hasPrevious = this.hasPreviousEntry();
+		boolean hasNext = this.hasNextEntry();
+		
+		if(hasPrevious) {
+			if(hasNext)	{
+				previous.next = this.next;
+				next.previous = this.previous;
+			} else {
+				previous.next = null;
+				root.lastChild = this.previous;
+			}
+		} else {
+			if(hasNext) {
+				next.previous = null;
+				root.firstChild = this.next;
+			} else {
+				root.firstChild = root.lastChild = null;
+			}
+		}
+		
+		this.name = theCategory.name;
+		this.theCategory = null;
+	}
+	
+	@Override
+	public void setIDEnabled(boolean idEnabled) {
+		this.idEnabled = idEnabled;
+	}
 	
 	@Override
 	public boolean equals(Object obj)
 	{
 		if(obj instanceof CategoryListEntry)
 		{			
-			return this.getName().equals(((CategoryListEntry) obj).getName());
+			if(!this.idEnabled)
+				return this.getName().equals(((CategoryListEntry) obj).getName());
+			else return id.equals(((CategoryListEntry) obj).id);
 		}
 		return false;
 	}
@@ -255,7 +343,9 @@ public class CategoryListEntry implements ICategoryEntry {
 	@Override
 	public int hashCode()
 	{
-		return this.getName().hashCode();
+		if(!this.idEnabled)
+			return this.getName().hashCode();
+		else return id.hashCode();
 	}
 	
 	

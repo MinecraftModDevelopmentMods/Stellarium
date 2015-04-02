@@ -40,9 +40,17 @@ public class GuiConfigCatEntry extends GuiListExtended {
 		sublabelX = labelX + 10;
 		
         this.setHasListHeader(true, 20);
-
-		// TODO Auto-generated constructor stub
 	}
+	
+	@Override
+	public int getListWidth() {
+		return this.width - SPACING;
+	}
+	
+	@Override
+    protected int getScrollBarX() {
+        return this.width - SPACING;
+    }
 	
 	public int getLabelX() {
 		return this.labelX;
@@ -67,7 +75,7 @@ public class GuiConfigCatEntry extends GuiListExtended {
 		
 		maxLabelWidth = Math.min(maxLabelWidth, MAX_LABEL_WIDTH);
 		
-		return this.labelX + SPACING + maxLabelWidth;
+		return this.labelX + SPACING + maxLabelWidth + 6;
 	}
 	
 	public int getSubContentX() {
@@ -90,7 +98,6 @@ public class GuiConfigCatEntry extends GuiListExtended {
 	
 	public void setCategory(StellarConfigCategory category, GuiConfigCatHandler catHandler)
 	{
-		// TODO Setting Category
 		this.category = category;
 		this.catHandler = catHandler;
 		
@@ -107,7 +114,6 @@ public class GuiConfigCatEntry extends GuiListExtended {
 
         if(catHandler != null)
         	catHandler.onSetup(this);
-		// TODO Auto-generated method stub
         
 	}
 	
@@ -117,6 +123,15 @@ public class GuiConfigCatEntry extends GuiListExtended {
 		
 		for(IGuiCfgPropElement element : this.catHandler)
 			element.onGuiClosed();
+	}
+	
+
+	public void mouseClicked(int x, int y, int mouseEvent) {
+		if(catHandler == null)
+			return;
+		
+		for(IGuiCfgPropElement element : this.catHandler)
+			element.mouseClicked(x, y, mouseEvent);
 	}
 	
 	public void onKeyPressed(char eventChar, int eventKey) {

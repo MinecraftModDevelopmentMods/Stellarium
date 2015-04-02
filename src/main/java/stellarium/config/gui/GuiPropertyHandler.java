@@ -10,6 +10,7 @@ import stellarium.config.element.IDoubleElement;
 import stellarium.config.element.IEnumElement;
 import stellarium.config.element.IIntegerElement;
 import stellarium.config.element.IStringElement;
+import stellarium.config.gui.GuiConfigCatHandler.GuiPropertyRelation;
 import stellarium.config.gui.entry.CombinedPropElement;
 import stellarium.config.gui.entry.DoubleContent;
 import stellarium.config.gui.entry.EnumContent;
@@ -23,14 +24,13 @@ import stellarium.lang.CPropLangUtil;
 public class GuiPropertyHandler implements IPropertyHandler {
 	
 	private StellarConfigProperty property;
+	private List<GuiPropertyRelation> proprels = Lists.newArrayList();
 	
 	private List<IGuiCfgPropElement> elemlist = Lists.newArrayList();
 	private List<String> namelist = Lists.newArrayList();
 	private String expl = "";
 
-	public GuiPropertyHandler(GuiConfigCatList cfgHandler,
-			GuiConfigCatHandler guiCfgCatHandler, StellarConfigProperty prop) {
-		// TODO Auto-generated constructor stub
+	public GuiPropertyHandler(StellarConfigProperty prop) {
 		this.property = prop;
 	}
 	
@@ -87,28 +87,41 @@ public class GuiPropertyHandler implements IPropertyHandler {
 	public void onElementAdded(String subname, IDoubleElement element) {
 		this.onPreAdd();
 		
-		this.addElement(subname, new CombinedPropElement(subname, new DoubleContent(element), property.isSingular()));
+		this.addElement(subname, new CombinedPropElement(subname, new DoubleContent(property, element), property.isSingular()));
 	}
 
 	@Override
 	public void onElementAdded(String subname, IEnumElement element) {
 		this.onPreAdd();
 
-		this.addElement(subname, new CombinedPropElement(subname, new EnumContent(element), property.isSingular()));
+		this.addElement(subname, new CombinedPropElement(subname, new EnumContent(property, element), property.isSingular()));
 	}
 
 	@Override
 	public void onElementAdded(String subname, IIntegerElement element) {
 		this.onPreAdd();
 
-		this.addElement(subname, new CombinedPropElement(subname, new IntegerContent(element), property.isSingular()));
+		this.addElement(subname, new CombinedPropElement(subname, new IntegerContent(property, element), property.isSingular()));
 	}
 
 	@Override
 	public void onElementAdded(String subname, IStringElement element) {
 		this.onPreAdd();
 
-		this.addElement(subname, new CombinedPropElement(subname, new StringContent(element), property.isSingular()));
+		this.addElement(subname, new CombinedPropElement(subname, new StringContent(property, element), property.isSingular()));
+	}
+
+	
+	public void addPropertyRelation(GuiPropertyRelation guiRel) {
+		proprels.add(guiRel);
+	}
+
+	public void removePropertyRelation(GuiPropertyRelation guiRel) {
+		proprels.remove(guiRel);
+	}
+	
+	public List<GuiPropertyRelation> getPropertyRelation() {
+		return proprels;
 	}
 
 }

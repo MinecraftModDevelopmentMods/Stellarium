@@ -1,7 +1,8 @@
-package stellarium.config.gui.entry;
+package stellarium.config.gui.gui;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.client.config.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -39,15 +40,17 @@ public class GuiTexturedButton extends GuiButton {
         	Tessellator tessellator = Tessellator.instance;
             this.field_146123_n = p_146112_2_ >= this.xPosition && p_146112_3_ >= this.yPosition && p_146112_2_ < this.xPosition + this.width && p_146112_3_ < this.yPosition + this.height;
             int k = this.getHoverState(this.field_146123_n);
+            int texWidth = this.width, texHeight = this.height;
+            int xPos = this.xPosition, yPos = this.yPosition;
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glEnable(GL11.GL_BLEND);
-            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             
             if(this.btnbgEnabled) {
-            	p_146112_1_.getTextureManager().bindTexture(buttonTextures);
-            	this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + k * 20, this.width / 2, this.height);
-            	this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
+                GuiUtils.drawContinuousTexturedBox(buttonTextures, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
+            	
+            	texWidth = this.width - 8;
+                texHeight = this.height - 8;
+                xPos = this.xPosition + 4;
+                yPos = this.yPosition + 4;
             }
             this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
             
@@ -68,8 +71,10 @@ public class GuiTexturedButton extends GuiButton {
             }
 
             tessellator.setColorOpaque_I(l);
+            
             p_146112_1_.getTextureManager().bindTexture(resLocation);
-            this.drawTexturedRect(this.xPosition, this.yPosition, this.width, this.height, k-1, this.nState);
+
+            this.drawTexturedRect(xPos, yPos, texWidth, texHeight, k-1, this.nState);
         }
     }
 	

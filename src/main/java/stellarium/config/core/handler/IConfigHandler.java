@@ -38,4 +38,5 @@ public interface IConfigHandler {
 	public void addLoadFailMessage(String title, ICfgMessage msg);
 
 	public void onSave(StellarConfiguration config);
+	
 }

@@ -14,7 +14,6 @@ import stellarium.lang.CPropLangUtil;
 public class GuiCfgPropLabel {
 	
 	private static final int SPACING = 3;
-	private static int TOOLTIP_TIMING = 400;
 	
 	protected GuiStellarConfig screen;
 	protected GuiPropertyHandler property;
@@ -61,7 +60,7 @@ public class GuiCfgPropLabel {
         screen.drawCenteredString(screen.getFontRenderer(), labelPrint, this.xLabel + this.maxLabelWidth / 2, y + SPACING, 0xffffff);
 
         if (this.tooltipChecker == null)
-            this.tooltipChecker = new HoverChecker(y, y + slotHeight, this.xLabel, this.xLabel + this.maxLabelWidth, TOOLTIP_TIMING);
+            this.tooltipChecker = new HoverChecker(y, y + slotHeight, this.xLabel, this.xLabel + this.maxLabelWidth, ConfigGuiUtil.TOOLTIP_TIMING);
         else this.tooltipChecker.updateBounds(y, y + slotHeight, this.xLabel, this.xLabel + this.maxLabelWidth);
 	}
 

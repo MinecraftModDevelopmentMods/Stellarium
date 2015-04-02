@@ -84,11 +84,13 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 
 	
 	@Override
-	public void onNew(ICategoryEntry parent, String name) {
+	public boolean canCreate(ICategoryEntry parent, String name) {
 		if(datamap.containsKey(name))
-			return;
+			return true;
 		
 		datamap.put(name, new CCatalogData(isPhysical));
+		
+		return true;
 	}
 	
 	@Override
@@ -99,6 +101,12 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	@Override
 	public void onPostCreated(IConfigCategory cat) { }
 
+	@Override
+	public boolean canMigrate(ICategoryEntry parent, String name,
+			ICategoryEntry before) {
+		return true;
+	}
+	
 	@Override
 	public void onMigrate(IConfigCategory cat, ICategoryEntry before) { }
 

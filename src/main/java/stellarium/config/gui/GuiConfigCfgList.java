@@ -18,6 +18,7 @@ import stellarium.config.core.StellarConfigCategory;
 import stellarium.config.core.StellarConfiguration;
 import stellarium.config.core.handler.ICategoryHandler;
 import stellarium.config.core.handler.IConfigHandler;
+import stellarium.config.gui.gui.GuiTexturedButton;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangUtil;
 import net.minecraft.client.Minecraft;
@@ -201,7 +202,7 @@ public class GuiConfigCfgList extends GuiConfigBase {
 
 	public class CfgBtnEntry implements IGuiListEntry, GuiYesNoCallback {
 		
-		protected final GuiButtonExt button, btnChange, btnCopy, btnDelete;
+		protected final GuiButton button, btnChange, btnCopy, btnDelete;
 		protected final CfgBtnList parlist;
 		protected final IConfigCategory category;
 		protected final StellarConfiguration subConfig;
@@ -220,8 +221,8 @@ public class GuiConfigCfgList extends GuiConfigBase {
 					CPropLangUtil.getLocalizedFromID(category.getName()));
 			this.btnChange = new GuiButtonExt(1, parlist.right - parlist.width * 1/3 - 20, 0, 18, 18,
 					ConfigGuiUtil.CHANGE_CHAR);
-			this.btnCopy = new GuiButtonExt(2, parlist.right - parlist.width, 0, 18, 18,
-					ConfigGuiUtil.COPY_CHAR);
+			this.btnCopy = new GuiTexturedButton(2, parlist.right - parlist.width, 0, 18, 18,
+					ConfigGuiUtil.ICON_COPY);
 			this.btnDelete = new GuiButtonExt(3, parlist.right - parlist.width * 1/3 + 20, 0, 18, 18,
 					ConfigGuiUtil.DELETE_CHAR);
 			btnChange.packedFGColour = 0xffff99;
@@ -314,8 +315,10 @@ public class GuiConfigCfgList extends GuiConfigBase {
 					
 					if(!category.getName().equals(textFieldValue.getText()))
 					{
-						GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.nameChange), I18n.format(CLangStrs.nameChangeSub), 0);
-						mc.displayGuiScreen(msg);
+						if(warn) {
+							GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.nameChange), I18n.format(CLangStrs.nameChangeSub), 0);
+							mc.displayGuiScreen(msg);
+						} else this.confirmClickTask(true, 0);
 					}
 				}
 				
@@ -323,15 +326,19 @@ public class GuiConfigCfgList extends GuiConfigBase {
 			}
 			else if(btnCopy.mousePressed(mc, x, y))
 			{
-				GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.copyCategory), I18n.format(CLangStrs.copyCategorySub), 1);
-				mc.displayGuiScreen(msg);
+				if(warn) {
+					GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.copyCategory), I18n.format(CLangStrs.copyCategorySub), 1);
+					mc.displayGuiScreen(msg);
+				} else this.confirmClickTask(true, 1);
 				
 				return true;
 			}
 			else if(btnDelete.mousePressed(mc, x, y))
 			{
-				GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.removeCategory), I18n.format(CLangStrs.removeCategorySub), 2);
-				mc.displayGuiScreen(msg);
+				if(warn) {
+					GuiYesNo msg = new GuiYesNo(this, I18n.format(CLangStrs.removeCategory), I18n.format(CLangStrs.removeCategorySub), 2);
+					mc.displayGuiScreen(msg);
+				} else this.confirmClickTask(true, 2);
 				
 				return true;
 			}
@@ -353,6 +360,13 @@ public class GuiConfigCfgList extends GuiConfigBase {
 
 		@Override
 		public void confirmClicked(boolean check, int id) {
+			this.confirmClickTask(check, id);
+			
+			guiConfig.initGui();
+			mc.displayGuiScreen(guiConfig);
+		}
+		
+		private void confirmClickTask(boolean check, int id) {
 			if(check)
 			{
 				if(id == 0)
@@ -369,9 +383,6 @@ public class GuiConfigCfgList extends GuiConfigBase {
 					category.getCategoryEntry().removeCategory();
 				}
 			}
-			
-			GuiConfigCfgList.this.initGui();
-			mc.displayGuiScreen(GuiConfigCfgList.this);
 		}
 	}
    

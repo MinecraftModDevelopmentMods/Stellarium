@@ -14,7 +14,7 @@ import stellarium.config.element.*;
 public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	protected StellarConfigCategory par; 
-	protected String name;
+	protected String name, type;
 	protected IConfigPropHandler<T> handle;
 	protected boolean singular = false;
 	
@@ -30,6 +30,7 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	{
 		this.par = cat;
 		this.name = pname;
+		this.type = ptype;
 		this.handle = ConfigPropTypeRegistry.getHandler(ptype);
 		if(handle == null)
 			throw new IllegalArgumentException("The Property Type: " + ptype + "Does Not Exist!");
@@ -42,7 +43,7 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 		if(namelist.size() == 1 && namelist.get(0).equals(name))
 			singular = true;
 		
-		setVal(def);
+		handle.onSetVal(this, def);
 		
 		for(int i = 0; i < namelist.size(); i++) {
 			String subname = namelist.get(i);
@@ -103,6 +104,28 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void updateValue() {
+		if(!enabled)
+			return;
+		
+		List<StellarConfigCategory.PropertyRelation> lr = par.proprels.get(name);
+		
+		if(lr != null)
+		{
+			for(StellarConfigCategory.PropertyRelation pr : lr)
+			{
+				for(int j = 0; j < pr.relprops.length; j++)
+					if(pr.relprops[j] == this)
+						pr.proprel.onValueChange(j);
+			}
+		}
 	}
 
 	@Override
@@ -274,7 +297,7 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 
 		@Override
 		public void setValue(int index) {
-			ind = index;
+			ind = index % valrange.length;
 		}
 
 		@Override

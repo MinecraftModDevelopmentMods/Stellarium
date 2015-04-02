@@ -91,6 +91,17 @@ public class CategoryListRoot implements ICategoryEntry {
 	public ICategoryEntry getNextEntry() {
 		return null;
 	}
+	
+	@Override
+	public boolean canCreateCategory(String name, EnumPosOption option) {
+		if(option.isOnSameLevel())
+			return false;
+		
+		else if(this.getChildEntry(name) != null)
+			return false;
+		
+		return config.canMakeCategory(this, name);
+	}
 
 	@Override
 	public IConfigCategory createCategory(String name, EnumPosOption option) {
@@ -103,11 +114,19 @@ public class CategoryListRoot implements ICategoryEntry {
 		
 		StellarConfigCategory category = config.newCategory(this, name);
 
+		if(category == null)
+			return null;
+		
 		addNewEntry(category);
 		
 		config.postCreated(category);
 		
 		return category;
+	}
+	
+	@Override
+	public boolean canRemoveCategory() {
+		return false;
 	}
 
 	@Override
@@ -118,6 +137,11 @@ public class CategoryListRoot implements ICategoryEntry {
 	@Override
 	public String getName() {
 		throw new IllegalStateException("Cannot get the name from the Root Entry!");
+	}
+	
+	@Override
+	public boolean canChangeName(String name) {
+		return false;
 	}
 
 	@Override
@@ -137,6 +161,9 @@ public class CategoryListRoot implements ICategoryEntry {
 		
 		StellarConfigCategory copiedCategory = config.newCategory(this, name);
 		
+		if(copiedCategory == null)
+			return null;
+		
 		addNewEntry(copiedCategory);
 		
 		config.postCreated(copiedCategory);
@@ -144,6 +171,20 @@ public class CategoryListRoot implements ICategoryEntry {
 		copiedCategory.copy(category);
 		
 		return copiedCategory;
+	}
+	
+	@Override
+	public boolean canMigrateCategory(IConfigCategory category, EnumPosOption option) {
+		if(option.isOnSameLevel() && this.isRootEntry())
+			return false;
+		
+		else if(!option.isOnSameLevel() && this.getChildEntry(category.getName()) != null)
+			return false;
+		
+		if(!config.canMigrate(this, category.getName(), category.getCategoryEntry()))
+			return false;
+		
+		return true;
 	}
 
 	@Override
@@ -155,11 +196,13 @@ public class CategoryListRoot implements ICategoryEntry {
 		else if(!option.isOnSameLevel() && this.getChildEntry(category.getName()) != null)
 			return false;
 		
+		if(!config.canMigrate(this, category.getName(), category.getCategoryEntry()))
+			return false;
 		
 		StellarConfigCategory mcategory = (StellarConfigCategory) category;
 		
 		//Invalidates this entry
-		((CategoryNode)mcategory.getCategoryEntry()).theCategory = null;
+		((CategoryListEntry)mcategory.getCategoryEntry()).removeEntry();
 		
 		try {
 			addNewEntry(mcategory);
@@ -254,6 +297,12 @@ public class CategoryListRoot implements ICategoryEntry {
 	@Override
 	public Iterator<ICategoryEntry> iterator() {
 		return this.getChildEntryIterator();
+	}
+
+	
+	@Override
+	public void setIDEnabled(boolean idEnabled) {
+		//No Effect
 	}
 	
 }

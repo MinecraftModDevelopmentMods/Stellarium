@@ -48,9 +48,11 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 			mv.additive().getAdditiveType().onRemove(mv.additive());
 		if(!mv.isVirtual())
 			mv.cbody().getCBodyType().onRemove(mv.cbody());
-		mv.orbit().getOrbitType().onRemove(mv.orbit());
+		if(mv.orbit() != null)
+			mv.orbit().getOrbitType().onRemove(mv.orbit());
 		
-		mv.getParent().removeSatellite(mv);
+		if(mv.hasParent())
+			mv.getParent().removeSatellite(mv);
 	}
 
 	

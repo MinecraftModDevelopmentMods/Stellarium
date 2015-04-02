@@ -23,8 +23,14 @@ public interface IConfigProperty<T> {
 	public void simSetVal(T val);
 
 	/**
+	 * Checks if this property is enabled.
+	 * */
+	public boolean isEnabled();
+	
+	/**
 	 * Simulates enable/disable.
 	 * It will behave like the case that the property is enabled/diabled.
 	 * */
 	public void simSetEnabled(boolean enabled);
+
 }

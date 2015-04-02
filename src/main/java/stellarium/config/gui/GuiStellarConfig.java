@@ -31,7 +31,7 @@ public class GuiStellarConfig extends GuiScreen implements IConfigHandler {
 	
 	protected StellarConfiguration config;
 	
-	protected boolean needsRefresh = true;
+	protected boolean needsRefresh = true, modifiable, warn;
 	
 	public GuiStellarConfig(GuiScreen parScreen, StellarConfiguration config,
 			String title) {
@@ -61,6 +61,10 @@ public class GuiStellarConfig extends GuiScreen implements IConfigHandler {
 	
 	public FontRenderer getFontRenderer() {
 		return mc.fontRenderer;
+	}
+	
+	public double getZLevel() {
+		return this.zLevel;
 	}
 	
     @Override
@@ -112,6 +116,11 @@ public class GuiStellarConfig extends GuiScreen implements IConfigHandler {
     protected void mouseMovedOrUp(int x, int y, int mouseEvent)
     {
     	handler.mouseMovedOrUp(x, y, mouseEvent);
+	}
+    
+	public void mouseClickMove(int mouseX, int mouseY, int lastButtonClicked, long timeSinceMouseClick)
+	{
+		handler.mouseClickMove(mouseX, mouseY, lastButtonClicked, timeSinceMouseClick);
 	}
 
     /**

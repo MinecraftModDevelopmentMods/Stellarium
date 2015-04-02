@@ -4,6 +4,10 @@ import java.util.List;
 
 import stellarium.config.core.ICategoryEntry;
 
+/**
+ * Interface for Configuration Management.
+ * NOTE: There is only one instance of this class per configuration while running Minecraft.
+ * */
 public interface IStellarConfig {
 	
 	/**
