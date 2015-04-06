@@ -2,12 +2,6 @@ package stellarium.stellars.orbit;
 
 import java.util.ArrayList;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import stellarium.initials.CCertificateHelper;
-import stellarium.initials.CConstructReader.CExistenceProperty;
-import stellarium.initials.CConstructReader.CProperty;
-import stellarium.initials.CTranslateManager;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.cbody.CBody;
 import stellarium.util.*;
@@ -20,7 +14,7 @@ public class Orbitse extends OrbitMv {
 	public double a, e;
 	public UpDouble w=new UpDouble(),
 			M=new UpDouble();
-	
+	/*
 	protected double wbar, wbard, L;
 	
 	protected boolean IsMajor;
@@ -167,5 +161,12 @@ public class Orbitse extends OrbitMv {
 	@Override
 	public double GetAvgRot() {
 		return M.vald;
+	}
+	
+	*/
+	@Override
+	public void RegisterOrbit() {
+		// TODO Auto-generated method stub
+		
 	}
 }

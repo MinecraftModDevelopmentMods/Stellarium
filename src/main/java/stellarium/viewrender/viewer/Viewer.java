@@ -49,7 +49,7 @@ public class Viewer {
 	public void OnRender(double part){
 		CurVp.Setpartial(part);
 		rm.PreRenderAdd();
-		RenderOrbit(manager.mvmanager.CSystem, part);
+		//RenderOrbit(manager.mvmanager.CSystem, part);
 		rm.PostRenderAdd();
 		rm.Render();
 	}

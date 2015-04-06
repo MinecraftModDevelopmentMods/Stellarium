@@ -7,8 +7,8 @@ import com.google.common.collect.Lists;
 import stellarium.config.ConfigDataRegistry;
 import stellarium.config.core.StellarConfiguration;
 import stellarium.config.file.FileCfgManager;
-import stellarium.config.gui.gui.IGuiCfgMultipleProvider;
-import stellarium.config.gui.gui.IGuiCfgProvider;
+import stellarium.gui.config.IGuiCfgMultipleProvider;
+import stellarium.gui.config.IGuiCfgProvider;
 
 public class StellarCfgGuiMProvider implements IGuiCfgMultipleProvider {
 	

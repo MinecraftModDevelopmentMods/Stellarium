@@ -8,8 +8,6 @@ import scala.Int;
 import sciapi.api.value.euclidian.EVector;
 import stellarium.util.*;
 import stellarium.util.math.*;
-import stellarium.initials.*;
-import stellarium.initials.CConstructReader.*;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.*;
 import stellarium.stellars.cbody.*;
@@ -35,9 +33,7 @@ public abstract class Orbit {
 	
 	
 	public StellarSettings manager;
-	
-	public CConstructReader conreader = new CConstructReader();
-	
+		
 	
 	abstract public void RegisterOrbit();
 	
@@ -46,7 +42,7 @@ public abstract class Orbit {
 	public static final String Virtual= "V";
 	public static final String MassP= "M";
 	public static final String CBType= "T";
-
+/*
 	protected CModes virbody;
 	
 	protected CExistenceProperty PVirtual;

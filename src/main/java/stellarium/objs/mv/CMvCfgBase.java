@@ -323,6 +323,9 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 	
 	@Override
 	public void onPostCreated(IConfigCategory cat) {
+		if(cat.isImmutable())
+			return;
+		
 		formatEntryCategory(cat);
 		
 		if(findEntry(cat.getCategoryEntry()) == null)

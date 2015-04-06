@@ -2,10 +2,6 @@ package stellarium.stellars.orbit;
 
 import java.util.ArrayList;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import stellarium.initials.CConstructReader.CProperty;
-import stellarium.initials.CTranslateManager;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.cbody.CBody;
 import stellarium.util.math.*;
@@ -16,12 +12,9 @@ public class OrbitSt extends Orbit {
 
 	
 	public void RegisterOrbit(){
-		CTranslateManager.AddTranslation("Stationary", "S");
-		
-		CTranslateManager.AddTranslation("Position", PPos);
 	}
 
-
+/*
 	protected CProperty PrPos;
 	protected double Di = 0.0, Lo = 0.0, La = 0.0;
 
@@ -52,5 +45,5 @@ public class OrbitSt extends Orbit {
 	public void Update(double yr) {
 		super.Update(yr);
 	}
-
+*/
 }

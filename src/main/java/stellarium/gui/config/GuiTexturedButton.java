@@ -1,4 +1,4 @@
-package stellarium.config.gui.gui;
+package stellarium.gui.config;
 
 import org.lwjgl.opengl.GL11;
 

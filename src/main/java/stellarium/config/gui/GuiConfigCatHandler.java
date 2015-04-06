@@ -191,7 +191,7 @@ public class GuiConfigCatHandler implements ICategoryHandler, Iterable<IGuiCfgPr
 	}
 
 	public IGuiCfgPropElement getElement(int index) {
-		int elemNum; 
+		int elemNum;
 		for(StellarConfigProperty property : category.getPropList()) {
 			elemNum = this.getPropHandler(property).getElementNum();
 			if(index < elemNum)

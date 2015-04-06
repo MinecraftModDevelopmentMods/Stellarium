@@ -257,23 +257,21 @@ public class CategoryNode implements ICategoryEntry {
 			if(this.getChildEntry(name) != null)
 				return this.getChildEntry(name).getCategory();
 			
-			else if(this.getCategory().isImmutable())
+			else if(!this.isRootEntry() && this.getCategory().isImmutable())
 				return null;
 		}
 				
 		
 		CategoryNode parent = option.isOnSameLevel()? this.parent : this;
 		
-		StellarConfigCategory copiedCategory = cfg.newCategory(parent, name);
+		StellarConfigCategory copiedCategory = cfg.copyCategory(parent, name, category);
 		
 		if(copiedCategory == null)
 			return null;
 		
 		addNewNode(copiedCategory, option, null);
 		
-		cfg.postCreated(copiedCategory);
-		
-		copiedCategory.copy(category);
+		cfg.postCopied(copiedCategory, category);
 		
 		return copiedCategory;
 	}

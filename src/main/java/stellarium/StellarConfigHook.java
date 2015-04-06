@@ -1,9 +1,13 @@
 package stellarium;
 
+import java.io.File;
+
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import stellarium.settings.StellarSettings;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class StellarConfigHook {
@@ -12,13 +16,20 @@ public class StellarConfigHook {
 	
 	protected Property Mag_Limit, turb, Moon_Frac;
 	
-	public StellarConfigHook(Configuration config)
+	public StellarConfigHook(File file)
 	{
-		this.config = config;
+		this.config = new Configuration(file);
+        FMLCommonHandler.instance().bus().register(this);
+	}
+	
+	public void onPreInit() {
+		this.onLoad();
 	}
 	
 	public void onLoad()
 	{
+		config.load();
+
         Mag_Limit=config.get(Configuration.CATEGORY_GENERAL, "Mag_Limit", 5.0);
         Mag_Limit.comment="Limit of magnitude can be seen on naked eye.\n" +
         		"If you want to increase FPS, you can set this property a bit little (e.g. 0.3)\n" +
@@ -48,13 +59,18 @@ public class StellarConfigHook {
         Moon_Frac.setMinValue(0);
                 
         StellarSettings.ImgFrac=Moon_Frac.getInt(16);
+        
+		config.save();
+   	}
+	
+	public ConfigCategory getCategory(String category) {
+		return config.getCategory(category);
 	}
 	
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
 	{
 		if(event.modID == Stellarium.modid)
-			onLoad();
+			this.onLoad();
 	}
-
 }

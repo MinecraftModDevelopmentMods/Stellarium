@@ -5,8 +5,8 @@ import net.minecraft.client.resources.I18n;
 import stellarium.config.ConfigDataRegistry;
 import stellarium.config.EnumCategoryType;
 import stellarium.config.core.StellarConfiguration;
-import stellarium.config.gui.gui.GuiStellarConfigMain;
-import stellarium.config.gui.gui.IGuiCfgProvider;
+import stellarium.gui.config.GuiStellarConfigMain;
+import stellarium.gui.config.IGuiCfgProvider;
 import stellarium.lang.CLangStrs;
 
 public class StellarConfigGuiProvider implements IGuiCfgProvider {

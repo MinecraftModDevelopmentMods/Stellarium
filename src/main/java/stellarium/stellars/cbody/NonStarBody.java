@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import cpw.mods.fml.relauncher.*;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
-import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.CShade;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.Color;
@@ -42,12 +41,11 @@ public abstract class NonStarBody extends CBody {
 	}
 	
 	public void Certificate(){
-		ParStarBody=manager.Star;
-		CCertificateHelper cch=null;
+	/*	ParStarBody=manager.Star;
 		if(this.Mass > cch.StarLimit)
 			cch.Unstable(Name+"'s Mass is too big, it is going to be a Star!");
 		if(this.Albedo > 1.0)
-			cch.IllegalConfig(Name+"'s Albedo should be smaller than 1.0.");
+			cch.IllegalConfig(Name+"'s Albedo should be smaller than 1.0.");*/
 	}
 	
 	

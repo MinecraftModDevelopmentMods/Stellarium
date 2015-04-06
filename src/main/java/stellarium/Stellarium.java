@@ -17,9 +17,8 @@ import stellarium.catalog.StellarCatalogRegistry;
 import stellarium.config.ConfigDataRegistry;
 import stellarium.config.file.FileCfgManager;
 import stellarium.config.gui.StellarConfigGuiProvider;
-import stellarium.config.gui.gui.DefCfgGuiProvider;
-import stellarium.config.gui.gui.StellarCfgGuiRegistry;
-import stellarium.initials.CConstructManager;
+import stellarium.gui.config.DefCfgGuiProvider;
+import stellarium.gui.config.StellarCfgGuiRegistry;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangStrs;
 import stellarium.settings.StellarSettings;
@@ -51,38 +50,34 @@ public class Stellarium {
         public static Stellarium instance;
         
 //        public static ITickHandler tickhandler=new StellarTickHandler();
-        public StellarSettings manager;
+        private StellarSettings manager;
         
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
         
         //Default Configuration
-        public StellarConfigHook cfghook;
+        private StellarConfigHook cfghook;
         
         //Stellar Configuration
-        public FileCfgManager filemanager;
+        private FileCfgManager filemanager;
         
-        //Catalog
-        public CCatalogCfgData catdata;
+        //Catalog Data
+        private CCatalogCfgData catdata;
         
-        public Configuration config;
+        
+		public StellarConfigHook getCfgHook() {
+			return cfghook;
+		}
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
         	//Default Configurations
-            config = new Configuration(event.getSuggestedConfigurationFile());
-            cfghook = new StellarConfigHook(config);
-            
-            config.load();
-            cfghook.onLoad();
-            config.save();
-            
-            FMLCommonHandler.instance().bus().register(cfghook);
-            
+            cfghook = new StellarConfigHook(event.getSuggestedConfigurationFile());
+            cfghook.onPreInit();         
             
             //File Side Configuration Manager
             filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
- 
+            
             //Loads Catalog
             StellarCatalogRegistry.onLoad();
             
@@ -91,10 +86,11 @@ public class Stellarium {
             ConfigDataRegistry.register(CPropLangStrs.catalog, catdata, catdata);
             
             
+            //Setup Stellar Settings
             manager = new StellarSettings();
 			StellarSettings.InitializeStars();
 			
-			
+			//Proxy Settings
 			proxy.initSided(manager);
 			proxy.initCfgGui(filemanager);
 			
@@ -104,18 +100,15 @@ public class Stellarium {
         
         @EventHandler
         public void load(FMLInitializationEvent event) {
-        	
         	ConfigDataRegistry.onFormat();
         	filemanager.onFormat();
         	filemanager.onApply();
         	
 			StellarSettings.Initialize();
-        	
         }
         
         @EventHandler
         public void postInit(FMLPostInitializationEvent event) {
-        	        	
         	DimensionManager.unregisterDimension(0);
         	DimensionManager.unregisterProviderType(0);
         	DimensionManager.registerProviderType(0, StellarWorldProvider.class, true);

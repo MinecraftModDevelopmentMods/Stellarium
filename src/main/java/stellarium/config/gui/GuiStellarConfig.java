@@ -19,7 +19,7 @@ import stellarium.config.core.StellarConfigCategory;
 import stellarium.config.core.StellarConfiguration;
 import stellarium.config.core.handler.ICategoryHandler;
 import stellarium.config.core.handler.IConfigHandler;
-import stellarium.config.gui.gui.GuiDetailedMessage;
+import stellarium.gui.config.GuiDetailedMessage;
 import stellarium.lang.CPropLangUtil;
 
 public class GuiStellarConfig extends GuiScreen implements IConfigHandler {

@@ -62,12 +62,12 @@ public class ViewPoint {
 		IsFixedVp=true;
 		HostCBody=hostcbody;
 		
-		SetLCV(manager.mvmanager.CSystem);
+		//SetLCV(manager.mvmanager.CSystem);
 	}
 	
 	public void InitVp(StellarSettings m){
 		manager=m;
-		SetLCV(manager.mvmanager.CSystem);
+		//SetLCV(manager.mvmanager.CSystem);
 	}
 	
 	protected void SetLCV(Orbit orb){
@@ -100,7 +100,7 @@ public class ViewPoint {
 	}
 	
 	protected void UpdateCSystem() {
-		this.UpdateOrbit(manager.mvmanager.CSystem);
+		//this.UpdateOrbit(manager.mvmanager.CSystem);
 	}
 	
 	protected void UpdateOrbit(Orbit corb){
@@ -145,7 +145,7 @@ public class ViewPoint {
 	
 	protected void UpdateInf() {
 		//Leaving Gravitational Influence Sphere
-		if(this.OrbInf instanceof OrbitMv){
+		/*if(this.OrbInf instanceof OrbitMv){
 			OrbitMv orb=(OrbitMv)OrbInf;
 			if(orb.Hill_Radius < mapotol.get(orb).Dist){
 				this.OrbInf=OrbInf.ParOrbit;
@@ -162,7 +162,7 @@ public class ViewPoint {
 				this.OrbInf=orb;
 				return;
 			}
-		}
+		}*/
 	}
 
 	

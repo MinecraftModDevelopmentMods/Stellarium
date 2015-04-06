@@ -79,8 +79,11 @@ public class IntegerContent implements IGuiCfgPropContent {
                     || eventKey == Keyboard.KEY_LEFT || eventKey == Keyboard.KEY_RIGHT || eventKey == Keyboard.KEY_HOME || eventKey == Keyboard.KEY_END) {
                 this.textFieldValue.textboxKeyTyped((this.isEnabled ? eventChar : Keyboard.CHAR_NONE), eventKey);
             
-            	theElement.setValue(Integer.valueOf(textFieldValue.getText()));
-            	property.updateValue();
+                if(!textFieldValue.getText().equals("")) 
+                {
+                	theElement.setValue(Integer.valueOf(textFieldValue.getText()));
+                	property.updateValue();
+                }
             }
         }
 	}

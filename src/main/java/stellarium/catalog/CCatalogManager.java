@@ -41,12 +41,11 @@ public class CCatalogManager {
 					else return -1;
 				}
 				
-			}); 
+			});
 		
 	public CCatalogManager(StellarManager par) {
 		parent = par;
 	}
-	
 	
 	protected void addCatalog(IStellarCatalog cat)
 	{
@@ -54,7 +53,6 @@ public class CCatalogManager {
 		finds.add(cat);
 		renders.add(cat);
 	}
-	
 	
 	public void setupCatalogs(String cid, ICatalogDataHandler handler)
 	{

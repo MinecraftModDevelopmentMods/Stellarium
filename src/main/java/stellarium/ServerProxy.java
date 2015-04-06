@@ -9,7 +9,7 @@ public class ServerProxy implements BaseProxy {
 
 	@Override
 	public void initSided(StellarSettings m) {
-		m.side = Side.CLIENT;
+		m.side = Side.SERVER;
 		
 		FMLCommonHandler.instance().bus().register(new StellarTickHandler(m.side));
 	}

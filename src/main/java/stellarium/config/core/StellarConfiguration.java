@@ -18,6 +18,7 @@ import stellarium.config.ILoadSaveHandler;
 import stellarium.config.IStellarConfig;
 import stellarium.config.core.handler.IConfigHandler;
 import stellarium.config.json.JsonCfgCatHandler;
+import stellarium.config.util.CfgCategoryIterator;
 
 public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
@@ -30,10 +31,11 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
 	protected List<ICfgArrMListener> listenList = Lists.newArrayList();
 	
-	protected EnumCategoryType cattype = EnumCategoryType.List;
+	protected EnumCategoryType cattype;
 	protected ICategoryEntry root;
 	
 	private boolean loadingSuccess = true;
+	private boolean modifiable, warn;
 	
 	public StellarConfiguration(ConfigDataRegistry.ConfigRegistryData regdata)
 	{
@@ -63,7 +65,6 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	{
 		this.invhandler = inverthandler;
 	}
-	
 
 	public IConfigHandler getInvHandler() {
 		return invhandler;
@@ -72,12 +73,14 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
 	@Override
 	public void setCategoryType(EnumCategoryType t) {
-		cattype = t;
-		
-		root = t.getRootEntry(this);
-		handler.setCategoryType(t);
-		if(invhandler != null)
-			invhandler.setCategoryType(t);
+		if(cattype != t) {
+			cattype = t;	
+			root = t.getRootEntry(this);
+			
+			handler.setCategoryType(t);
+			if(invhandler != null)
+				invhandler.setCategoryType(t);
+		}
 	}
 	
 	public EnumCategoryType getCategoryType() {
@@ -86,6 +89,8 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
 	@Override
 	public void setModifiable(boolean modif, boolean warn) {
+		this.modifiable = modif;
+		this.warn = warn;
 		handler.setModifiable(modif, warn);
 		if(invhandler != null)
 			invhandler.setModifiable(modif, warn);
@@ -194,6 +199,50 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 			list.onMigrate(theCategory, prevEntry);
 	}
 	
+	public StellarConfigCategory copyCategory(ICategoryEntry parent, String name, IConfigCategory catFrom)
+	{
+		for(ICfgArrMListener list : listenList)
+		{
+			if(!list.canCreate(parent, name))
+				return null;
+		}
+		
+		if(cattype.isConfigList())
+		{
+			StellarConfigCatCfg category = new StellarConfigCatCfg(this, name);
+			
+			StellarConfiguration subConfig = new StellarConfiguration(name, 
+					formatter.getSubFormatter(name), data.getSubData(name));
+			
+			category.setSubConfig(subConfig.setHandler(handler.getNewSubCfg(subConfig)));
+			
+			if(invhandler != null)
+				subConfig.setInvHandler(invhandler.getNewSubCfg(subConfig));
+			
+			return category;
+		} else {
+			StellarConfigCategory category = new StellarConfigCategory(this, name);
+			
+			return category;
+		}
+	}
+	
+	public void postCopied(StellarConfigCategory theCategory, IConfigCategory catFrom) {
+		
+		theCategory.setHandler(handler.getNewCat(theCategory));
+		if(invhandler != null)
+			theCategory.setInvHandler(invhandler.getNewCat(theCategory));
+		
+		theCategory.copy(catFrom);
+		
+		handler.onPostCreated(theCategory);
+		if(invhandler != null)
+			invhandler.onPostCreated(theCategory);
+		
+		for(ICfgArrMListener list : listenList)
+			list.onPostCreated(theCategory);
+	}
+	
 	public boolean preNameChange(StellarConfigCategory theCategory, String name) {
 		return handler.isValidNameChange(theCategory, name);
 	}
@@ -210,6 +259,16 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
 	@Override
 	public void loadCategories() {
+		CfgCategoryIterator iterator = new CfgCategoryIterator(this);
+		while(iterator.hasNext()) {
+			StellarConfigCategory category = (StellarConfigCategory) iterator.next();
+			for(ICfgArrMListener list : listenList)
+			{
+				list.canCreate(category.getCategoryEntry().getParentEntry(), category.getName());
+				list.onPostCreated(category);
+			}
+		}
+		
 		handler.loadCategories(this);
 	}
 
@@ -222,14 +281,57 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
 	@Override
 	public void onFormat() {
+		if(this.cattype != null)
+			this.onRefresh();
+		
 		formatter.formatConfig(this);
+		
+		if(this.cattype != null && cattype.isConfigList())
+		{
+			CfgCategoryIterator iterator = new CfgCategoryIterator(this);
+			while(iterator.hasNext()) {
+				StellarConfigCatCfg category = (StellarConfigCatCfg) iterator.next();
+				category.subhandler.onFormat();
+			}
+		}
+	}
+
+	private void onRefresh() {
+		listenList.clear();
+		
+		CfgCategoryIterator iterator = new CfgCategoryIterator(this);
+		
+		while(iterator.hasNext()) {
+			StellarConfigCategory category = (StellarConfigCategory) iterator.next();
+			category.onRefresh();
+		}
+		
+		handler.setCategoryType(this.cattype);
+		if(invhandler != null)
+			invhandler.setCategoryType(this.cattype);
+		
+		this.setModifiable(this.modifiable, this.warn);
+		
+		iterator = new CfgCategoryIterator(this);
+		while(iterator.hasNext()) {
+			StellarConfigCategory category = (StellarConfigCategory) iterator.next();
+			category.setHandler(handler.getNewCat(category));
+			handler.onPostCreated(category);
+			
+			if(this.invhandler != null)
+			{
+				category.setInvHandler(invhandler.getNewCat(category));
+				invhandler.onPostCreated(category);
+			}
+		}
 	}
 
 	@Override
 	public void onApply() {
 		data.applyConfig(this);
-		if(loadingSuccess && invhandler != null)
+		if(this.loadingSuccess && invhandler != null)
 			invhandler.onSave(this);
+		
 		this.loadingSuccess = true;
 	}
 

@@ -159,17 +159,15 @@ public class CategoryListRoot implements ICategoryEntry {
 			return this.getChildEntry(name).getCategory();
 		
 		
-		StellarConfigCategory copiedCategory = config.newCategory(this, name);
+		StellarConfigCategory copiedCategory = config.copyCategory(this, name, category);
 		
 		if(copiedCategory == null)
 			return null;
 		
 		addNewEntry(copiedCategory);
 		
-		config.postCreated(copiedCategory);
-		
-		copiedCategory.copy(category);
-		
+		config.postCopied(copiedCategory, category);
+				
 		return copiedCategory;
 	}
 	

@@ -1,4 +1,4 @@
-package stellarium.config.gui.gui;
+package stellarium.gui.config;
 
 import cpw.mods.fml.client.config.GuiConfig;
 import stellarium.Stellarium;
@@ -19,7 +19,7 @@ public class DefCfgGuiProvider implements IGuiCfgProvider {
 
 	@Override
 	public GuiScreen getCfgGui(GuiStellarConfigMain parScreen) {
-		return new GuiConfig(parScreen, new ConfigElement(Stellarium.instance.config.getCategory(category)).getChildElements(),
+		return new GuiConfig(parScreen, new ConfigElement(Stellarium.instance.getCfgHook().getCategory(category)).getChildElements(),
 				Stellarium.modid, Stellarium.name, false, false, I18n.format(CLangStrs.defaultConfig));
 	}
 

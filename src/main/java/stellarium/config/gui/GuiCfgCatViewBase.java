@@ -7,7 +7,7 @@ import stellarium.config.IConfigCategory;
 import stellarium.config.core.EnumPosOption;
 import stellarium.config.core.ICategoryEntry;
 import stellarium.config.core.StellarConfigCategory;
-import stellarium.config.gui.gui.GuiTexturedButton;
+import stellarium.gui.config.GuiTexturedButton;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangUtil;
 import net.minecraft.client.Minecraft;

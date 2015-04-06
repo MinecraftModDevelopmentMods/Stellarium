@@ -1,22 +1,26 @@
 package stellarium.stellars.orbit;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
-import stellarium.initials.CCertificateHelper;
 import stellarium.stellars.cbody.CBody;
 import stellarium.util.UpDouble;
 import stellarium.util.math.*;
 
 public abstract class OrbitMv extends Orbit {
-	
+
+	public double Hill_Radius;
+	public IEVector Pol;
+
+	public double GetAvgRot() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	/*
 	public UpDouble i=new UpDouble(), Om=new UpDouble();
 	
 	public EVector Pol = new EVector(3);
 	
-	public double Hill_Radius;
 	
 	public void PreCertificate(){
 		super.PreCertificate();
@@ -65,5 +69,5 @@ public abstract class OrbitMv extends Orbit {
 	
 	
 	@SideOnly(Side.SERVER)
-	abstract protected void HillRadius();
+	abstract protected void HillRadius()*/
 }

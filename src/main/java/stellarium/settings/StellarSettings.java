@@ -6,21 +6,18 @@ import java.sql.Time;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import stellarium.initials.*;
 import stellarium.stellars.Earth;
 import stellarium.stellars.Moon;
 import stellarium.stellars.Planet;
 import stellarium.stellars.Sun;
 import stellarium.stellars.background.BrStar;
 import stellarium.stellars.cbody.StarBody;
-import stellarium.stellars.moving.StellarMvManager;
 import stellarium.stellars.orbit.*;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
 import stellarium.viewrender.render.CRenderEngine;
 import stellarium.viewrender.render.StellarRenders;
 import stellarium.viewrender.viewer.*;
-import stellarium.world.StellarWorldManager;
 
 public class StellarSettings {
 	
@@ -35,23 +32,11 @@ public class StellarSettings {
 	public static Planet Saturn=new Planet();
 	public static Planet Uranus=new Planet();
 	public static Planet Neptune=new Planet();
-	
-	
-	//Managers
-	public StellarInitManager initmanager;
-	public StellarMvManager mvmanager;
-	//public StellarDataManager datamanager;
-	public StellarWorldManager worldmanager;
 
-	
 	public StellarRenders render;
 	public Viewer viewer;
-	
-	
+
 	public StarBody Star;
-	
-	
-	
 	
 	public static final double AU=1.496e+8;
 	
@@ -73,43 +58,7 @@ public class StellarSettings {
 	
 	public StellarSettings(){
 		CRenderEngine.instance=new CRenderEngine();
-		
-		initmanager = new StellarInitManager(this);
-		mvmanager = new StellarMvManager(this);
-		worldmanager = new StellarWorldManager(this);
 	}
-	
-	
-	public void OpenWorld() throws IOException{
-		OrbitSt CSystem;
-		
-		if(!side.isClient()){
-			CSystem = initmanager.ConstructSystem();
-		}
-		else{
-			render = new StellarRenders();
-			viewer = new Viewer();
-			viewer.SetViewer(this);
-			CSystem = initmanager.ConstructSystem();
-		}
-		
-		mvmanager.OpenWorld(CSystem);
-	}
-	
-	public void OpenWorld(String[] CWorld){
-		OrbitSt CSystem;
-		
-		if(side.isClient()){
-			CSystem = initmanager.ConstructSystem(CWorld);
-			
-			mvmanager.OpenWorld(CSystem);
-		}
-	}
-	
-	public void CloseWold(){
-		mvmanager.CloseWorld();
-	}
-	
 
 	
 	//Initialization Fuction

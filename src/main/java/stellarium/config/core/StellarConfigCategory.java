@@ -34,6 +34,8 @@ public class StellarConfigCategory implements IConfigCategory {
 	protected Map<String, List> proprels = Maps.newHashMap();
 	
 	protected boolean isImmutable = false;
+	
+	private Map<String, IPropertyRelation> prels = Maps.newHashMap();
 
 	public StellarConfigCategory(StellarConfiguration config, String name)
 	{
@@ -47,11 +49,20 @@ public class StellarConfigCategory implements IConfigCategory {
 	public void setHandler(ICategoryHandler handler) {
 		if(handler == null)
 			this.handler = new NullCategoryHandler();
-		else this.handler = handler;
+		else {
+			this.handler = handler;
+			
+			for(StellarConfigProperty property : proplist)
+				property.setHandler(handler.getNewProp(property));
+		}
 	}
 	
 	public void setInvHandler(ICategoryHandler invhandler) {
 		this.invhandler = invhandler;
+		
+		if(this.invhandler != null)
+			for(StellarConfigProperty property : proplist)
+				property.setInvHandler(invhandler.getNewProp(property));
 	}
 	
 	@Override
@@ -101,6 +112,11 @@ public class StellarConfigCategory implements IConfigCategory {
 		
 		return true;
 	}
+	
+	protected void onRefresh() {
+		proprels.clear();
+		prels.clear();
+	}
 
 	
 	@Override
@@ -119,10 +135,10 @@ public class StellarConfigCategory implements IConfigCategory {
 		for(StellarConfigProperty fromProp : rcat.getPropList()) {
 			IConfigProperty toProp = this.addProperty(fromProp.type, fromProp.name, fromProp.def);
 			
-			temp = toProp.isEnabled();
+			toProp.setExpl(fromProp.expl);
 			toProp.simSetEnabled(true);
 			toProp.simSetVal(fromProp.getVal());
-			toProp.simSetEnabled(temp);
+			toProp.simSetEnabled(fromProp.enabled);
 		}
 	}
 
@@ -165,6 +181,8 @@ public class StellarConfigCategory implements IConfigCategory {
 		
 		for(PropertyRelation pr : lr)
 		{
+			prels.remove(pr.proprel.getRelationToolTip());
+			
 			handler.onPropertyRelationRemoved(pr);
 			if(invhandler != null)
 				invhandler.onPropertyRelationRemoved(pr);
@@ -202,6 +220,10 @@ public class StellarConfigCategory implements IConfigCategory {
 	@Override
 	public void addPropertyRelation(IPropertyRelation rel,
 			IConfigProperty... relprops) {
+		if(prels.containsKey(rel.getRelationToolTip()))
+			return;
+		
+		prels.put(rel.getRelationToolTip(), rel);
 		
 		PropertyRelation pr = new PropertyRelation(rel, relprops);
 		

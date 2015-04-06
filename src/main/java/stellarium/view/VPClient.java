@@ -29,7 +29,7 @@ public class VPClient extends ViewPoint {
 	}
 	
 	public void Setpartial(double part){
-		this.Setpartial(part, manager.mvmanager.CSystem);
+		//this.Setpartial(part, manager.mvmanager.CSystem);
 		
 		Zen.set(DZen.Get(part));
 		North.set(DNorth.Get(part));

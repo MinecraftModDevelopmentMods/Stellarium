@@ -191,17 +191,15 @@ public class CategoryListEntry implements ICategoryEntry {
 		else if(category.isImmutable())
 			return null;
 		
-		StellarConfigCategory copiedCategory = root.config.newCategory(this.root, name);
+		StellarConfigCategory copiedCategory = root.config.copyCategory(this.root, name, category);
 		
 		if(copiedCategory == null)
 			return null;
 		
 		addNewEntry(copiedCategory, option, null);
 		
-		root.config.postCreated(copiedCategory);
-		
-		copiedCategory.copy(category);
-		
+		root.config.postCopied(copiedCategory, category);
+				
 		return copiedCategory;
 	}
 	

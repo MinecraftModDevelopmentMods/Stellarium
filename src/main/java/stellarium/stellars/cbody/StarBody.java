@@ -4,7 +4,6 @@ import stellarium.settings.StellarSettings;
 import stellarium.stellars.local.LocalCValue;
 import stellarium.stellars.orbit.OrbitMv;
 import stellarium.stellars.orbit.OrbitSt;
-import stellarium.initials.*;
 import stellarium.util.math.*;
 import stellarium.view.ViewPoint;
 import stellarium.viewrender.render.RBase;
@@ -19,15 +18,13 @@ public class StarBody extends CBody {
 	
 	@Override
 	public void RegisterCBody() {
-		CTranslateManager.AddTranslation("Temp", PTemp);
-		CTranslateManager.AddTranslation("Temperature", PTemp);
-		CTranslateManager.AddTranslation("Luminosity", PLum);
+
 	}
 	
 	public void Construct(String[] ConBody){
 		InitLum=false;
-		if(manager.Star!=null)
-			CCertificateHelper.IllegalConfig("Two Stars are not supported (until 0.2.0)");
+		if(manager.Star!=null);
+//			CCertificateHelper.IllegalConfig("Two Stars are not supported (until 0.2.0)");
 		else manager.Star=this; 
 			
 		super.Construct(ConBody);
@@ -58,9 +55,9 @@ public class StarBody extends CBody {
 	}
 	
 	public void Certificate(){
-		CCertificateHelper cch=null;
-		if(this.Mass < cch.StarLimit)
-			cch.Unstable(Name+" lacks Mass to be a Star!");
+//		CCertificateHelper cch=null;
+	//	if(this.Mass < cch.StarLimit)
+	//		cch.Unstable(Name+" lacks Mass to be a Star!");
 	}
 	
 	

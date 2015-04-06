@@ -23,8 +23,8 @@ import stellarium.config.IStellarConfig;
 import stellarium.config.core.EnumPosOption;
 import stellarium.config.core.ICategoryEntry;
 import stellarium.config.core.StellarConfigCategory;
-import stellarium.config.gui.gui.GuiTexturedButton;
 import stellarium.config.util.CConfigUtil;
+import stellarium.gui.config.GuiTexturedButton;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangUtil;
 

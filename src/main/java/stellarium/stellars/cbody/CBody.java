@@ -10,7 +10,6 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
-import stellarium.initials.CCertificateHelper;
 import stellarium.lighting.*;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.*;
@@ -135,11 +134,10 @@ public abstract class CBody {
 	}
 	
 	public void Certificate(){
-		CCertificateHelper cch = null;
-		if(IsResonant && theOrbit instanceof OrbitSt)
-			cch.IllegalConfig(this.Name+"can't be Resonant for It is on Stationary Orbit.");
-		if((theOrbit instanceof OrbitMv) && ((OrbitMv)theOrbit).Hill_Radius < this.Radius)
-			cch.Unstable("The Celestial Body "+this.Name+" Is Going to be Shattered!");
+		if(IsResonant && theOrbit instanceof OrbitSt);
+//			cch.IllegalConfig(this.Name+"can't be Resonant for It is on Stationary Orbit.");
+		if((theOrbit instanceof OrbitMv) && ((OrbitMv)theOrbit).Hill_Radius < this.Radius);
+//			cch.Unstable("The Celestial Body "+this.Name+" Is Going to be Shattered!");
 
 	}
 	

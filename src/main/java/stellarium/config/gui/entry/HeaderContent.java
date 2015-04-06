@@ -9,9 +9,9 @@ import stellarium.config.element.IPropElement;
 import stellarium.config.gui.ConfigGuiUtil;
 import stellarium.config.gui.GuiConfigCatEntry;
 import stellarium.config.gui.GuiConfigCatHandler.GuiPropertyRelation;
-import stellarium.config.gui.gui.GuiTexturedButton;
 import stellarium.config.gui.GuiPropertyHandler;
 import stellarium.config.gui.GuiStellarConfig;
+import stellarium.gui.config.GuiTexturedButton;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangUtil;
 

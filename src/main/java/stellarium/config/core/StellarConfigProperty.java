@@ -14,7 +14,7 @@ import stellarium.config.element.*;
 public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	protected StellarConfigCategory par; 
-	protected String name, type;
+	protected String name, type, expl;
 	protected IConfigPropHandler<T> handle;
 	protected boolean singular = false;
 	
@@ -45,27 +45,25 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 		
 		handle.onSetVal(this, def);
 		
+		this.addElementToPropHandler(prophandler);
+		if(propinvhandler != null)
+			this.addElementToPropHandler(propinvhandler);
+	}
+	
+	private void addElementToPropHandler(IPropertyHandler handler) {
 		for(int i = 0; i < namelist.size(); i++) {
 			String subname = namelist.get(i);
 			IPropElement propel = ellist.get(i);
 			
 			if(propel instanceof IDoubleElement)
 			{
-				prophandler.onElementAdded(subname, (IDoubleElement) propel);
-				if(propinvhandler != null)
-					propinvhandler.onElementAdded(subname, (IDoubleElement) propel);
+				handler.onElementAdded(subname, (IDoubleElement) propel);
 			} else if(propel instanceof IIntegerElement) {
-				prophandler.onElementAdded(subname, (IIntegerElement) propel);
-				if(propinvhandler != null)
-					propinvhandler.onElementAdded(subname, (IIntegerElement) propel);
+				handler.onElementAdded(subname, (IIntegerElement) propel);
 			} else if(propel instanceof IStringElement) {
-				prophandler.onElementAdded(subname, (IStringElement) propel);
-				if(propinvhandler != null)
-					propinvhandler.onElementAdded(subname, (IStringElement) propel);
+				handler.onElementAdded(subname, (IStringElement) propel);
 			} else if(propel instanceof IEnumElement) {
-				prophandler.onElementAdded(subname, (IEnumElement) propel);
-				if(propinvhandler != null)
-					propinvhandler.onElementAdded(subname, (IEnumElement) propel);
+				handler.onElementAdded(subname, (IEnumElement) propel);
 			}
 		}
 	}
@@ -81,10 +79,13 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	public void setHandler(IPropertyHandler prophandler) {
 		this.prophandler = prophandler;
+		this.addElementToPropHandler(prophandler);
 	}
 	
 	public void setInvHandler(IPropertyHandler propinvhandler) {
 		this.propinvhandler = propinvhandler;
+		if(propinvhandler != null)
+			this.addElementToPropHandler(propinvhandler);
 	}
 	
 	public StellarConfigCategory getCategory() {
@@ -193,6 +194,8 @@ public class StellarConfigProperty<T> implements IMConfigProperty<T> {
 	
 	@Override
 	public IConfigProperty<T> setExpl(String expl) {
+		this.expl = expl;
+		
 		prophandler.setExpl(expl);
 		if(propinvhandler != null)
 			propinvhandler.setExpl(expl);

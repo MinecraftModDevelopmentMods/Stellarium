@@ -79,9 +79,12 @@ public class DoubleContent implements IGuiCfgPropContent {
                     || eventKey == Keyboard.KEY_BACK || eventKey == Keyboard.KEY_DELETE || eventKey == Keyboard.KEY_LEFT || eventKey == Keyboard.KEY_RIGHT
                     || eventKey == Keyboard.KEY_HOME || eventKey == Keyboard.KEY_END) {
                 this.textFieldValue.textboxKeyTyped((this.isEnabled ? eventChar : Keyboard.CHAR_NONE), eventKey);
-            
-                theElement.setValue(Double.valueOf(textFieldValue.getText()));
-                property.updateValue();
+                
+                if(!textFieldValue.getText().equals(""))
+                {
+                	theElement.setValue(Double.valueOf(textFieldValue.getText()));
+                	property.updateValue();
+                }
             }
         }
 	}
