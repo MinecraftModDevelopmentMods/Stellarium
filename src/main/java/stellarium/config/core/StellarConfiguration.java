@@ -3,6 +3,7 @@ package stellarium.config.core;
 import java.util.List;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
@@ -22,7 +23,7 @@ import stellarium.config.util.CfgCategoryIterator;
 
 public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	
-	public final String title;
+	public String title;
 	protected final IConfigFormatter formatter;
 	protected final IConfigurableData data;
 	
@@ -74,7 +75,7 @@ public class StellarConfiguration implements IStellarConfig, ILoadSaveHandler {
 	@Override
 	public void setCategoryType(EnumCategoryType t) {
 		if(cattype != t) {
-			cattype = t;	
+			cattype = t;
 			root = t.getRootEntry(this);
 			
 			handler.setCategoryType(t);

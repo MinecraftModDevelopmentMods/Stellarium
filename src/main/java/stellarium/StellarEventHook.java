@@ -11,7 +11,7 @@ public class StellarEventHook {
 	{
 		if(e.world.provider.dimensionId == 0 || e.world.provider.dimensionId == -1)
 		{
-			e.world.provider.setSkyRenderer(new DrawSky());
+			Stellarium.proxy.setSkyRenderer(e.world.provider);
 		}
 	}
 	

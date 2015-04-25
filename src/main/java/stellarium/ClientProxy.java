@@ -1,5 +1,8 @@
 package stellarium;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -12,14 +15,11 @@ import stellarium.gui.config.StellarCfgGuiRegistry;
 import stellarium.lang.CLangStrs;
 import stellarium.settings.StellarSettings;
 
-
 public class ClientProxy implements BaseProxy {
 
 	@Override
 	public void initSided(StellarSettings m) {
 		m.side = Side.CLIENT;
-		
-		FMLCommonHandler.instance().bus().register(new StellarTickHandler(m.side));
 	}
 	
 	@Override
@@ -27,6 +27,16 @@ public class ClientProxy implements BaseProxy {
 	{
 		StellarCfgGuiRegistry.register(new DefCfgGuiProvider(CLangStrs.defaultConfig, Configuration.CATEGORY_GENERAL));
     	StellarCfgGuiRegistry.register(new StellarCfgGuiMProvider(fm));
+	}
+
+	@Override
+	public void setSkyRenderer(WorldProvider provider) {
+		provider.setSkyRenderer(new DrawSky());
+	}
+
+	@Override
+	public World getDefWorld() {
+		return Minecraft.getMinecraft().theWorld;
 	}
 	
 }

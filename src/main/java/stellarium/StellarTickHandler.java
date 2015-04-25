@@ -13,11 +13,11 @@ import cpw.mods.fml.relauncher.Side;
 
 public class StellarTickHandler {
 	
-	Side side;
+	private Side side;
 	
 	public StellarTickHandler(Side pside)
 	{
-		side = pside;
+		this.side = pside;
 	}
 
 	@SubscribeEvent
@@ -31,7 +31,7 @@ public class StellarTickHandler {
 	@SubscribeEvent
 	public void tickStart(TickEvent.ClientTickEvent e) {
 		if(e.phase == Phase.START){
-			World world = Minecraft.getMinecraft().theWorld;
+			World world = Stellarium.proxy.getDefWorld();
 			
 			if(world != null)
 				StellarSettings.Update(world.getWorldTime(), world.provider.isSurfaceWorld());

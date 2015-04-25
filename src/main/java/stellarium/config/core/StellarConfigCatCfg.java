@@ -32,6 +32,17 @@ public class StellarConfigCatCfg extends StellarConfigCategory {
 			subhandler.setInvHandler(config.getInvHandler().getNewSubCfg(subhandler));
 	}
 	
+	@Override
+	public boolean setName(String name) {
+		if(!super.setName(name))
+			return false;
+		
+		subhandler.title = name;
+		
+		return true;
+	}
+	
+	@Override
 	public void copy(IConfigCategory category) {
 		StellarConfigCatCfg cfgcat = (StellarConfigCatCfg) category;
 		StellarConfiguration hcopy = cfgcat.subhandler;

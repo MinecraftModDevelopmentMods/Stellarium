@@ -27,6 +27,18 @@ public class ConfigDataRegistry {
 		ins.cfglist.add(new ConfigRegistryData(title, formatter, data));
 	}
 	
+	/**
+	 * Registers Configurable Data Form.
+	 * @param title the id of the title for this data form.
+	 * @param formatter the configuration formatter for this data form.
+	 * @param data the configurable data.
+	 * @param handler the physical handler provider, to handle physical configuration.
+	 * */
+	public static void register(String title, IConfigFormatter formatter, IConfigurableData data, IPhysicalHandlerProvider handler)
+	{
+		ins.cfglist.add(new ConfigRegistryData(title, formatter, data, handler));
+	}
+	
 	public static ImmutableList<ConfigRegistryData> getImmutableList()
 	{
 		return ImmutableList.copyOf(ins.cfglist);
@@ -55,12 +67,19 @@ public class ConfigDataRegistry {
 		public final String title;
 		public final IConfigFormatter formatter;
 		public final IConfigurableData data;
+		public final IPhysicalHandlerProvider handler;
 		
 		public ConfigRegistryData(String title, IConfigFormatter formatter, IConfigurableData data)
+		{
+			this(title, formatter, data, null);
+		}
+		
+		public ConfigRegistryData(String title, IConfigFormatter formatter, IConfigurableData data, IPhysicalHandlerProvider handler)
 		{
 			this.title = title;
 			this.formatter = formatter;
 			this.data = data;
+			this.handler = handler;
 		}
 		
 		@Override

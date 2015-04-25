@@ -35,20 +35,19 @@ public class StellarMvCatalog implements IStellarCatalogProvider<StellarMvLogica
 	public StellarMvLogical provideCatalogData(boolean isPhysical) {
 		return isPhysical? new StellarMv(this, renderId) : new StellarMvLogical(this);
 	}
+
+	@Override
+	public StellarMvLogical providePhysicalData(StellarMvLogical logical) {
+		StellarMv mv = new StellarMv(this, renderId);
+		formatter.formatMv(logical, mv);
+		return mv;
+	}
 	
 	@Override
 	public IStellarCatalog provideCatalog(StellarManager manager, StellarMvLogical data) {
-		if(data instanceof StellarMv)
-		{
-			StellarMv mv = (StellarMv) data;
-			mv.setManager(manager);
-			return mv;
-		}
-		else {
-			StellarMv mv = new StellarMv(manager, this, renderId);
-			formatter.formatMv(data, mv);
-			return mv;
-		}
+		StellarMv mv = (StellarMv) data;
+		mv.setManager(manager);
+		return mv;
 	}
 	
 	@Override

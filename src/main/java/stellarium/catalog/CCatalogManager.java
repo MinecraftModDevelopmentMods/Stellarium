@@ -14,8 +14,9 @@ public class CCatalogManager {
 	
 	private StellarManager parent;
 	
-	private List<IStellarCatalog> catalog = Lists.newArrayList();
+	protected CCatalogCfgDataPhysical catalogData;
 	
+	private List<IStellarCatalog> catalog = Lists.newArrayList();
 	
 	private List<IStellarCatalog> findlist = Lists.newArrayList();
 	private PriorityQueue<IStellarCatalog> finds = new PriorityQueue(
@@ -54,9 +55,9 @@ public class CCatalogManager {
 		renders.add(cat);
 	}
 	
-	public void setupCatalogs(String cid, ICatalogDataHandler handler)
+	public void setupCatalogs()
 	{
-		for(IStellarCatalogData data : handler.getData(cid))
+		for(IStellarCatalogData data : this.catalogData)
 		{
 			IStellarCatalog cat = data.getProvider().provideCatalog(parent, data);
 			
@@ -64,24 +65,6 @@ public class CCatalogManager {
 				addCatalog(cat);
 		}
 		
-		endSetup();
-	}
-	
-	public void setupCatalogs(ICatalogDataHandler handler)
-	{
-		for(IStellarCatalogData data : handler.getDefaultData())
-		{
-			IStellarCatalog cat = data.getProvider().provideCatalog(parent, data);
-			
-			if(!cat.isDisabled())
-				addCatalog(cat);
-		}
-		
-		endSetup();
-	}
-	
-	public void endSetup()
-	{
 		while(!finds.isEmpty())
 			findlist.add(finds.poll());
 		
@@ -98,5 +81,29 @@ public class CCatalogManager {
 	public Iterator<IStellarCatalog> getItetoRender()
 	{
 		return renderlist.iterator();
+	}
+
+	
+	public IConfigFormatter createPhysicalFormatter(
+			ICatalogDataHandler formatter, CCatalogAdditionalData addData) {
+		ICCatalogDataSet dataset;
+		if("".equals(addData.getContext()))
+			dataset = formatter.getDefaultData();
+		else dataset = formatter.getData(addData.getContext());
+		
+		return this.catalogData = new CCatalogCfgDataPhysical(dataset);
+	}
+
+	public IConfigurableData createPhysicalData(ICatalogDataHandler data,
+			CCatalogAdditionalData addData) {
+		return this.catalogData;
+	}
+
+	public IConfigFormatter createPhysicalFormatter() {
+		return this.catalogData = new CCatalogCfgDataPhysical();
+	}
+
+	public IConfigurableData createPhysicalData() {
+		return this.catalogData;
 	}
 }

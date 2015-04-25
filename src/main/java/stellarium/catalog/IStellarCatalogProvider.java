@@ -11,14 +11,20 @@ public interface IStellarCatalogProvider<T extends IStellarCatalogData> {
 	
 	/**
 	 * Provides new catalog data.
-	 * @param isPhysical flag for physical(saving/packet) check.
+	 * @param isPhysical flag for physical(saving/packet) check
 	 * */
 	public T provideCatalogData(boolean isPhysical);
 	
 	/**
+	 * Provides physical copy of logical catalog data.
+	 * @param logical logical catalog data
+	 * */
+	public T providePhysicalData(T logical);
+	
+	/**
 	 * Provides new catalog.
-	 * @param manager the StellarManager instance.
-	 * @param data catalog data for 
+	 * @param manager the StellarManager instance
+	 * @param data physical catalog data
 	 * */
 	public IStellarCatalog provideCatalog(StellarManager manager, T data);
 	

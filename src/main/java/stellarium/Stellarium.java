@@ -15,12 +15,14 @@ import net.minecraftforge.common.config.Property;
 import stellarium.catalog.CCatalogCfgData;
 import stellarium.catalog.StellarCatalogRegistry;
 import stellarium.config.ConfigDataRegistry;
+import stellarium.config.core.ConfigDataPhysicalManager;
 import stellarium.config.file.FileCfgManager;
 import stellarium.config.gui.StellarConfigGuiProvider;
 import stellarium.gui.config.DefCfgGuiProvider;
 import stellarium.gui.config.StellarCfgGuiRegistry;
 import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangStrs;
+import stellarium.network.StellarNetworkHandler;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.orbit.*;
 import stellarium.stellars.cbody.*;
@@ -33,6 +35,8 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.*;
 import cpw.mods.fml.relauncher.Side;
@@ -55,6 +59,8 @@ public class Stellarium {
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
         
+        private StellarNetworkHandler netHandler;
+        
         //Default Configuration
         private StellarConfigHook cfghook;
         
@@ -65,8 +71,12 @@ public class Stellarium {
         private CCatalogCfgData catdata;
         
         
+        public StellarNetworkHandler getNetHandler() {
+			return this.netHandler;
+		}
+        
 		public StellarConfigHook getCfgHook() {
-			return cfghook;
+			return this.cfghook;
 		}
         
         @EventHandler
@@ -82,7 +92,7 @@ public class Stellarium {
             StellarCatalogRegistry.onLoad();
             
             //creates Logical Catalog Cfg Data. For GUI & Text Config.            
-            catdata = new CCatalogCfgData(false);
+            catdata = new CCatalogCfgData();
             ConfigDataRegistry.register(CPropLangStrs.catalog, catdata, catdata);
             
             
@@ -94,8 +104,13 @@ public class Stellarium {
 			proxy.initSided(manager);
 			proxy.initCfgGui(filemanager);
 			
-			
+			//Event Handlers
+			FMLCommonHandler.instance().bus().register(new StellarTickHandler(manager.side));
 			MinecraftForge.EVENT_BUS.register(new StellarEventHook());
+
+			//Networking
+			netHandler = new StellarNetworkHandler();
+			FMLCommonHandler.instance().bus().register(netHandler);
         }
         
         @EventHandler
@@ -116,7 +131,18 @@ public class Stellarium {
         }
         
         @EventHandler
-        public void onServerLoad(FMLServerStartingEvent event) {
-        	StellarManager.resetManager(Side.SERVER);
+        public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+        	event.getServer();
         }
+        
+        @EventHandler
+        public void onServerStarting(FMLServerStartingEvent event) {
+        	ConfigDataPhysicalManager.getManager(Side.SERVER).onFormatServer(event.getServer().worldServers[0]);
+        }
+        
+        @EventHandler
+        public void onServerStarted(FMLServerStartedEvent event) {
+        	
+        }
+        
 }

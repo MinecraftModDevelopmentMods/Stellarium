@@ -27,7 +27,6 @@ public class FileCfgManager implements ILoadSaveHandler {
 
 	@Override
 	public void onFormat() {
-		
 		for(ConfigDataRegistry.ConfigRegistryData data : ConfigDataRegistry.getImmutableList())
 		{
 			StellarConfiguration handler = ConfigDataRegistry.getConfig(data);

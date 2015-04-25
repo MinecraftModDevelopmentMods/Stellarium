@@ -16,16 +16,13 @@ import stellarium.config.IStellarConfig;
 import stellarium.config.core.EnumPosOption;
 import stellarium.config.core.ICategoryEntry;
 
-public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, IConfigFormatter, ICfgArrMListener {
+public class CCatalogCfgData implements ICatalogDataHandler, ICfgArrMListener {
 	
-	public Map<String, CCatalogData> datamap = Maps.newHashMap();
-	public boolean isPhysical;
+	private Map<String, CCatalogData> dataMap = Maps.newHashMap();
 	
-	public CCatalogCfgData(boolean isPhysical)
+	public CCatalogCfgData()
 	{
-		this.isPhysical = isPhysical;
-		
-		datamap.put("Default", new CCatalogData(isPhysical));
+		dataMap.put("Default", new CCatalogData());
 	}
 	
 	@Override
@@ -34,16 +31,21 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	}
 	
 	private CCatalogData getDataRawType(String id) {
-		if(!datamap.containsKey(id))
+		if(!dataMap.containsKey(id))
 			throw new IllegalArgumentException("Wrong ID: " + id);
-		return datamap.get(id);
+		return dataMap.get(id);
 	}
 
 	@Override
 	public ICCatalogDataSet getDefaultData() {
-		if(datamap.isEmpty())
+		if(dataMap.isEmpty())
 			throw new IllegalStateException("Empty Catalog Data; Might be connection error");
-		return (ICCatalogDataSet) datamap.values().toArray()[0];
+		for(String id : dataMap.keySet())
+		{
+			if(!id.equals("Default"))
+				return dataMap.get(id);
+		}
+		return dataMap.get("Default");
 	}
 
 	
@@ -57,7 +59,7 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 		
 		cfg.loadCategories();
 		
-		for(String name : datamap.keySet())
+		for(String name : dataMap.keySet())
 		{
 			cfg.getRootEntry().createCategory(name, EnumPosOption.Child);
 		}
@@ -85,17 +87,17 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 	
 	@Override
 	public boolean canCreate(ICategoryEntry parent, String name) {
-		if(datamap.containsKey(name))
+		if(dataMap.containsKey(name))
 			return true;
 		
-		datamap.put(name, new CCatalogData(isPhysical));
+		dataMap.put(name, new CCatalogData());
 		
 		return true;
 	}
 	
 	@Override
 	public void onRemove(IConfigCategory cat) {
-		datamap.remove(cat.getName());
+		dataMap.remove(cat.getName());
 	}
 
 	@Override
@@ -112,56 +114,11 @@ public class CCatalogCfgData implements ICatalogDataHandler, IConfigurableData, 
 
 	@Override
 	public void onNameChange(IConfigCategory cat, String before) {
-		if(!datamap.containsKey(before))
+		if(!dataMap.containsKey(before))
 			return;
 		
-		CCatalogData data = datamap.remove(before);
-		datamap.put(cat.getName(), data);
-	}
-	
-	
-	public class CCatalogData implements ICCatalogDataSet, IConfigurableData, IConfigFormatter {
-		
-		private boolean isPhysical;
-		private Map<String, IStellarCatalogData> datamap = Maps.newHashMap();
-		
-		public CCatalogData(boolean isPhysical)
-		{
-			this.isPhysical = isPhysical;
-			
-			for(IStellarCatalogProvider prov : StellarCatalogRegistry.getProvList())
-				datamap.put(prov.getCatalogName(), prov.provideCatalogData(isPhysical));
-		}
-
-		@Override
-		public void formatConfig(IStellarConfig cfg) {
-			cfg.setCategoryType(EnumCategoryType.ConfigList);
-			
-			for(IStellarCatalogData data : this)
-				cfg.getRootEntry().createCategory(data.getProvider().getCatalogName(), EnumPosOption.Child);
-		}
-
-		@Override
-		public void applyConfig(IStellarConfig config) { }
-
-		@Override
-		public void saveConfig(IStellarConfig config) { }
-
-		@Override
-		public Iterator<IStellarCatalogData> iterator() {
-			return datamap.values().iterator();
-		}
-
-		
-		@Override
-		public IConfigFormatter getSubFormatter(String name) {
-			return datamap.get(name);
-		}
-
-		@Override
-		public IConfigurableData getSubData(String name) {
-			return datamap.get(name);
-		}
+		CCatalogData data = dataMap.remove(before);
+		dataMap.put(cat.getName(), data);
 	}
 
 }
