@@ -1,9 +1,10 @@
 package stellarium;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.relauncher.Side;
-import stellarium.catalog.StellarCatalogRegistry;
 import stellarium.config.file.FileCfgManager;
 import stellarium.settings.StellarSettings;
 

@@ -50,10 +50,6 @@ public class StellarNetworkHandler {
 		return organizer.get(Side.CLIENT);
 	}
     
-    public void finishClientOrganization() {
-		organizer.get(Side.CLIENT).onSetupClient();
-	}
-    
     public void finishServerOrganization() {
     	organizer.get(Side.SERVER).onSetupServer();
     }
@@ -67,13 +63,18 @@ public class StellarNetworkHandler {
 	public void onServerConnectionFromClient(FMLNetworkEvent.ServerConnectionFromClientEvent event) {
 		if(event.handler instanceof NetHandlerPlayServer) {
 			NetHandlerPlayServer handler = (NetHandlerPlayServer) event.handler;
-			network.sendTo(new InitialConnectionMessage(ConfigDataPhysicalManager.getManager(Side.SERVER).getAdditionalDataMap()),
+			network.sendTo(new InitialConnectionMessage(organizer.get(Side.SERVER).getNodeCount(), ConfigDataPhysicalManager.getManager(Side.SERVER).getAdditionalDataMap()),
 					handler.playerEntity);
 		}
+	}
+    
+	public void onConnectedToServer(int nodeCount) {
+		organizer.get(Side.CLIENT).setTotalCount(nodeCount);
 	}
     
 	public void onConnectionReply(EntityPlayerMP player) {
 		organizer.get(Side.SERVER).sendConfigTo(player);
 	}
+
 	
 }

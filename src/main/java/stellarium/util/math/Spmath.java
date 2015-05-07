@@ -211,4 +211,8 @@ public class Spmath {
 	public static double MagToLum(double Mag){
 		return Math.pow(10.0, (-26.74) - Mag/2.5);
 	}
+	
+	public static double LumToMag(double Lum) {
+		return 2.5 * (-26.74 - Math.log10(Lum));
+	}
 }

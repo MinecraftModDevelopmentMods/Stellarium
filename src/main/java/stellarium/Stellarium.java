@@ -26,6 +26,7 @@ import stellarium.network.StellarNetworkHandler;
 import stellarium.settings.StellarSettings;
 import stellarium.stellars.orbit.*;
 import stellarium.stellars.cbody.*;
+import stellarium.view.StellarVPManager;
 import stellarium.world.StellarWorldProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -59,10 +60,14 @@ public class Stellarium {
         @SidedProxy(clientSide="stellarium.ClientProxy", serverSide="stellarium.ServerProxy")
         public static BaseProxy proxy;
         
+        //Network Handler
         private StellarNetworkHandler netHandler;
         
         //Default Configuration
         private StellarConfigHook cfghook;
+        
+        //ViewPoint Manager
+        private StellarVPManager vpManager = new StellarVPManager();
         
         //Stellar Configuration
         private FileCfgManager filemanager;
@@ -74,6 +79,10 @@ public class Stellarium {
         public StellarNetworkHandler getNetHandler() {
 			return this.netHandler;
 		}
+        
+        public StellarVPManager getVPManager() {
+        	return this.vpManager;
+        }
         
 		public StellarConfigHook getCfgHook() {
 			return this.cfghook;
@@ -94,7 +103,6 @@ public class Stellarium {
             //creates Logical Catalog Cfg Data. For GUI & Text Config.            
             catdata = new CCatalogCfgData();
             ConfigDataRegistry.register(CPropLangStrs.catalog, catdata, catdata);
-            
             
             //Setup Stellar Settings
             manager = new StellarSettings();
@@ -131,13 +139,12 @@ public class Stellarium {
         }
         
         @EventHandler
-        public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
-        	event.getServer();
+        public void onServerAboutToStart(FMLServerAboutToStartEvent event) {        	
+        	ConfigDataPhysicalManager.getManager(Side.SERVER).onFormatServer(event.getServer());
         }
         
         @EventHandler
         public void onServerStarting(FMLServerStartingEvent event) {
-        	ConfigDataPhysicalManager.getManager(Side.SERVER).onFormatServer(event.getServer().worldServers[0]);
         }
         
         @EventHandler

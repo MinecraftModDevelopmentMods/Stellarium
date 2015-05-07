@@ -1,12 +1,11 @@
 package stellarium.catalog;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import stellarium.config.IConfigAdditionalData;
 
 public class CCatalogAdditionalData implements IConfigAdditionalData {
 
+	private static String TAG = "CATALOG_SET";
 	private String selected = "";
 	
 	public CCatalogAdditionalData() { }
@@ -20,13 +19,13 @@ public class CCatalogAdditionalData implements IConfigAdditionalData {
 	}
 
 	@Override
-	public void fromBytes(ByteBuf buf) {
-		this.selected = ByteBufUtils.readUTF8String(buf);
+	public void fromNBT(NBTTagCompound comp) {
+		selected = comp.getString(TAG);
 	}
 
 	@Override
-	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeUTF8String(buf, this.selected);
+	public void toNBT(NBTTagCompound comp) {
+		comp.setString(TAG, this.selected);
 	}
 
 }

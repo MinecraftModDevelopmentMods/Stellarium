@@ -48,6 +48,11 @@ public class StellarManager implements IPhysicalHandler<ICatalogDataHandler, ICa
 	}
 	
 	
+	public void updateTick(long worldTime) {
+		catalog.updateTick(worldTime);
+	}
+	
+	
 	@Override
 	public void endSetup() {
 		catalog.setupCatalogs();

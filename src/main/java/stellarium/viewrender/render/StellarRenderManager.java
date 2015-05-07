@@ -43,7 +43,7 @@ public class StellarRenderManager {
 	
 	public void PreRenderAdd(){
 		if(viewer.CurVp.HostCBody!=null) {
-			LocalCValue lcv=viewer.CurVp.mapotoln.get(viewer.CurVp.HostCBody);
+			LocalCValue lcv=new LocalCValue();
 			RHost host = viewer.CurVp.HostCBody.RenderHost(lcv)
 					.SetHor(viewer.CurVp.Zen, viewer.CurVp.North, viewer.CurVp.East);
 			if(!CCDMode)
@@ -59,7 +59,7 @@ public class StellarRenderManager {
 	}
 	
 	public void AddCBodyforRender(CBody body, double part){
-		LocalCValue lcv=viewer.CurVp.mapotoln.get(body.theOrbit);
+		LocalCValue lcv=new LocalCValue();
 		if(viewer.CurVp.HostCBody != null && body == viewer.CurVp.HostCBody){
 			return;
 		}

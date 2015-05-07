@@ -1,13 +1,20 @@
 package stellarium.config.core;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.SaveHandler;
+import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 import stellarium.Stellarium;
 import stellarium.config.ConfigDataRegistry.ConfigRegistryData;
 import stellarium.config.*;
+import stellarium.config.save.ConfigAdditionalDataSet;
 import stellarium.config.save.ConfigSaveDataSet;
 
 import com.google.common.collect.ImmutableList;
@@ -34,6 +41,9 @@ public class ConfigDataPhysicalManager {
 	private Map<String, StellarConfiguration> cfgmap = Maps.newHashMap();
 	private ImmutableMap<String, IConfigAdditionalData> dataMap;
 	private ImmutableMap<String, IPhysicalHandler> handlerMap;
+	
+	private ConfigAdditionalDataSet addDataSet;
+	private ConfigSaveDataSet cfgDataSet;
 	
 	public ConfigDataPhysicalManager(boolean isRemote) {
 		this.isRemote = isRemote;
@@ -63,13 +73,25 @@ public class ConfigDataPhysicalManager {
 		cfgmap.put(data.title, new StellarConfiguration(data));
 	}
 	
-	public Map<String, IConfigAdditionalData> getCfgAdditionalDataMap() {
+	public Map<String, IConfigAdditionalData> getDefaultAdditionalDataMap() {
 		Builder<String, IConfigAdditionalData> builder = ImmutableMap.builder();
 		
 		for(ConfigRegistryData data : ConfigDataRegistry.getImmutableList())
 		{
 			if(data.handler != null)
 				builder.put(data.title, data.handler.provideAdditionalData());
+		}
+		
+		return dataMap = builder.build();
+	}
+	
+	public Map<String, IConfigAdditionalData> getFormattedAdditionalDataMap(WorldInfo worldInfo) {
+		Builder<String, IConfigAdditionalData> builder = ImmutableMap.builder();
+		
+		for(ConfigRegistryData data : ConfigDataRegistry.getImmutableList())
+		{
+			if(data.handler != null)
+				builder.put(data.title, data.handler.provideFormattedAdditionalData(worldInfo));
 		}
 		
 		return dataMap = builder.build();
@@ -118,26 +140,36 @@ public class ConfigDataPhysicalManager {
 	}
 	
 	
+	private static SaveHandler getSaveHandler(MinecraftServer server) {
+        if (server.worldServers.length > 0 && server.worldServers[0] != null)
+        {
+            return ((SaveHandler)server.worldServers[0].getSaveHandler());
+        }
+        SaveHandler saveHandler = (SaveHandler) server.getActiveAnvilConverter().getSaveLoader(server.getFolderName(), false);
+        return saveHandler;
+	}
+	
 	public void onFormatClient(Map<String, IConfigAdditionalData> addDataMap) {
     	Stellarium.instance.getNetHandler().refreshOrganizer(Side.CLIENT);
 		this.onFormat(addDataMap);
 	}
-
-	public void onFormatServer(WorldServer world) {
-    	Stellarium.instance.getNetHandler().refreshOrganizer(Side.SERVER);
-    	
-		Builder<String, IConfigAdditionalData> builder = ImmutableMap.builder();
+	
+	public void onFormatServer(MinecraftServer server) {
 		
-		for(ConfigRegistryData data : ConfigDataRegistry.getImmutableList())
-		{
-			if(data.handler != null)
-				builder.put(data.title, data.handler.provideFormattedAdditionalData(world));
+		SaveHandler handler = getSaveHandler(server);
+		
+		File location = handler.getWorldDirectory();
+		location.mkdirs();
+		
+		WorldInfo worldInfo = handler.loadWorldInfo();
+		
+		try{
+			this.addDataSet = new ConfigAdditionalDataSet(this, location, worldInfo);
+			this.cfgDataSet = new ConfigSaveDataSet(this, location);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		
-		this.dataMap = builder.build();
-		
-		ConfigSaveDataSet.loadConfigData(world);
-		
+    	
 		Stellarium.instance.getNetHandler().finishServerOrganization();
 		this.onFinishSetup();
 	}
@@ -145,5 +177,16 @@ public class ConfigDataPhysicalManager {
 	public void onFinishSetup() {
 		for(IPhysicalHandler handler : handlerMap.values())
 			handler.endSetup();
+	}
+	
+	public void saveData(File location) {
+		try {
+			if(this.addDataSet != null)
+				addDataSet.saveConfigData(location);
+			if(this.cfgDataSet != null)
+				cfgDataSet.saveConfigData(location);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

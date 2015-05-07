@@ -11,7 +11,7 @@ public interface ISkySet {
 	/**Extinction of this sky settings for specific wavelength & specific position*/
 	public double getExtinction(Wavelength wl, SpCoord pos);
 	
-	/**Background light (pollution) of this sky settings
+	/**Magnitude of background light (pollution) of this sky settings
 	 * for specific wavelength & specific position*/
 	public double getBgLight(Wavelength wl, SpCoord pos);
 }

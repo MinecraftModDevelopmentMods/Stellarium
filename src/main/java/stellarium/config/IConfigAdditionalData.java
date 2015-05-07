@@ -1,19 +1,19 @@
 package stellarium.config;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface IConfigAdditionalData {
 
 	/**
-	 * Reads data from byte buffer.
-	 * @param buf the data buffer
+	 * Reads data from nbt compound.
+	 * @param comp the nbt compound to read
 	 * */
-	public void fromBytes(ByteBuf buf);
+	public void fromNBT(NBTTagCompound comp);
 
 	/**
-	 * Writes data to byte buffer.
-	 * @param buf the data buffer
+	 * Writes data to nbt compound.
+	 * @param buf the nbt compound to write
 	 * */
-	public void toBytes(ByteBuf buf);
+	public void toNBT(NBTTagCompound comp);
 
 }

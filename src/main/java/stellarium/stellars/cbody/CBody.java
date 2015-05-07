@@ -189,9 +189,9 @@ public abstract class CBody {
 	@SideOnly(Side.SERVER)
 	public void GetLocalized(ViewPoint vp, LocalCValue lcv){
 		lcv.Size = Spmath.Degrees(2*Radius/lcv.Dist);
-		lcv.Pol.Set(Pol);
-		lcv.PrMer.Set(PrMer);
-		lcv.East.Set(East);
+		lcv.Pol.set(Pol);
+		lcv.PrMer.set(PrMer);
+		lcv.East.set(East);
 	}
 	
 	@SideOnly(Side.SERVER)

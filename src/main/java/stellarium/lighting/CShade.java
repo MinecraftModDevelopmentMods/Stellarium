@@ -15,7 +15,7 @@ public class CShade {
 	
 	public CShade Get(double part){
 		CShade sh=new CShade();
-		sh.ShadePos.Set(ShadePos.Get(part));
+		sh.ShadePos.set(ShadePos.Get(part));
 		sh.Depth.Set(Depth.Get(part));
 		sh.EffRad.Set(EffRad.Get(part));
 		sh.size_LS.Set(size_LS.Get(part));

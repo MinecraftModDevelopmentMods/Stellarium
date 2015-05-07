@@ -19,28 +19,35 @@ import cpw.mods.fml.relauncher.Side;
 public class InitialConnectionMessage implements IMessage {
 
 	private Map<String, IConfigAdditionalData> dataMap;
+	private int nodeCount;
 	
 	public InitialConnectionMessage() {
-		this.dataMap = ConfigDataPhysicalManager.getManager(Side.CLIENT).getCfgAdditionalDataMap();
+		this.dataMap = ConfigDataPhysicalManager.getManager(Side.CLIENT).getDefaultAdditionalDataMap();
 	}
 	
-	public InitialConnectionMessage(Map<String, IConfigAdditionalData> dataMap) {
+	public InitialConnectionMessage(int nodeCount, Map<String, IConfigAdditionalData> dataMap) {
+		this.nodeCount = nodeCount;
 		this.dataMap = dataMap;
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buf) {
+		nodeCount = buf.readInt();
 		while(buf.isReadable()) {
 			String key = ByteBufUtils.readUTF8String(buf);
-			dataMap.get(key).fromBytes(buf);
+			dataMap.get(key).fromNBT(ByteBufUtils.readTag(buf));
 		}
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
+		buf.writeInt(nodeCount);
 		for(String key : dataMap.keySet()) {
 			ByteBufUtils.writeUTF8String(buf, key);
-			dataMap.get(key).toBytes(buf);
+			
+			NBTTagCompound comp = new NBTTagCompound();
+			dataMap.get(key).toNBT(comp);
+			ByteBufUtils.writeTag(buf, comp);
 		}
 	}
 	
@@ -50,6 +57,7 @@ public class InitialConnectionMessage implements IMessage {
 		public InitialConnectionReply onMessage(InitialConnectionMessage message,
 				MessageContext ctx) {
 	    	ConfigDataPhysicalManager.getManager(Side.CLIENT).onFormatClient(message.dataMap);
+	    	Stellarium.instance.getNetHandler().onConnectedToServer(message.nodeCount);
 	    	
 			return new InitialConnectionReply();
 		}

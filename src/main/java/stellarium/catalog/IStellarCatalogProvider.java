@@ -6,7 +6,7 @@ import stellarium.config.IStellarConfig;
 
 public interface IStellarCatalogProvider<T extends IStellarCatalogData> {
 	
-	/**gives the name of this catalog*/
+	/**Gives the name of this catalog, also used as ID for this catalog*/
 	public String getCatalogName();
 	
 	/**

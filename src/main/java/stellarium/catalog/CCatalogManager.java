@@ -82,6 +82,13 @@ public class CCatalogManager {
 	{
 		return renderlist.iterator();
 	}
+	
+	
+	public void updateTick(long worldTime) {
+		for(IStellarCatalog catalog : this.catalog) {
+			catalog.update(worldTime);
+		}
+	}
 
 	
 	public IConfigFormatter createPhysicalFormatter(
@@ -99,6 +106,7 @@ public class CCatalogManager {
 		return this.catalogData;
 	}
 
+	
 	public IConfigFormatter createPhysicalFormatter() {
 		return this.catalogData = new CCatalogCfgDataPhysical();
 	}

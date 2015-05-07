@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.google.common.collect.Maps;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import stellarium.Stellarium;
 import stellarium.config.IConfigCategory;
 import stellarium.config.core.ConfigDataPhysicalManager;
 import stellarium.config.core.ICategoryEntry;
@@ -20,13 +21,15 @@ public class NetworkCfgOrganizer {
 	private SimpleNetworkWrapper network;
 	private NetworkCfgNode baseNode;
 	private Map<UUID, NetworkCfgNode> nodeMap = Maps.newHashMap();
+	private int countNode, setCount;
 	
 	public NetworkCfgOrganizer(SimpleNetworkWrapper network) {
 		this.network = network;
 	}
 	
-	//Called before sending packet
+	//Called when server about to start, before sending packet
 	public void onSetupServer() {
+		this.countNode = 0;
 		baseNode = new NetworkCfgNode(this, "");
 		
 		for(StellarConfiguration config : ConfigDataPhysicalManager.getManager(Side.SERVER).getImmutableCfgList())
@@ -38,7 +41,7 @@ public class NetworkCfgOrganizer {
 		}
 	}
 	
-	//Called after receiving packet
+	//Called after receiving final configuration packet
 	public void onSetupClient() {
 		for(NetworkCfgNode node : baseNode.getSubNodes())
 		{
@@ -50,6 +53,8 @@ public class NetworkCfgOrganizer {
 	}
 	
 	public NetworkCfgNode addNode(NetworkCfgNode parNode, String title) {
+		if(parNode != null)
+			this.countNode++;
 		return this.addNode(parNode, UUID.randomUUID(), title);
 	}
 	
@@ -65,6 +70,14 @@ public class NetworkCfgOrganizer {
 		nodeMap.remove(node.getID());
 		if(node.hasParent())
 			node.getParent().getSubNodes().remove(node);
+	}
+	
+	public int getNodeCount() {
+		return this.countNode;
+	}
+	
+	public void setTotalCount(int setCount) {
+		this.setCount = setCount;
 	}
 	
 	public void sendConfigTo(EntityPlayerMP player) {
@@ -90,11 +103,20 @@ public class NetworkCfgOrganizer {
 			baseNode = new NetworkCfgNode(this, parentId, "");
 		
 		this.addNode(nodeMap.get(parentId), thisId, title);
+		
+		if(this.countNode == this.setCount)
+			this.onSetupClient();
 	}
 
-	public void receiveCfgInfo(UUID thisId, String context) {
-		NetworkCfgNode node = nodeMap.get(thisId);
+	public void receiveCfgInfo(UUID parentId, UUID thisId, String title, String context) {
+		if(!nodeMap.containsKey(parentId))
+			baseNode = new NetworkCfgNode(this, parentId, "");
+		
+		NetworkCfgNode node = this.addNode(nodeMap.get(parentId), thisId, title);
 		node.setContextString(context);
+		
+		if(this.countNode == this.setCount)
+			this.onSetupClient();
 	}
 	
 }

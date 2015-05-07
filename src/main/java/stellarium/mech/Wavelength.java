@@ -2,7 +2,10 @@ package stellarium.mech;
 
 public class Wavelength {
 
+	/**Wavelength, as nm*/
 	public double wlen;
-	public EnumWavelength type;
 	
+	/**Type of this wavelength*/
+	public EnumWavelength type;
+			
 }

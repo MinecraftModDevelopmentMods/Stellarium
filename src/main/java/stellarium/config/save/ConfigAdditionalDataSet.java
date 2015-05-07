@@ -2,53 +2,46 @@ package stellarium.config.save;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
+import stellarium.config.IConfigAdditionalData;
 import stellarium.config.core.ConfigDataPhysicalManager;
-import stellarium.config.core.StellarConfiguration;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.WorldInfo;
 
-public class ConfigSaveDataSet extends WorldSavedData {
+public class ConfigAdditionalDataSet extends WorldSavedData {
+
+	private static String key = "cfgadddata.dat";
+	private Map<String, IConfigAdditionalData> dataMap;
 	
-	private static final String key = "cfgdata.dat";
-	private List<ConfigSaveData> dataList = Lists.newArrayList();
+	public ConfigAdditionalDataSet(ConfigDataPhysicalManager manager, File location, WorldInfo worldInfo) throws IOException {
+		super(key);
+		this.loadConfigData(manager, location, worldInfo);
+	}
 	
-	public void loadConfigData(ConfigDataPhysicalManager manager, File location) throws IOException {
+	public void loadConfigData(ConfigDataPhysicalManager manager, File location, WorldInfo worldInfo) throws IOException {
 		File file = new File(location, key);
 		
 		if(!location.exists()) {
 			location.createNewFile();
-			manager.onFormatWithLogicalData();
+			dataMap = manager.getFormattedAdditionalDataMap(worldInfo);
 			return;
 		}
 		
-		manager.onFormatToLoad();
+		dataMap = manager.getDefaultAdditionalDataMap();
 		
 		FileInputStream fi = new FileInputStream(location);
 		BufferedInputStream inp = new BufferedInputStream(fi);
 		
 		NBTTagCompound comp = CompressedStreamTools.readCompressed(inp);
 		this.readFromNBT(comp);
-		
-		for(StellarConfiguration config : manager.getImmutableCfgList())
-			dataList.add(new ConfigSaveData(config));
 	}
 
 	public void saveConfigData(File location) throws IOException {
@@ -56,7 +49,7 @@ public class ConfigSaveDataSet extends WorldSavedData {
 		
 		if(!location.exists())
 			location.createNewFile();
-				
+		
 		NBTTagCompound comp = new NBTTagCompound();
 		this.writeToNBT(comp);
 
@@ -66,23 +59,17 @@ public class ConfigSaveDataSet extends WorldSavedData {
 		CompressedStreamTools.writeCompressed(comp, outp);
 	}
 	
-	public ConfigSaveDataSet(ConfigDataPhysicalManager manager, File location) throws IOException {
-		super(key);
-		this.loadConfigData(manager, location);
-	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
-		for(ConfigSaveData data : dataList) {
-			data.readFromNBT(tag.getCompoundTag(data.getTitle()));
-		}
+		for(Map.Entry<String, IConfigAdditionalData> entry : dataMap.entrySet())
+			entry.getValue().fromNBT(tag.getCompoundTag(entry.getKey()));
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
-		for(ConfigSaveData data : dataList) {
-			data.writeToNBT(tag.getCompoundTag(data.getTitle()));
-		}
+		for(Map.Entry<String, IConfigAdditionalData> entry : dataMap.entrySet())
+			entry.getValue().toNBT(tag.getCompoundTag(entry.getKey()));
 	}
-	
+
 }

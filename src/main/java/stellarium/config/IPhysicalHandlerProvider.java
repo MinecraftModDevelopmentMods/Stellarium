@@ -1,8 +1,8 @@
 package stellarium.config;
 
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.WorldInfo;
 
-public interface IPhysicalHandlerProvider<CF extends IConfigFormatter, CD extends IConfigurableData> {
+public interface IPhysicalHandlerProvider {
 	
 	/**
 	 * Provides the physical handler before physical environment is established.
@@ -17,9 +17,8 @@ public interface IPhysicalHandlerProvider<CF extends IConfigFormatter, CD extend
 	
 	/**
 	 * Provides formatted additional data for physical environment.
-	 * (Server side)
-	 * @param world loaded overworld instance
+=	 * @param world loaded overworld instance
 	 * */
-	public IConfigAdditionalData provideFormattedAdditionalData(WorldServer world);
+	public IConfigAdditionalData provideFormattedAdditionalData(WorldInfo worldInfo);
 	
 }

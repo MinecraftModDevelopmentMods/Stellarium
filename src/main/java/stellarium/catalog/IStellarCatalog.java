@@ -27,7 +27,7 @@ public interface IStellarCatalog extends IConfigurableData {
 	/**
 	 * called by TickHandler to update this catalog.
 	 * */
-	public void update(int tick);
+	public void update(long worldTime);
 	
 	/**
 	 * gives the list of Stellar Objects in the catalog within certain (circular) range.

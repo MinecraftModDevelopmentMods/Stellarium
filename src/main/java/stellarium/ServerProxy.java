@@ -1,5 +1,6 @@
 package stellarium;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import cpw.mods.fml.common.FMLCommonHandler;

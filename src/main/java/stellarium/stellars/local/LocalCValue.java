@@ -19,9 +19,9 @@ public class LocalCValue {
 		get.Pos.set(this.Pos);
 		get.Dist = this.Dist;
 		
-		get.Pol.Set(Pol.Get(part));
-		get.PrMer.Set(PrMer.Get(part));
-		get.East.Set(East.Get(part));
+		get.Pol.set(Pol.Get(part));
+		get.PrMer.set(PrMer.Get(part));
+		get.East.set(East.Get(part));
 //		get.Size.Set(Size.Get(part));
 		get.Size=this.Size;
 	}

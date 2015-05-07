@@ -43,8 +43,7 @@ public class ConfigInfoMessage extends ConfigEntryMessage implements IMessage {
 		public IMessage onMessage(ConfigInfoMessage message, MessageContext ctx) {
 			
 			NetworkCfgOrganizer organizer = Stellarium.instance.getNetHandler().getClientOrganizer();
-			organizer.receiveConfig(message.getParentID(), message.getID(), message.getTitle());
-			organizer.receiveCfgInfo(message.getID(), message.context);
+			organizer.receiveCfgInfo(message.getParentID(), message.getID(), message.getTitle(), message.context);
 			
 			NetworkCfgNode node = organizer.getNetNode(message.getID());
 			if(node.hasLoadFailMessage())

@@ -50,7 +50,7 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 		manager = mn;
 	}
 	
-	public void update(int tick) {
+	public void update(long tick) {
 		
 		for(CMvEntry entry : this)
 		{

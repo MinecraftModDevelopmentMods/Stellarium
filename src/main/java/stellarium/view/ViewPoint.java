@@ -28,7 +28,7 @@ public class ViewPoint {
 	
 	//Gravitational Influence Orbit
 	public Orbit OrbInf;
-	
+
 	//Lattitude/Longitude (Degrees)
 	public double lat, lon;
 	
@@ -40,16 +40,12 @@ public class ViewPoint {
 	
 	//EcRPos of Viewpoint
 	public EVector EcRPos = new EVector(3);
-	
-	//Maps for LocalCValues
-	public Map<Orbit, LocalCValue> mapotol=new HashMap<Orbit, LocalCValue>();
-	public Map<LocalCValue, Orbit> mapltoo=new HashMap<LocalCValue, Orbit>();
 
 	
 	//The StellarManager
 	public StellarSettings manager;
 	
-	public ISkySet skyset;
+	private ISkySet skyset;
 	
 	public ISkySet getSkySet()
 	{
@@ -69,22 +65,6 @@ public class ViewPoint {
 		manager=m;
 		//SetLCV(manager.mvmanager.CSystem);
 	}
-	
-	protected void SetLCV(Orbit orb){
-		mapotol.put(orb, new LocalCValue());
-		for(int i=0; i<orb.SatOrbit.size(); i++)
-			SetLCV(orb.SatOrbit.get(i));
-	}
-	
-	public void Update(){
-		UpdateCoordPos();
-		UpdateCSystem();
-		
-		if(!IsFixedVp){
-			UpdateHost();
-			UpdateInf();
-		}
-	}
 
 	protected void UpdateCoordPos(){
 		if(HostCBody!=null){
@@ -96,18 +76,6 @@ public class ViewPoint {
 			EcRPos.set(VecMath.add(HostCBody.theOrbit.Pos, VecMath.mult(HostCBody.Radius+this.HeightAU, Zen)));
 		}
 		else{
-		}
-	}
-	
-	protected void UpdateCSystem() {
-		//this.UpdateOrbit(manager.mvmanager.CSystem);
-	}
-	
-	protected void UpdateOrbit(Orbit corb){
-		LocalCValue lcv=mapotol.get(corb);
-		corb.GetLocalized(this, lcv);
-		for(int i=0; i<corb.SatOrbit.size(); i++){
-			UpdateOrbit(corb.SatOrbit.get(i));
 		}
 	}
 	
@@ -125,7 +93,8 @@ public class ViewPoint {
 	}
 	
 	public CBody FindHostCBody(boolean checksat, Orbit orb){
-		if(!orb.IsVirtual){
+		return HostCBody;
+	/*	if(!orb.IsVirtual){
 			CBody theBody=orb.theBody;
 			LocalCValue lcv=mapotol.get(OrbInf);
 			if(theBody.IsHosting(lcv.Dist-theBody.Radius)){
@@ -140,7 +109,7 @@ public class ViewPoint {
 				if(body!=null) return body;
 			}
 		}
-		return null;
+		return null;*/
 	}
 	
 	protected void UpdateInf() {

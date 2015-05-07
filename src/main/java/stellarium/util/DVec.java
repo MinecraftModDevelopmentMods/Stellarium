@@ -10,12 +10,12 @@ import stellarium.util.math.*;
 public class DVec {
 	public EVector pre, post;
 	
-	public void Set(EVector v){
+	public void set(EVector v){
 		pre=post;
 		post=v;
 	}
 	
-	public void Set(IValRef<EVector> v){
+	public void set(IValRef<EVector> v){
 		if(pre == null)
 			pre = new EVector(3);
 		if(post == null)
@@ -25,7 +25,7 @@ public class DVec {
 		post.set(v);
 	}
 	
-	public EVector Get(){
+	public EVector get(){
 		return post;
 	}
 	
