@@ -5,6 +5,7 @@ import stellarium.mech.OpFilter.WaveFilter;
 import stellarium.mech.Wavelength;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.additive.CAdditive;
+import stellarium.render.CRenderEngine;
 import stellarium.render.ISObjRenderer;
 
 public class CBodyRenderer implements ISObjRenderer {
@@ -26,31 +27,31 @@ public class CBodyRenderer implements ISObjRenderer {
 
 	@Override
 	public void setWaveRender(IStellarObj obj, double radVsRes,
-			double brightness, WaveFilter filter) {
+			double magnitude, WaveFilter filter) {
 		if(obj instanceof CBody)
 		{
 			CBody ob = (CBody) obj;
-			ob.getCBodyType().getCBodyRenderer().setWaveRender(ob, radVsRes, brightness, filter);
+			ob.getCBodyType().getCBodyRenderer().setWaveRender(ob, radVsRes, magnitude, filter);
 			
 			if(ob.getEntry().hasAdditive())
 			{
 				CAdditive add = ob.getEntry().additive();
-				add.getAdditiveType().getCAdditiveRenderer().setWaveRender(add, radVsRes, brightness, filter);
+				add.getAdditiveType().getCAdditiveRenderer().setWaveRender(add, radVsRes, magnitude, filter);
 			}
 		}
 	}
 
 	@Override
-	public void render(IStellarObj obj, double radVsRes, double brightness) {
+	public void render(CRenderEngine re, IStellarObj obj) {
 		if(obj instanceof CBody)
 		{
 			CBody ob = (CBody) obj;
-			ob.getCBodyType().getCBodyRenderer().render(ob, radVsRes, brightness);
+			ob.getCBodyType().getCBodyRenderer().render(re, ob);
 			
 			if(ob.getEntry().hasAdditive())
 			{
 				CAdditive add = ob.getEntry().additive();
-				add.getAdditiveType().getCAdditiveRenderer().render(add, radVsRes, brightness);
+				add.getAdditiveType().getCAdditiveRenderer().render(re, add);
 			}
 		}
 	}

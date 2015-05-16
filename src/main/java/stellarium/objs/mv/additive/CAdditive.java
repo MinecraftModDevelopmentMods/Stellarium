@@ -1,5 +1,6 @@
 package stellarium.objs.mv.additive;
 
+import sciapi.api.value.euclidian.EVector;
 import stellarium.catalog.EnumCatalogType;
 import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
@@ -31,7 +32,7 @@ public abstract class CAdditive implements IStellarObj {
 	}
 
 	@Override
-	public SpCoord getPos(ViewPoint vp, double partime) {
+	public EVector getPos(ViewPoint vp, double partime) {
 		return entry.cbody().getPos(vp, partime);
 	}
 

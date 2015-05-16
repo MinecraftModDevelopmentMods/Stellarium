@@ -23,6 +23,8 @@ import stellarium.render.CRenderEngine;
 
 public class DetectorEye implements IDetector {
 	
+	private static double DEF_EYELIMIT = 6.0;
+	private static double DEF_FOV = 70.0;
 	private List<RenderLayer> layers = Lists.newArrayList();
 	
 	public void setup() {
@@ -41,11 +43,12 @@ public class DetectorEye implements IDetector {
 		OpFilter filter = viewer.getFilter();
 		IScope scope = viewer.getScope();
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
-		double eyeLimit = 6.0 - 2.5 * Math.log10(scope.getLGP());
+		double eyeLimit = DEF_EYELIMIT + Spmath.lumRatioToMag(scope.getLGP());
+		double fov = DEF_FOV / scope.getMP();
 		
 		for(RenderLayer layer : layers) {
-			if(layer.shouldUpdateRender(time)) {
-				layer.preRender(viewer.getViewPoint(), viewer.getPos(), 70.0 / scope.getMP() / 2);
+			if(layer.shouldUpdateRender(time, scope, viewer.getPos(), fov)) {
+				layer.preRender(re, viewer.getViewPoint(), viewer.getPos(), fov, scope.isFOVCoverSky());
 				
 				for(OpFilter.WaveFilter wfilter : filter.getFilterList()) {
 					double magLimit = Math.min(eyeLimit, skyset.getBgLight(wfilter.wl, viewer.getPos()));
@@ -53,10 +56,10 @@ public class DetectorEye implements IDetector {
 					if(!layer.canRender(magLimit))
 						continue;
 					
-					layer.renderForWave(re, time, wfilter);
+					layer.renderForWave(re, viewer, time, partialTicks, wfilter);
 				}
 				
-				layer.render(re, time);
+				layer.render(re);
 			}
 			
 			layer.loadRendered(re);

@@ -16,6 +16,9 @@ public interface IScope {
 	/**Plate Scale of this scope, only available for CCD-type scopes.*/
 	public double getPlateScale();
 	
+	/**<code>true</code> when FOV of this scope nearly covers the sky.*/
+	public boolean isFOVCoverSky();
+	
 	/**The type of this scope.*/
 	public EnumEyeCCD getType();
 }

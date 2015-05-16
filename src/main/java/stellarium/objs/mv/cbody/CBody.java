@@ -1,6 +1,7 @@
 package stellarium.objs.mv.cbody;
 
 import sciapi.api.value.euclidian.ECoord;
+import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
 import stellarium.catalog.EnumCatalogType;
@@ -39,9 +40,9 @@ public abstract class CBody implements IStellarObj {
 	}
 
 	@Override
-	public SpCoord getPos(ViewPoint vp, double partime) {
-		SpCoord ret = new SpCoord();
-		ret.setWithVec(VOp.normalize((BOp.sub(entry.orbit().getPosition(partime), vp.EcRPos))));
+	public EVector getPos(ViewPoint vp, double partime) {
+		EVector ret = new EVector(3);
+		ret.set(BOp.sub(entry.orbit().getPosition(partime), vp.EcRPos));
 		return ret;
 	}
 	

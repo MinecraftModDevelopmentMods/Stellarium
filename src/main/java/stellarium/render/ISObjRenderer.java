@@ -10,9 +10,9 @@ public interface ISObjRenderer {
 	public void preRender(IStellarObj obj);
 	
 	/**Set object to render the Stellar Object by certain Wavelength*/
-	public void setWaveRender(IStellarObj obj, double radVsRes, double brightness, OpFilter.WaveFilter filter);
+	public void setWaveRender(IStellarObj obj, double radVsRes, double magnitude, OpFilter.WaveFilter filter);
 	
-	/**render object regardless of wavelength (for RGB mode)*/
-	public void render(IStellarObj obj, double radVsRes, double brightness);
+	/**render the object*/
+	public void render(CRenderEngine re, IStellarObj obj);
 	
 }

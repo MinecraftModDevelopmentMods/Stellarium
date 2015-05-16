@@ -134,6 +134,11 @@ public class ViewPoint {
 		}*/
 	}
 
+	public EVector getEcRPos() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 /*	public Vec GetLocPos(Vec TarEcRPos){
 		Vec tar=Vec.Sub(TarEcRPos, EcRPos);

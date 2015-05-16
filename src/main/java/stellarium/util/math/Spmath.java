@@ -215,4 +215,24 @@ public class Spmath {
 	public static double LumToMag(double Lum) {
 		return 2.5 * (-26.74 - Math.log10(Lum));
 	}
+
+	/**Subtracts magnitude*/
+	public static double subMag(double mag, double subMag) {
+		double lum = magToLumRatio(mag);
+		double sublum = magToLumRatio(subMag);
+		return lumRatioToMag(lum - sublum);
+	}
+	
+	public static double magToLumRatio(double mag) {
+		return Math.pow(10.0, -mag / 2.5);
+	}
+	
+	public static double lumRatioToMag(double lum) {
+		return -2.5 * Math.log10(lum);
+	}
+
+	public static double distArc(SpCoord prevDir, SpCoord dir) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -3,6 +3,7 @@ package stellarium.objs.mv.additive;
 import stellarium.mech.OpFilter;
 import stellarium.mech.OpFilter.WaveFilter;
 import stellarium.objs.IStellarObj;
+import stellarium.render.CRenderEngine;
 
 public interface ICAdditiveRenderer {
 	
@@ -12,8 +13,8 @@ public interface ICAdditiveRenderer {
 	/**render the Celestial Additive by certain Wavelength*/
 	public void setWaveRender(CAdditive add, double radVsRes, double brightness, WaveFilter filter);
 
-	/**render object regardless of wavelength, for RGB mode*/
-	public void render(CAdditive obj, double radVsRes, double brightness);
+	/**render object*/
+	public void render(CRenderEngine re, CAdditive add);
 
 	
 }

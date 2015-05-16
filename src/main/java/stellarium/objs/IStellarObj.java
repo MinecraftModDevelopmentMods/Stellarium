@@ -1,5 +1,6 @@
 package stellarium.objs;
 
+import sciapi.api.value.euclidian.EVector;
 import stellarium.catalog.EnumCatalogType;
 import stellarium.mech.Wavelength;
 import stellarium.util.math.SpCoord;
@@ -10,8 +11,8 @@ public interface IStellarObj {
 	/**gives the name of this object*/
 	public String getName();
 	
-	/**gives the position of this object from celestial sphere. (As Ecliptic Coordinate)*/
-	public SpCoord getPos(ViewPoint vp, double partime);
+	/**gives the relative position of this object. (As Ecliptic Coordinate)*/
+	public EVector getPos(ViewPoint vp, double partime);
 
 	/**
 	 * gives the radius for certain wavelength.

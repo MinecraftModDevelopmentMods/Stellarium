@@ -1,6 +1,7 @@
 package stellarium.objs.mv.cbody;
 
 import stellarium.mech.OpFilter;
+import stellarium.render.CRenderEngine;
 
 public interface ICBodyRenderer {
 	
@@ -10,7 +11,7 @@ public interface ICBodyRenderer {
 	/**render the Celestial Body by certain Wavelength*/
 	public void setWaveRender(CBody obj, double radVsRes, double brightness, OpFilter.WaveFilter filter);
 	
-	/**render object regardless of wavelength, for RGB mode*/
-	public void render(CBody obj, double radVsRes, double brightness);
+	/**render object*/
+	public void render(CRenderEngine re, CBody ob);
 	
 }

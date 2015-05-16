@@ -8,7 +8,7 @@ public interface ISkySet {
 	/**Seeing of this sky settings for specific wavelength*/
 	public double getSeeing(Wavelength wl);
 
-	/**Extinction of this sky settings for specific wavelength & specific position*/
+	/**Extinction magnitude of this sky settings for specific wavelength & specific position*/
 	public double getExtinction(Wavelength wl, SpCoord pos);
 	
 	/**Magnitude of background light (pollution) of this sky settings
