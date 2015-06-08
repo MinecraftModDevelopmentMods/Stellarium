@@ -1,5 +1,6 @@
 package stellarium.objs.mv.orbit;
 
+import sciapi.api.value.euclidian.ECoord;
 import stellarium.config.IConfigCategory;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
@@ -72,6 +73,18 @@ public class OrbTStationary implements IOrbitType {
 
 		public OrbitStationary(CMvEntry e) {
 			super(e);
+		}
+		
+		@Override
+		public void update(double year) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public ECoord getOrbCoord(double year) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override

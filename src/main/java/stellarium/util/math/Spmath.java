@@ -231,7 +231,7 @@ public class Spmath {
 		return -2.5 * Math.log10(lum);
 	}
 
-	public static double distArc(SpCoord prevDir, SpCoord dir) {
+	public static double distArc(SpCoord dir1, SpCoord dir2) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

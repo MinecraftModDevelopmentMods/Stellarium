@@ -133,4 +133,8 @@ public class VecMath {
 	{
 		return getCoord(par, 2).asDouble();
 	}
+
+	public static IValRef<EVector> interpolate(EVector prevPos, EVector curPos, double partime) {
+		return add(prevPos, mult(partime, sub(curPos, prevPos)));
+	}
 }

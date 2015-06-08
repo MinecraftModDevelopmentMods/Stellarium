@@ -1,7 +1,10 @@
 package stellarium.objs.mv.cbody;
 
+import sciapi.api.value.IValRef;
+import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.ECoord;
 import sciapi.api.value.euclidian.EVector;
+import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
 import stellarium.catalog.EnumCatalogType;
@@ -9,30 +12,31 @@ import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.stellars.orbit.OrbitMv;
+import stellarium.stellars.orbit.OrbitSt;
+import stellarium.util.math.AxisRotate;
 import stellarium.util.math.SpCoord;
 import stellarium.util.math.SpCoordf;
+import stellarium.util.math.VecMath;
 import stellarium.view.ViewPoint;
 
 public abstract class CBody implements IStellarObj {
 
 	protected CMvEntry entry;
 	
+	protected double w_prec, w_rot;
+	protected ECoord initialCoord;
+	protected boolean isTidalLocked;
+	
 	public CBody(CMvEntry e)
 	{
-		entry = e;
+		this.entry = e;
 	}
 	
 	public CMvEntry getEntry()
 	{
-		return entry;
+		return this.entry;
 	}
-	
-	public void update(double year)
-	{
-		
-	}
-	
-	abstract public double getRadius();
 	
 	@Override
 	public String getName() {
@@ -46,9 +50,33 @@ public abstract class CBody implements IStellarObj {
 		return ret;
 	}
 	
-	public ECoord getCoord(double partime)
+	public abstract void update(double day);
+	
+	/**
+	 * Get the coordinate of this celestial body on the day.
+	 * <li>x axis is pointing North Pole.
+	 * <li>y axis is pointing Prime Meridian.
+	 * <li>z axis is pointing east, which is perpendicular to the x, y axis.
+	 * */
+	public ECoord getCoord(double day)
 	{
-		//TODO Total Stub;
+		double tyr = day / entry.getMain().yr;
+		ECoord orbCoord = entry.orbit().getOrbCoord(tyr);
+				
+		if(this.isTidalLocked) {
+			// TODO rotation code
+			return getRotated(orbCoord, day);
+		} else {
+			//TODO rotation code
+			//Precession needed
+			return getRotated(this.initialCoord, day);
+			//this.w_prec * tyr
+			//this.w_rot * day;
+		}
+	}
+	
+	private ECoord getRotated(ECoord coord, double day) {
+		// TODO Yes it is stub
 		return null;
 	}
 
@@ -58,24 +86,11 @@ public abstract class CBody implements IStellarObj {
 	}
 
 	@Override
-	public double getMag(Wavelength wl) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int getRenderId() {
 		return entry.getMain().renderId;
 	}
 
-	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	abstract public EnumSObjType getType();
+	abstract public double getRadius();
 	
 	abstract public ICBodyType getCBodyType();
 

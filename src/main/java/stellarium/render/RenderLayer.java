@@ -2,6 +2,8 @@ package stellarium.render;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.renderer.Tessellator;
 import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
@@ -9,6 +11,8 @@ import sciapi.api.value.numerics.DDouble;
 import sciapi.api.value.numerics.IReal;
 import stellarium.catalog.IStellarCatalog;
 import stellarium.catalog.IStellarCatalogProvider;
+import stellarium.mech.OpFilter;
+import stellarium.mech.Wavelength;
 import stellarium.mech.OpFilter.WaveFilter;
 import stellarium.objs.IStellarObj;
 import stellarium.util.math.SpCoord;
@@ -30,9 +34,11 @@ public class RenderLayer {
 	private long prevTick;
 	private IScope prevScope;
 	private SpCoord prevDir;
+	private boolean isCoverSky;
 	
-	private boolean rendered = false;
-	
+	private final SingleLayerPartition basePartition;
+	private final SpLayerPartition spPartition;
+		
 	private List<IStellarObj> currentObjs;
 
 	public RenderLayer(IStellarCatalog catalog) {
@@ -40,13 +46,17 @@ public class RenderLayer {
 		this.provider = catalog.getProvider();
 		
 		this.prevTick = -(catalog.getRUpTick() + 1);
+		
+		this.basePartition = new SingleLayerPartition(catalog);
+		this.spPartition = new SpLayerPartition(catalog);
 	}
 	
-	public void updateWidthHeight(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public ILayerPartition getCurrentPartition() {
+		if(this.isCoverSky)
+			return spPartition;
+		return basePartition;
 	}
-	
+
 	public boolean shouldUpdateRender(long time, IScope scope, SpCoord dir, double fov) {
 		boolean timeUpdate = this.prevTick > time || time >= this.prevTick + catalog.getRUpTick();
 		boolean sameScope = this.prevScope == scope;
@@ -56,7 +66,8 @@ public class RenderLayer {
 			this.prevTick = time;
 			this.prevScope = scope;
 			this.prevDir = dir;
-			
+			this.isCoverSky = scope.isFOVCoverSky();
+						
 			return true;
 		} else return false;
 	}
@@ -65,60 +76,50 @@ public class RenderLayer {
 		return provider.getMag() < magLimit;
 	}
 	
-	public void preRender(CRenderEngine re, ViewPoint vp, SpCoord dir, double fov, boolean coverSky) {
-
-		if(coverSky)
-			currentObjs = catalog.getList(vp, dir, 90.0);
-		else currentObjs = catalog.getList(vp, dir, fov);
+	public void renderLayer(CRenderEngine re, Viewer viewer, long time, float partialTicks, double eyeLimit, double fov, double pxScale) {
+		OpFilter filter = viewer.getFilter();
+		ViewPoint vp = viewer.getViewPoint();
+		ISkySet skyset = vp.getSkySet();
 		
-		this.rendered = false;
+		this.getCurrentPartition().updateView(viewer.getViewPos(), fov, pxScale);
 		
-		re.preSaveRendered(provider.getCatalogName(), 2 * width, 2 * height);
-
-		for(IStellarObj obj : currentObjs)
-			StellarRenderingRegistry.getRenderer(obj.getRenderId()).preRender(obj);
+		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
+			layer.preRender(re, vp);
+		
+		if(!filter.isRGB()) {
+			for(OpFilter.WaveFilter wfilter : filter.getFilterList()) {
+				double magLimit = Math.min(eyeLimit, skyset.getBgLight(wfilter.wl, viewer.getViewPos()));
+			
+				if(!this.canRender(magLimit))
+					continue;
+			
+				this.renderForWave(re, viewer, time, partialTicks, wfilter);
+			}
+		} else {
+			this.renderForRGB(re, viewer, time, partialTicks, filter);
+		}
 	}
 
-	public void renderForWave(CRenderEngine re, Viewer viewer, long time, double partialTicks, WaveFilter wfilter) {
+	private void renderForWave(CRenderEngine re, Viewer viewer, long time, double partialTicks, WaveFilter wfilter) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		double resolution = Math.min(scope.getResolution(wfilter.wl), skyset.getSeeing(wfilter.wl));
-		double mag, bglight;
-		double size;
-		SpCoord coord = new SpCoord();
-		EVector pos;
-		IReal dist = new DDouble();
-
-		for(IStellarObj obj : currentObjs) {
-			pos = obj.getPos(viewer.getViewPoint(), partialTicks);
 			
-			dist.set(VecMath.size(pos));
-			coord.setWithVec(VecMath.div(dist, pos));
-			
-			mag = obj.getMag(wfilter.wl) + skyset.getExtinction(wfilter.wl, coord);
-			bglight = skyset.getBgLight(wfilter.wl, coord);
-			
-			size = obj.getRadius(wfilter.wl) / (resolution * dist.asDouble());
-			
-			if(mag < bglight) {
-				mag = Spmath.subMag(mag, bglight);
-				
-				StellarRenderingRegistry.getRenderer(obj.getRenderId()).setWaveRender(obj, size, mag, wfilter);
-			}
-		}
-		
-		this.rendered = true;
+		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
+			layer.renderForWave(re, viewer, resolution, time, partialTicks, wfilter);
 	}
 	
-	public void render(CRenderEngine re) {
-		for(IStellarObj obj : currentObjs) {
-			StellarRenderingRegistry.getRenderer(obj.getRenderId()).render(re, obj);
-		}
-		re.postSaveRendered();
+	private void renderForRGB(CRenderEngine re, Viewer viewer, long time, float partialTicks, OpFilter filter) {
+		ISkySet skyset = viewer.getViewPoint().getSkySet();
+		IScope scope = viewer.getScope();
+		double resolution = Math.min(scope.getResolution(Wavelength.visible), skyset.getSeeing(Wavelength.visible));
+		
+		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
+			layer.renderForRGB(re, viewer, resolution, time, partialTicks, filter);
 	}
 	
 	public void loadRendered(CRenderEngine re) {
-		if(this.rendered)
-			re.loadRendered(provider.getCatalogName());
+		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
+			layer.loadRendered(re);
 	}
 }

@@ -1,5 +1,6 @@
 package stellarium.view;
 
+import sciapi.api.value.euclidian.ECoord;
 import stellarium.mech.OpFilter;
 import stellarium.util.math.SpCoord;
 
@@ -10,6 +11,7 @@ public class Viewer {
 	private ViewPoint viewPoint;
 	private IScope scope;
 	private OpFilter filter;
+	private ECoord viewCoord;
 	private SpCoord viewPos;
 	
 	public ViewPoint getViewPoint() {
@@ -24,7 +26,11 @@ public class Viewer {
 		return this.filter;
 	}
 
-	public SpCoord getPos() {
-		return viewPos;
+	public ECoord getViewCoord() {
+		return this.viewCoord;
+	}
+	
+	public SpCoord getViewPos() {
+		return this.viewPos;
 	}
 }

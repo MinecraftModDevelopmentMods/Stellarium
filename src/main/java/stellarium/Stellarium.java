@@ -90,9 +90,10 @@ public class Stellarium {
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
+        	        	
         	//Default Configurations
             cfghook = new StellarConfigHook(event.getSuggestedConfigurationFile());
-            cfghook.onPreInit();         
+            cfghook.onPreInit();
             
             //File Side Configuration Manager
             filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));

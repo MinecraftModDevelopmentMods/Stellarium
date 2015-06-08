@@ -51,16 +51,18 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 	}
 	
 	public void update(long tick) {
-		
+		double timeDay = tick / this.day;
+		double timeYear = timeDay / this.yr;
+
 		for(CMvEntry entry : this)
 		{
 			//TODO Total Stub(unit)
-			entry.orbit().update();
+			entry.orbit().update(timeYear);
 			if(!entry.isVirtual())
-				entry.cbody().update(tick);
+				entry.cbody().update(timeDay);
 		}
 	}
-	
+
 	@Override
 	public List<CBody> getList(ViewPoint vp, SpCoord dir, double hfov) {
 		// TODO Auto-generated method stub

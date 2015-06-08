@@ -18,5 +18,4 @@ public class SkyRendererForEye extends IRenderHandler {
 		Viewer viewer = Stellarium.instance.getVPManager().getViewer(mc.renderViewEntity);
 		eye.render(viewer, world.getWorldTime(), partialTicks, mc);
 	}
-
 }

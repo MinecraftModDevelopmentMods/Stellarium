@@ -2,6 +2,9 @@ package stellarium.render;
 
 import java.util.Map;
 
+import stellarium.mech.OpFilter.WaveFilter;
+import stellarium.objs.IStellarObj;
+
 import com.google.common.collect.Maps;
 
 public class StellarRenderingRegistry {

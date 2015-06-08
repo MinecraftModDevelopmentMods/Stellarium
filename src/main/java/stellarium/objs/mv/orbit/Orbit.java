@@ -5,10 +5,15 @@ import sciapi.api.value.euclidian.ECoord;
 import sciapi.api.value.euclidian.EVector;
 import stellarium.objs.mv.CMvEntry;
 import stellarium.objs.mv.cbody.ICBodyType;
+import stellarium.util.math.Spmath;
+import stellarium.util.math.VecMath;
 
 public abstract class Orbit {
 
 	protected CMvEntry entry;
+	
+	protected EVector position;
+	protected EVector velocity;
 	
 	public Orbit(CMvEntry e)
 	{
@@ -20,33 +25,23 @@ public abstract class Orbit {
 		return entry;
 	}
 	
-	public void update()
+	public abstract void update(double year);
+	
+	public IValRef<EVector> getPosition(double secondPassed)
 	{
-		
+		return VecMath.add(this.position, VecMath.mult(secondPassed, this.velocity));
 	}
 	
-	public void update(double year)
+	public EVector getCurrentVelocity()
 	{
-		
+		return this.velocity;
 	}
 	
-	public IValRef<EVector> getPosition(double partime)
-	{
-		//TODO Total Stub;
-		return null;
-	}
-	
-	public IValRef<EVector> getVelocity(double partime)
-	{
-		//TODO Total Stub;
-		return null;
-	}
-	
-	public ECoord getOrbCoord(double partime)
-	{
-		//TODO Total Stub;
-		return null;
-	}
+	/**
+	 * Get the coordinate of this orbit in the year.
+	 * 
+	 * */
+	abstract public ECoord getOrbCoord(double year);
 	
 	abstract public double getAvgSize();
 	

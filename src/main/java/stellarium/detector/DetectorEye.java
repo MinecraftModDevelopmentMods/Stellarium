@@ -24,8 +24,10 @@ import stellarium.render.CRenderEngine;
 public class DetectorEye implements IDetector {
 	
 	private static double DEF_EYELIMIT = 6.0;
-	private static double DEF_FOV = 70.0;
 	private List<RenderLayer> layers = Lists.newArrayList();
+	private int width, height;
+	private double detectorDefFov;
+	private double pixelScale;
 	
 	public void setup() {
 		CCatalogManager manager = StellarManager.getManager(Side.CLIENT).getCatalogManager();
@@ -38,29 +40,17 @@ public class DetectorEye implements IDetector {
 	}
 
 	public void render(Viewer viewer, long time, float partialTicks, Minecraft mc) {
-		// TODO Auto-generated method stub
 		CRenderEngine re = CRenderEngine.instance;
-		OpFilter filter = viewer.getFilter();
 		IScope scope = viewer.getScope();
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		double eyeLimit = DEF_EYELIMIT + Spmath.lumRatioToMag(scope.getLGP());
-		double fov = DEF_FOV / scope.getMP();
+		double fov = this.detectorDefFov / scope.getMP();
+		
+		re.convertFrom(viewer.getViewCoord());
 		
 		for(RenderLayer layer : layers) {
-			if(layer.shouldUpdateRender(time, scope, viewer.getPos(), fov)) {
-				layer.preRender(re, viewer.getViewPoint(), viewer.getPos(), fov, scope.isFOVCoverSky());
-				
-				for(OpFilter.WaveFilter wfilter : filter.getFilterList()) {
-					double magLimit = Math.min(eyeLimit, skyset.getBgLight(wfilter.wl, viewer.getPos()));
-					
-					if(!layer.canRender(magLimit))
-						continue;
-					
-					layer.renderForWave(re, viewer, time, partialTicks, wfilter);
-				}
-				
-				layer.render(re);
-			}
+			if(layer.shouldUpdateRender(time, scope, viewer.getViewPos(), fov))
+				layer.renderLayer(re, viewer, time, partialTicks, eyeLimit, fov, this.pixelScale);
 			
 			layer.loadRendered(re);
 		}

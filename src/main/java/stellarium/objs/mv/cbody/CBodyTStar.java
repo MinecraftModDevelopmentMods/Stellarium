@@ -2,6 +2,7 @@ package stellarium.objs.mv.cbody;
 
 import stellarium.config.IConfigCategory;
 import stellarium.lang.CPropLangStrsCBody;
+import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.mv.CMvEntry;
 import stellarium.world.CWorldProvider;
@@ -92,6 +93,24 @@ public class CBodyTStar implements ICBodyType {
 		}
 
 		@Override
+		public double getMag(Wavelength wl) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public void update(double day) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public String getDescription() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
 		public EnumSObjType getType() {
 			return EnumSObjType.Star;
 		}
@@ -100,8 +119,6 @@ public class CBodyTStar implements ICBodyType {
 		public ICBodyType getCBodyType() {
 			return CBodyTStar.this;
 		}
-
-		
 	}
 
 }
