@@ -4,10 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Registry for converting between id(for physical) and lang(for logical) string.
- * the id string which is given for Configuration will be converted into lang form first.
+ * Registry for converting between id(for physical) and language(for logical) string.
+ * the id string which is given for Configuration will be converted into language form first.
  * */
-
 public class CPropLangRegistry {
 
 	private static CPropLangRegistry ins;

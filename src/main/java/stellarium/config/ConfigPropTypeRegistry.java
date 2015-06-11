@@ -2,10 +2,7 @@ package stellarium.config;
 
 import java.util.Map;
 
-import stellarium.config.proptype.DoublePropHandler;
-import stellarium.config.proptype.IntegerPropHandler;
-import stellarium.config.proptype.StringPropHandler;
-import stellarium.config.proptype.UDoublePropHandler;
+import stellarium.config.proptype.*;
 
 import com.google.common.collect.Maps;
 
@@ -27,6 +24,7 @@ public class ConfigPropTypeRegistry {
 		register("udouble", new UDoublePropHandler());
 		register("integer", new IntegerPropHandler());
 		register("string", new StringPropHandler());
+		register("toggleYesNo", new ToggleYesNoPropHandler());
 	}
 	
 	public static <T> void register(String proptype, IConfigPropHandler<T> handler)

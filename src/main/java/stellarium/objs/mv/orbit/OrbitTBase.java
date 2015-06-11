@@ -1,49 +1,50 @@
 package stellarium.objs.mv.orbit;
 
-import sciapi.api.value.euclidian.ECoord;
 import stellarium.config.IConfigCategory;
-import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
 
-public class OrbTStationary extends OrbitTBase implements IOrbitType {
+public class OrbitTBase implements IOrbitType {
 
 	@Override
 	public String getTypeName() {
-		return CPropLangStrsCBody.storb;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void init() {
-		
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void formatConfig(IConfigCategory cat) {
 		// TODO Auto-generated method stub
-		super.formatConfig(cat);
+
 	}
 
 	@Override
 	public void removeConfig(IConfigCategory cat) {
 		// TODO Auto-generated method stub
-		super.removeConfig(cat);
+
 	}
 
 	@Override
 	public Orbit provideOrbit(CMvEntry e) {
-		return new OrbitStationary(e);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void apply(Orbit orbit, IConfigCategory cfg) {
 		// TODO Auto-generated method stub
-		super.apply(orbit, cfg);
+
 	}
 
 	@Override
 	public void save(Orbit orbit, IConfigCategory cfg) {
 		// TODO Auto-generated method stub
-		super.save(orbit, cfg);
+
 	}
 
 	@Override
@@ -54,11 +55,13 @@ public class OrbTStationary extends OrbitTBase implements IOrbitType {
 
 	@Override
 	public void setScaled(Orbit ref, Orbit target, double scale) {
-		//Does not called
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public boolean hasParent() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -68,34 +71,4 @@ public class OrbTStationary extends OrbitTBase implements IOrbitType {
 
 	}
 
-	public class OrbitStationary extends Orbit
-	{
-
-		public OrbitStationary(CMvEntry e) {
-			super(e);
-		}
-		
-		@Override
-		public void update(double year) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public ECoord getOrbCoord(double year) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public double getAvgSize() {
-			return 0;
-		}
-
-		@Override
-		public IOrbitType getOrbitType() {
-			return OrbTStationary.this;
-		}
-		
-	}
 }

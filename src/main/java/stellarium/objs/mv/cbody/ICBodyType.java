@@ -16,8 +16,10 @@ public interface ICBodyType {
 	public void init();
 	
 	
-	/**forms configuration for this type*/
-	public void formatConfig(IConfigCategory cfg);
+	/**forms configuration for this type
+	 * @param cfg the configuration category to format
+	 * @param isMain check value which is <code>true</code> iff. this category for main star.*/
+	public void formatConfig(IConfigCategory cfg, boolean isMain);
 	
 	/**remove properties from this type*/
 	public void removeConfig(IConfigCategory cat);
@@ -38,7 +40,10 @@ public interface ICBodyType {
 	/**Copies the CBody.*/
 	public void setCopy(CBody ref, CBody target);
 	
-	/**do tasks needed for remove*/
+	/**
+	 * Process tasks needed for remove.
+	 * Warning: this can also be done on logical side
+	 * */
 	public void onRemove(CBody body);
 	
 	/**gives CBody Renderer for this type*/

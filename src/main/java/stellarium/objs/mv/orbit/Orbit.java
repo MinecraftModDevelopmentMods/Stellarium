@@ -39,11 +39,20 @@ public abstract class Orbit {
 	
 	/**
 	 * Get the coordinate of this orbit in the year.
-	 * 
 	 * */
 	abstract public ECoord getOrbCoord(double year);
 	
+	/**
+	 * Get the average size(radius) of this orbit.
+	 * */
 	abstract public double getAvgSize();
+	
+	public double getAvgPeriod() {
+		if(entry.hasParent()) {
+			double size = this.getAvgSize();
+			return Math.sqrt(size * size * size / entry.getParent().getMass());
+		} else return 0.0;
+	}
 	
 	abstract public IOrbitType getOrbitType();
 }

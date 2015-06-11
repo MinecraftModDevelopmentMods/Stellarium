@@ -5,6 +5,7 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.IValue;
 import sciapi.api.value.STempRef;
 import sciapi.api.value.absalg.IVectorSpace;
+import sciapi.api.value.euclidian.ECoord;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVecSet;
 import sciapi.api.value.euclidian.IEVector;
@@ -136,5 +137,11 @@ public class VecMath {
 
 	public static IValRef<EVector> interpolate(EVector prevPos, EVector curPos, double partime) {
 		return add(prevPos, mult(partime, sub(curPos, prevPos)));
+	}
+
+	
+	public static ECoord copyCoord(ECoord initialCoord) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -7,7 +7,7 @@ import stellarium.objs.EnumSObjType;
 import stellarium.objs.mv.CMvEntry;
 import stellarium.world.CWorldProvider;
 
-public class CBodyTStar implements ICBodyType {
+public class CBodyTStar extends CBodyTBase implements ICBodyType {
 
 	@Override
 	public String getTypeName() {
@@ -21,15 +21,13 @@ public class CBodyTStar implements ICBodyType {
 	}
 
 	@Override
-	public void formatConfig(IConfigCategory cfg) {
-		// TODO Auto-generated method stub
-
+	public void formatConfig(IConfigCategory cfg, boolean isMain) {
+		super.formatConfig(cfg, isMain);
 	}
 
 	@Override
 	public void removeConfig(IConfigCategory cat) {
-		// TODO Auto-generated method stub
-
+		super.removeConfig(cat);
 	}
 
 	@Override
@@ -39,14 +37,12 @@ public class CBodyTStar implements ICBodyType {
 
 	@Override
 	public void apply(CBody body, IConfigCategory cfg) {
-		// TODO Auto-generated method stub
-
+		super.apply(body, cfg);
 	}
 
 	@Override
 	public void save(CBody body, IConfigCategory cfg) {
-		// TODO Auto-generated method stub
-
+		super.save(body, cfg);
 	}
 
 	@Override

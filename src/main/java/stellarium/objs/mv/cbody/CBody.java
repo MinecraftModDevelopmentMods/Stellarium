@@ -1,5 +1,6 @@
 package stellarium.objs.mv.cbody;
 
+import net.minecraftforge.common.config.Configuration;
 import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.ECoord;
@@ -62,7 +63,7 @@ public abstract class CBody implements IStellarObj {
 	{
 		double tyr = day / entry.getMain().yr;
 		ECoord orbCoord = entry.orbit().getOrbCoord(tyr);
-				
+
 		if(this.isTidalLocked) {
 			// TODO rotation code
 			return getRotated(orbCoord, day);

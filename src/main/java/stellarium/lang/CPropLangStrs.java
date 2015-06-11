@@ -5,6 +5,10 @@ import stellarium.config.IConfigProperty;
 
 public class CPropLangStrs {
 	
+	//------------------------------------ Basics -----------------------------------//
+	public static final String yes = "Yes";
+	public static final String no = "No";
+	
 	//------------------------------------ Types -----------------------------------//
 	public static final String orbtype = "OrbT";
 	public static final String cbtype = "CBT";

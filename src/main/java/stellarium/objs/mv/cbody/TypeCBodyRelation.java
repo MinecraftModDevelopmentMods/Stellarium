@@ -33,7 +33,7 @@ public class TypeCBodyRelation implements IPropertyRelation {
 		if(prop.getVal() != null)
 		{
 			IConfigProperty prep = cat.setPropAddEntry(prop);
-			prop.getVal().formatConfig(cat);
+			prop.getVal().formatConfig(cat, cat.getCategoryEntry().getParentEntry().isRootEntry());
 			cat.setPropAddEntry(prep);
 		}
 	}
