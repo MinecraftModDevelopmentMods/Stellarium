@@ -15,6 +15,7 @@ import net.minecraftforge.common.config.Property;
 import stellarium.catalog.CCatalogCfgData;
 import stellarium.catalog.StellarCatalogRegistry;
 import stellarium.config.ConfigDataRegistry;
+import stellarium.config.ConfigPropTypeRegistry;
 import stellarium.config.core.ConfigDataPhysicalManager;
 import stellarium.config.file.FileCfgManager;
 import stellarium.config.gui.StellarConfigGuiProvider;
@@ -90,11 +91,11 @@ public class Stellarium {
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
-        	        	
+        	 
         	//Default Configurations
             cfghook = new StellarConfigHook(event.getSuggestedConfigurationFile());
             cfghook.onPreInit();
-            
+                        
             //File Side Configuration Manager
             filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
             

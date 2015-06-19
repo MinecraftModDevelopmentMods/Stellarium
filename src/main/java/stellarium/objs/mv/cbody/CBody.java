@@ -77,8 +77,7 @@ public abstract class CBody implements IStellarObj {
 	}
 	
 	private ECoord getRotated(ECoord coord, double day) {
-		// TODO Yes it is stub
-		return null;
+		return VecMath.rotateCoordZ(coord, day * this.w_rot);
 	}
 
 	@Override

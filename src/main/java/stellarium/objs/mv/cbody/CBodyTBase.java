@@ -1,5 +1,8 @@
 package stellarium.objs.mv.cbody;
 
+import sciapi.api.value.euclidian.CrossUtil;
+import sciapi.api.value.euclidian.ECoord;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
@@ -13,22 +16,25 @@ import stellarium.world.CWorldProvider;
 public abstract class CBodyTBase implements ICBodyType {
 
 	@Override
-	public void formatConfig(IConfigCategory cfg, boolean isMain) {
+	public void formatConfig(IConfigCategory cat, boolean isMain) {
 		// TODO Auto-generated method stub
 		
 		IConfigProperty tidalLock = null;
 		
 		if(!isMain)
 		{
-			 tidalLock = CPropLangStrs.addProperty(cfg, "toggleYesNo", CPropLangStrsCBody.tidalLocked, false);
+			 tidalLock = CPropLangStrs.addProperty(cat, "toggleYesNo", CPropLangStrsCBody.tidalLocked, false);
 		}
 		
-		IConfigProperty periodRot = CPropLangStrs.addProperty(cfg, "udouble", CPropLangStrsCBody.periodRotation, 1.0);
+		IConfigProperty pole = CPropLangStrs.addProperty(cat, "vector3", CPropLangStrsCBody.pole, new EVector(0.0, 0.0, 1.0));
+		IConfigProperty tickViewVernal = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.dayViewVernal, 0.25);
 		
-		IConfigProperty hasPrec = CPropLangStrs.addProperty(cfg, "toggleYesNo", CPropLangStrsCBody.hasPrecession, false);
-		IConfigProperty periodPrec = CPropLangStrs.addProperty(cfg, "udouble", CPropLangStrsCBody.periodPrecession, 26000.0);
+		IConfigProperty periodRot = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.periodRotation, 1.0);
 		
-		cfg.addPropertyRelation(new IPropertyRelation() {
+		IConfigProperty hasPrec = CPropLangStrs.addProperty(cat, "toggleYesNo", CPropLangStrsCBody.hasPrecession, false);
+		IConfigProperty periodPrec = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.periodPrecession, 26000.0);
+		
+		cat.addPropertyRelation(new IPropertyRelation() {
 			IMConfigProperty<Boolean> hasPrec;
 			IMConfigProperty periodPrec;
 			
@@ -60,7 +66,7 @@ public abstract class CBodyTBase implements ICBodyType {
 		}, hasPrec, periodPrec);
 		
 		if(!isMain) {
-			cfg.addPropertyRelation(new IPropertyRelation() {
+			cat.addPropertyRelation(new IPropertyRelation() {
 				
 				IMConfigProperty<Boolean> check;
 				IMConfigProperty[] props;
@@ -94,7 +100,7 @@ public abstract class CBodyTBase implements ICBodyType {
 					return "";
 				}
 				
-			}, tidalLock, periodRot, hasPrec, periodPrec);
+			}, tidalLock, pole, periodRot, hasPrec, periodPrec);
 		}
 	}
 
@@ -102,26 +108,41 @@ public abstract class CBodyTBase implements ICBodyType {
 	public void removeConfig(IConfigCategory cat) {
 		// TODO Auto-generated method stub
 		cat.removeProperty(CPropLangStrsCBody.tidalLocked);
+		cat.removeProperty(CPropLangStrsCBody.pole);
+		cat.removeProperty(CPropLangStrsCBody.dayViewVernal);
 		cat.removeProperty(CPropLangStrsCBody.periodRotation);
 		cat.removeProperty(CPropLangStrsCBody.hasPrecession);
 		cat.removeProperty(CPropLangStrsCBody.periodPrecession);
 	}
 
 	@Override
-	public void apply(CBody body, IConfigCategory cfg) {
+	public void apply(CBody body, IConfigCategory cat) {
 		// TODO Auto-generated method stub
-		body.isTidalLocked = (boolean) cfg.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
-		boolean hasPrec = (boolean) cfg.getProperty(CPropLangStrsCBody.hasPrecession).getVal();
+		body.isTidalLocked = (boolean) cat.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
+		boolean hasPrec = (boolean) cat.getProperty(CPropLangStrsCBody.hasPrecession).getVal();
+		ECoord vernalCoord;
 		
 		if(!body.isTidalLocked) {
-			body.w_rot = 2 * Math.PI / (double) cfg.getProperty(CPropLangStrsCBody.periodRotation).getVal();
+			IConfigProperty<EVector> propPole = cat.getProperty(CPropLangStrsCBody.pole);
+			EVector pole = propPole.getVal();
+			EVector vernal = new EVector(1.0, 0.0, 0.0), third = new EVector(3);
+			
+			third.set(CrossUtil.cross(pole, vernal));
+			vernal.set(CrossUtil.cross(third, pole));
+			vernalCoord = new ECoord(pole, vernal, third);
+			
+			body.w_rot = 2 * Math.PI / (double) cat.getProperty(CPropLangStrsCBody.periodRotation).getVal();
 			
 			if(hasPrec)
-				body.w_prec = 2 * Math.PI / (double) cfg.getProperty(CPropLangStrsCBody.periodPrecession).getVal();
+				body.w_prec = 2 * Math.PI / (double) cat.getProperty(CPropLangStrsCBody.periodPrecession).getVal();
 			else body.w_prec = 0.0;
 		} else {
 			body.w_rot = 2 * Math.PI / body.getEntry().orbit().getAvgPeriod();
+			vernalCoord = VecMath.copyCoord(body.getEntry().orbit().getOrbCoord(0.0));
 		}
+		
+		double dayViewVernal = (double) cat.getProperty(CPropLangStrsCBody.dayViewVernal).getVal();
+		body.initialCoord = VecMath.rotateCoordZ(vernalCoord, -body.w_rot * dayViewVernal);
 	}
 
 	@Override

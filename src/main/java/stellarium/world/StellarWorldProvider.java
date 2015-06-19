@@ -30,7 +30,7 @@ public class StellarWorldProvider extends WorldProviderSurface {
     	
     	sun.onUsed();
     	
-    	return (float)(Spmath.fmod((h/2/Math.PI)+0.75,2*Math.PI));
+    	return (float)(Spmath.fmod((h/2/Math.PI)+0.75,2));
     }
 
     public int getMoonPhase(long par1)

@@ -8,6 +8,9 @@ public class CPropLangStrs {
 	//------------------------------------ Basics -----------------------------------//
 	public static final String yes = "Yes";
 	public static final String no = "No";
+	public static final String size = "size";
+	public static final String yaw = "yaw";
+	public static final String pitch = "pitch";
 	
 	//------------------------------------ Types -----------------------------------//
 	public static final String orbtype = "OrbT";
@@ -47,6 +50,12 @@ public class CPropLangStrs {
 	
 	public static void onRegister()
 	{
+		CPropLangRegistry.instance().register(yes, "basis.yes");
+		CPropLangRegistry.instance().register(no, "basis.no");
+		CPropLangRegistry.instance().register(size, "basis.size");
+		CPropLangRegistry.instance().register(yaw, "basis.yaw");
+		CPropLangRegistry.instance().register(pitch, "basis.pitch");
+		
 		CPropLangRegistry.instance().register(moving, "cat.moving.name");
 		
 		CPropLangRegistry.instance().register(basicprops, "cmv.basicprops");

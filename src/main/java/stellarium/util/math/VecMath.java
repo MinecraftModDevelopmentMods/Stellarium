@@ -140,7 +140,12 @@ public class VecMath {
 	}
 
 	
-	public static ECoord copyCoord(ECoord initialCoord) {
+	public static ECoord copyCoord(ECoord coord) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static ECoord rotateCoordZ(ECoord coord, double angle) {
 		// TODO Auto-generated method stub
 		return null;
 	}
