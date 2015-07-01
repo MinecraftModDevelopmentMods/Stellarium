@@ -144,9 +144,47 @@ public class VecMath {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	public static EVector rotateVectorX(double d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public static EVector rotateVectorY(double d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public static EVector rotateVectorZ(double d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public static ECoord rotateCoordZ(ECoord coord, double angle) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public static ECoord rotateCoordX(ECoord coord, double angle) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static ECoord rotateCoordY(ECoord coord, double angle) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static ECoord rotateCoord(ECoord coord, IEVector axis, double angle) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static ECoord getDefaultCoord() {
+		EVector x = new EVector(1.0, 0.0, 0.0);
+		EVector y = new EVector(0.0, 1.0, 0.0);
+		EVector z = new EVector(0.0, 0.0, 1.0);
+		
+		return new ECoord(x, y, z);
 	}
 }

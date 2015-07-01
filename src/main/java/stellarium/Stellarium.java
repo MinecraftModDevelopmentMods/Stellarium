@@ -30,6 +30,7 @@ import stellarium.stellars.cbody.*;
 import stellarium.view.StellarVPManager;
 import stellarium.world.StellarWorldProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -91,11 +92,11 @@ public class Stellarium {
         
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) throws IOException{
-        	 
+        	
         	//Default Configurations
             cfghook = new StellarConfigHook(event.getSuggestedConfigurationFile());
             cfghook.onPreInit();
-                        
+                     
             //File Side Configuration Manager
             filemanager = new FileCfgManager(new File(event.getModConfigurationDirectory(), "Stellarium"));
             

@@ -39,6 +39,10 @@ public abstract class Orbit {
 	
 	/**
 	 * Get the coordinate of this orbit in the year.
+	 * 
+	 * <li>x axis is pointing Prime Meridian.
+	 * <li>y axis is pointing east, which is perpendicular to the x, y axis.
+	 * <li>z axis is pointing North Pole.
 	 * */
 	abstract public ECoord getOrbCoord(double year);
 	

@@ -9,7 +9,7 @@ public interface IOrbitType {
 	/**gives name of this type*/
 	public String getTypeName();
 	
-	/**initiation for this type*/
+	/**initialization for this type*/
 	public void init();
 	
 	
@@ -23,13 +23,13 @@ public interface IOrbitType {
 	public Orbit provideOrbit(CMvEntry e);
 	
 	/**applies the configuration to the orbit*/
-	public void apply(Orbit orbit, IConfigCategory cfg);
+	public void apply(Orbit orbit, IConfigCategory cat);
 	
 	/**saves the orbit as configuration*/
-	public void save(Orbit orbit, IConfigCategory cfg);
+	public void save(Orbit orbit, IConfigCategory cat);
 	
 	/**checks the current settings and forms the orbit*/
-	public void formOrbit(Orbit orb);
+	public void formOrbit(Orbit orb, IStellarConfig subConfig);
 	
 	/**sets the target orbit to be scaled orbit of reference orbit*/
 	public void setScaled(Orbit ref, Orbit target, double scale);

@@ -19,8 +19,8 @@ import stellarium.util.math.SpCoord;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import stellarium.view.IScope;
+import stellarium.view.IViewer;
 import stellarium.view.ViewPoint;
-import stellarium.view.Viewer;
 import stellarium.render.CRenderEngine;
 import stellarium.sky.ISkySet;
 
@@ -76,7 +76,7 @@ public class RenderLayer {
 		return provider.getMag() < magLimit;
 	}
 	
-	public void renderLayer(CRenderEngine re, Viewer viewer, long time, float partialTicks, double eyeLimit, double fov, double pxScale) {
+	public void renderLayer(CRenderEngine re, IViewer viewer, long time, float partialTicks, double eyeLimit, double fov, double pxScale) {
 		OpFilter filter = viewer.getFilter();
 		ViewPoint vp = viewer.getViewPoint();
 		ISkySet skyset = vp.getSkySet();
@@ -100,7 +100,7 @@ public class RenderLayer {
 		}
 	}
 
-	private void renderForWave(CRenderEngine re, Viewer viewer, long time, double partialTicks, WaveFilter wfilter) {
+	private void renderForWave(CRenderEngine re, IViewer viewer, long time, double partialTicks, WaveFilter wfilter) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		double resolution = Math.min(scope.getResolution(wfilter.wl), skyset.getSeeing(wfilter.wl));
@@ -109,7 +109,7 @@ public class RenderLayer {
 			layer.renderForWave(re, viewer, resolution, time, partialTicks, wfilter);
 	}
 	
-	private void renderForRGB(CRenderEngine re, Viewer viewer, long time, float partialTicks, OpFilter filter) {
+	private void renderForRGB(CRenderEngine re, IViewer viewer, long time, float partialTicks, OpFilter filter) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		double resolution = Math.min(scope.getResolution(Wavelength.visible), skyset.getSeeing(Wavelength.visible));

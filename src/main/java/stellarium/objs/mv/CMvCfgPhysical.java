@@ -60,9 +60,9 @@ public class CMvCfgPhysical extends CMvCfgBase implements ICfgArrMListener {
 			
 			CMvEntry ent = findEntry(cat.getCategoryEntry());
 
-			ent.orbit().getOrbitType().formOrbit(ent.orbit());
+			ent.orbit().getOrbitType().formOrbit(ent.orbit(), subConfig);
 			if(!ent.isVirtual())
-				ent.cbody().getCBodyType().formCBody(ent.cbody());
+				ent.cbody().getCBodyType().formCBody(ent.cbody(), subConfig);
 		}
 	}
 	

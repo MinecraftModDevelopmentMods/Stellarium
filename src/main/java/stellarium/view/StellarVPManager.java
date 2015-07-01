@@ -36,9 +36,9 @@ public class StellarVPManager implements IViewProvider {
 	}
 
 	@Override
-	public Viewer getViewer(Entity entity) {
+	public IViewer getViewer(Entity entity) {
 		for(IViewProvider provider : providers) {
-			Viewer viewer = provider.getViewer(entity);
+			IViewer viewer = provider.getViewer(entity);
 			if(viewer != null)
 				return viewer;
 		}

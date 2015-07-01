@@ -55,9 +55,10 @@ public abstract class CBody implements IStellarObj {
 	
 	/**
 	 * Get the coordinate of this celestial body on the day.
-	 * <li>x axis is pointing North Pole.
-	 * <li>y axis is pointing Prime Meridian.
-	 * <li>z axis is pointing east, which is perpendicular to the x, y axis.
+	 * 
+	 * <li>x axis is pointing Prime Meridian.
+	 * <li>y axis is pointing east, which is perpendicular to the x, y axis.
+	 * <li>z axis is pointing North Pole.
 	 * */
 	public ECoord getCoord(double day)
 	{
@@ -65,14 +66,10 @@ public abstract class CBody implements IStellarObj {
 		ECoord orbCoord = entry.orbit().getOrbCoord(tyr);
 
 		if(this.isTidalLocked) {
-			// TODO rotation code
 			return getRotated(orbCoord, day);
 		} else {
-			//TODO rotation code
-			//Precession needed
-			return getRotated(this.initialCoord, day);
-			//this.w_prec * tyr
-			//this.w_rot * day;
+			ECoord precCoord = VecMath.rotateCoord(this.initialCoord, orbCoord.getCoord(2), tyr * this.w_prec);
+			return getRotated(precCoord, day);
 		}
 	}
 	

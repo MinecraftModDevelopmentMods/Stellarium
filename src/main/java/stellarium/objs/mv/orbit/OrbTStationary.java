@@ -1,11 +1,19 @@
 package stellarium.objs.mv.orbit;
 
 import sciapi.api.value.euclidian.ECoord;
+import sciapi.api.value.euclidian.EVector;
 import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigProperty;
+import stellarium.config.IStellarConfig;
+import stellarium.lang.CPropLangStrs;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.util.math.VecMath;
 
-public class OrbTStationary extends OrbitTBase implements IOrbitType {
+/**
+ * Stationary orbit, which is the only root orbit.
+ * */
+public class OrbTStationary implements IOrbitType {
 
 	@Override
 	public String getTypeName() {
@@ -13,20 +21,16 @@ public class OrbTStationary extends OrbitTBase implements IOrbitType {
 	}
 
 	@Override
-	public void init() {
-		
-	}
+	public void init() { }
 
 	@Override
 	public void formatConfig(IConfigCategory cat) {
-		// TODO Auto-generated method stub
-		super.formatConfig(cat);
+		CPropLangStrs.addProperty(cat, "vector3", CPropLangStrsCBody.position, new EVector(0.0, 0.0, 0.0));
 	}
 
 	@Override
 	public void removeConfig(IConfigCategory cat) {
-		// TODO Auto-generated method stub
-		super.removeConfig(cat);
+		cat.removeProperty(CPropLangStrsCBody.position);
 	}
 
 	@Override
@@ -36,21 +40,20 @@ public class OrbTStationary extends OrbitTBase implements IOrbitType {
 
 	@Override
 	public void apply(Orbit orbit, IConfigCategory cfg) {
-		// TODO Auto-generated method stub
-		super.apply(orbit, cfg);
+		IConfigProperty<EVector> propPos = cfg.getProperty(CPropLangStrsCBody.position);
+		orbit.position = propPos.getVal();
 	}
 
 	@Override
 	public void save(Orbit orbit, IConfigCategory cfg) {
-		// TODO Auto-generated method stub
-		super.save(orbit, cfg);
+		IConfigProperty<EVector> propPos = cfg.getProperty(CPropLangStrsCBody.position);
+		
+		propPos.simSetEnabled(true);
+		propPos.simSetVal(orbit.position);
 	}
 
 	@Override
-	public void formOrbit(Orbit orb) {
-		// TODO Auto-generated method stub
-
-	}
+	public void formOrbit(Orbit orb, IStellarConfig cfg) { }
 
 	@Override
 	public void setScaled(Orbit ref, Orbit target, double scale) {
@@ -64,32 +67,32 @@ public class OrbTStationary extends OrbitTBase implements IOrbitType {
 
 	@Override
 	public void onRemove(Orbit orbit) {
-		// TODO Auto-generated method stub
-
+		OrbitStationary orb = (OrbitStationary) orbit;
+		orb.defCoord = null;
 	}
 
 	public class OrbitStationary extends Orbit
 	{
-
+		private ECoord defCoord;
+		
 		public OrbitStationary(CMvEntry e) {
 			super(e);
+			
+			this.velocity = new EVector(0.0, 0.0, 0.0);
+			this.defCoord = VecMath.getDefaultCoord();
 		}
 		
 		@Override
-		public void update(double year) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void update(double year) { }
 
 		@Override
 		public ECoord getOrbCoord(double year) {
-			// TODO Auto-generated method stub
-			return null;
+			return this.defCoord;
 		}
 
 		@Override
 		public double getAvgSize() {
-			return 0;
+			return 0.0;
 		}
 
 		@Override

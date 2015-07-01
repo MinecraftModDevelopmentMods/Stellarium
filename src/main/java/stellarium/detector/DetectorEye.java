@@ -17,8 +17,8 @@ import stellarium.sky.ISkySet;
 import stellarium.util.math.Spmath;
 import stellarium.view.EnumEyeCCD;
 import stellarium.view.IScope;
+import stellarium.view.IViewer;
 import stellarium.view.ViewPoint;
-import stellarium.view.Viewer;
 import stellarium.render.CRenderEngine;
 
 public class DetectorEye implements IDetector {
@@ -39,7 +39,7 @@ public class DetectorEye implements IDetector {
 		}
 	}
 
-	public void render(Viewer viewer, long time, float partialTicks, Minecraft mc) {
+	public void render(IViewer viewer, long time, float partialTicks, Minecraft mc) {
 		CRenderEngine re = CRenderEngine.instance;
 		IScope scope = viewer.getScope();
 		ISkySet skyset = viewer.getViewPoint().getSkySet();

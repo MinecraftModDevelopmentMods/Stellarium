@@ -5,14 +5,14 @@ import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.CMvEntry;
 import stellarium.objs.mv.orbit.Orbit;
 import stellarium.render.ISObjRenderer;
-import stellarium.world.CWorldProvider;
+import stellarium.world.CWorldProviderPart;
 
 public interface ICBodyType {
 	
 	/**gives name of this type*/
 	public String getTypeName();
 	
-	/**initiation for this type*/
+	/**initialization for this type*/
 	public void init();
 	
 	
@@ -34,7 +34,7 @@ public interface ICBodyType {
 	public void save(CBody body, IConfigCategory cfg);
 	
 	/**checks the current settings and forms the celestial body*/
-	public void formCBody(CBody body);
+	public void formCBody(CBody body, IStellarConfig cfg);
 	
 	
 	/**Copies the CBody.*/
@@ -50,6 +50,6 @@ public interface ICBodyType {
 	public ICBodyRenderer getCBodyRenderer();
 	
 	/**gives WorldProvider for this type of CBody*/
-	public CWorldProvider getCWorldProvider();
+	public CWorldProviderPart getCWorldProvider();
 	
 }

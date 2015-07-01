@@ -4,7 +4,7 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import stellarium.stellars.cbody.CBody;
-import stellarium.util.UpDouble;
+import stellarium.util.UpdateDouble;
 import stellarium.util.math.*;
 
 public abstract class OrbitMv extends Orbit {

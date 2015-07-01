@@ -26,6 +26,7 @@ public class ConfigPropTypeRegistry {
 		register("string", new StringPropHandler());
 		register("toggleYesNo", new ToggleYesNoPropHandler());
 		register("vector3", new EVectorHandler());
+		register("dir3", new DirectionHandler());
 	}
 	
 	public static <T> void register(String proptype, IConfigPropHandler<T> handler)

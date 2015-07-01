@@ -70,7 +70,7 @@ public class Planet extends SolarObj{
 		rotw.setRAngle(-Spmath.Radians(w));
 		rotom.setRAngle(-Spmath.Radians(Omega));
 		
-		return Spmath.GetOrbVec(a, e, roti, rotw, rotom, M);
+		return Spmath.getOrbVec(a, e, roti, rotw, rotom, M);
 	}
 	
 	//Ecliptic Position of Planet's Local Region from Moon Center (Update Needed)

@@ -81,9 +81,13 @@ public class CPropLangStrs {
 		CPropLangRegistry.instance().register(cbTypeRelation, "cmv.ent.rel.cbtype");
 
 		//these has .expl
-		CPropLangRegistry.instance().register(orbmissing, "cmv.ent.err.missingorbit");
+			// with one parameter: category name
+		CPropLangRegistry.instance().register(orbmissing, "cmv.ent.err.missingorbit"); 
+			// with one parameter: category name
 		CPropLangRegistry.instance().register(cbmissing, "cmv.ent.err.missingcbody");
+			// with one parameter: category name
 		CPropLangRegistry.instance().register(orbNotLocked, "cmv.ent.err.orbitnotlocked");
+			// with one parameter: category name
 		CPropLangRegistry.instance().register(cbNotLocked, "cmv.ent.err.cbodynotlocked");
 	}
 	

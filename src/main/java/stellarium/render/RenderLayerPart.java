@@ -22,8 +22,8 @@ import stellarium.util.math.SpCoord;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import stellarium.view.IScope;
+import stellarium.view.IViewer;
 import stellarium.view.ViewPoint;
-import stellarium.view.Viewer;
 
 /**
  * Partial render layer class for sky covering scope.
@@ -65,7 +65,7 @@ public class RenderLayerPart {
 		this.rendered = false;
 	}
 
-	public void renderForWave(final CRenderEngine re, Viewer viewer, double resolution, long time, double partialTicks, final WaveFilter wfilter) {
+	public void renderForWave(final CRenderEngine re, IViewer viewer, double resolution, long time, double partialTicks, final WaveFilter wfilter) {
 		
 		IRenderable renderable = new IRenderable() {
 			@Override
@@ -82,7 +82,7 @@ public class RenderLayerPart {
 		this.render(re, viewer, resolution, time, partialTicks, renderable);
 	}
 	
-	public void renderForRGB(final CRenderEngine re, Viewer viewer, double resolution, long time, float partialTicks, final OpFilter filter) {
+	public void renderForRGB(final CRenderEngine re, IViewer viewer, double resolution, long time, float partialTicks, final OpFilter filter) {
 		IRenderable renderable = new IRenderable() {
 			@Override
 			public Wavelength getWavelength() {
@@ -98,7 +98,7 @@ public class RenderLayerPart {
 		this.render(re, viewer, resolution, time, partialTicks, renderable);
 	}
 	
-	public void render(CRenderEngine re, Viewer viewer, double resolution, long time, double partialTicks, IRenderable renderable) {
+	public void render(CRenderEngine re, IViewer viewer, double resolution, long time, double partialTicks, IRenderable renderable) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		Wavelength wl = renderable.getWavelength();

@@ -33,9 +33,6 @@ public class StellarSettings {
 	public static Planet Uranus=new Planet();
 	public static Planet Neptune=new Planet();
 
-	public StellarRenders render;
-	public Viewer viewer;
-
 	public StarBody Star;
 	
 	public static final double AU=1.496e+8;

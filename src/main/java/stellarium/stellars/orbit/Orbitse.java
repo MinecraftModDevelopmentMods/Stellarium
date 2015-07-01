@@ -12,8 +12,8 @@ import stellarium.util.math.Transforms;
 
 public class Orbitse extends OrbitMv {
 	public double a, e;
-	public UpDouble w=new UpDouble(),
-			M=new UpDouble();
+	public UpdateDouble w=new UpdateDouble(a, a),
+			M=new UpdateDouble(a, a);
 	/*
 	protected double wbar, wbard, L;
 	

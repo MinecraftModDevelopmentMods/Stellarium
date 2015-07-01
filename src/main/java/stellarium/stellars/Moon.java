@@ -58,7 +58,7 @@ public class Moon extends Satellite {
 		double yr=day/365.25;
 		UpdateOrbE(yr);
 		double M=M0+mean_mot*yr;
-		return Spmath.GetOrbVec(a, e, ri.setRAngle(-Spmath.Radians(I)), rw.setRAngle(-Spmath.Radians(w)), rom.setRAngle(-Spmath.Radians(Omega)), M);
+		return Spmath.getOrbVec(a, e, ri.setRAngle(-Spmath.Radians(I)), rw.setRAngle(-Spmath.Radians(w)), rom.setRAngle(-Spmath.Radians(Omega)), M);
 	}
 	
 	//Update Orbital Elements in time

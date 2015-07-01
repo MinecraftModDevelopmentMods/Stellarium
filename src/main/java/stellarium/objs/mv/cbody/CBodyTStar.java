@@ -1,11 +1,12 @@
 package stellarium.objs.mv.cbody;
 
 import stellarium.config.IConfigCategory;
+import stellarium.config.IStellarConfig;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.mv.CMvEntry;
-import stellarium.world.CWorldProvider;
+import stellarium.world.CWorldProviderPart;
 
 public class CBodyTStar extends CBodyTBase implements ICBodyType {
 
@@ -46,15 +47,15 @@ public class CBodyTStar extends CBodyTBase implements ICBodyType {
 	}
 
 	@Override
-	public void formCBody(CBody body) {
+	public void formCBody(CBody body, IStellarConfig cfg) {
 		// TODO Auto-generated method stub
-
+		super.formCBody(body, cfg);
 	}
 
 	@Override
 	public void setCopy(CBody ref, CBody target) {
 		// TODO Auto-generated method stub
-
+		super.setCopy(ref, target);
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class CBodyTStar extends CBodyTBase implements ICBodyType {
 	}
 
 	@Override
-	public CWorldProvider getCWorldProvider() {
+	public CWorldProviderPart getCWorldProvider() {
 		// TODO Auto-generated method stub
 		return null;
 	}

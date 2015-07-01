@@ -21,5 +21,5 @@ public interface IViewProvider {
 	 * @param entity the entity
 	 * @return viewer for the entity
 	 * */
-	public Viewer getViewer(Entity entity);
+	public IViewer getViewer(Entity entity);
 }

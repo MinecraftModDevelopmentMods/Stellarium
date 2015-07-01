@@ -23,7 +23,7 @@ public class Satellite extends SolarObj {
 		ri.setRAngle(-I);
 		rw.setRAngle(-w);
 		rom.setRAngle(-Omega);
-		return VecMath.add(Spmath.GetOrbVec(a, e, ri, rw, rom, M), Parplanet.EcRPos);
+		return VecMath.add(Spmath.getOrbVec(a, e, ri, rw, rom, M), Parplanet.EcRPos);
 	}
 	
 	//Update Satellite
