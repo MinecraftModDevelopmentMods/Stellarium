@@ -226,13 +226,16 @@ public class OrbitTSmallEcc implements IOrbitType {
 
 	@Override
 	public void formOrbit(Orbit orb, IStellarConfig cfg) {
-		// TODO Auto-generated method stub
 		OrbitSmallEcc orbit = (OrbitSmallEcc) orb;
 		if(orbit.e > 0.5)
 			cfg.addLoadFailMessage(CPropLangStrsCBody.eccOutOfRange,
 					new StrMessage(CPropLangStrs.getExpl(CPropLangStrsCBody.eccOutOfRange)));
 		
-		orb.getEntry().getSatelliteList();
+		for(CMvEntry child : orb.getEntry().getSatelliteList()) {
+			if(child.orbit().getMaxDist() > orbit.hillRadius)
+				cfg.addLoadFailMessage(CPropLangStrsCBody.bodyEscaped,
+					new StrMessage(CPropLangStrs.getExpl(CPropLangStrsCBody.bodyEscaped)));
+		}
 	}
 
 	@Override
@@ -254,10 +257,7 @@ public class OrbitTSmallEcc implements IOrbitType {
 	}
 
 	@Override
-	public void onRemove(Orbit orbit) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onRemove(Orbit orbit) { }
 
 	public class OrbitSmallEcc extends Orbit
 	{		
@@ -317,6 +317,11 @@ public class OrbitTSmallEcc implements IOrbitType {
 		@Override
 		public double getAvgSize() {
 			return this.a;
+		}
+		
+		@Override
+		public double getMaxDist() {
+			return this.a * (1 + this.e);
 		}
 
 		@Override

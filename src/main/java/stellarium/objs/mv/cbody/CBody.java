@@ -13,18 +13,18 @@ import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.CMvEntry;
-import stellarium.stellars.orbit.OrbitMv;
-import stellarium.stellars.orbit.OrbitSt;
 import stellarium.util.math.AxisRotate;
 import stellarium.util.math.SpCoord;
 import stellarium.util.math.SpCoordf;
 import stellarium.util.math.VecMath;
 import stellarium.view.ViewPoint;
+import stellarium.world.IWorldHandler;
 
 public abstract class CBody implements IStellarObj {
 
 	protected CMvEntry entry;
 	
+	protected double radius;
 	protected double w_prec, w_rot;
 	protected ECoord initialCoord;
 	protected boolean isTidalLocked;
@@ -79,16 +79,15 @@ public abstract class CBody implements IStellarObj {
 
 	@Override
 	public double getRadius(Wavelength wl) {
-		return getRadius();
+		return this.radius;
 	}
 
 	@Override
 	public int getRenderId() {
 		return entry.getMain().renderId;
 	}
-
-	abstract public double getRadius();
 	
+	/** @return The type of this celestial body. */
 	abstract public ICBodyType getCBodyType();
 
 }

@@ -94,6 +94,11 @@ public class OrbTStationary implements IOrbitType {
 		public double getAvgSize() {
 			return 0.0;
 		}
+		
+		@Override
+		public double getMaxDist() {
+			return 0.0;
+		}
 
 		@Override
 		public IOrbitType getOrbitType() {

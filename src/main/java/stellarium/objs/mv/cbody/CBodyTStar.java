@@ -1,15 +1,18 @@
 package stellarium.objs.mv.cbody;
 
 import stellarium.config.IConfigCategory;
+import stellarium.config.IConfigProperty;
 import stellarium.config.IStellarConfig;
+import stellarium.lang.CPropLangStrs;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.mv.CMvEntry;
 import stellarium.world.CWorldProviderPart;
+import stellarium.world.IWorldHandler;
 
 public class CBodyTStar extends CBodyTBase implements ICBodyType {
-
+	
 	@Override
 	public String getTypeName() {
 		return CPropLangStrsCBody.starbody;
@@ -22,8 +25,10 @@ public class CBodyTStar extends CBodyTBase implements ICBodyType {
 	}
 
 	@Override
-	public void formatConfig(IConfigCategory cfg, boolean isMain) {
-		super.formatConfig(cfg, isMain);
+	public void formatConfig(IConfigCategory cat, boolean isMain) {
+		super.formatConfig(cat, isMain);
+		IConfigProperty luminosity = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.periodRotation, 1.0);
+		IConfigProperty temperature = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.periodRotation, 1.0);
 	}
 
 	@Override
@@ -49,7 +54,10 @@ public class CBodyTStar extends CBodyTBase implements ICBodyType {
 	@Override
 	public void formCBody(CBody body, IStellarConfig cfg) {
 		// TODO Auto-generated method stub
+		
 		super.formCBody(body, cfg);
+		
+		body.getEntry().getMain().registerLightSource(body);
 	}
 
 	@Override
@@ -69,26 +77,22 @@ public class CBodyTStar extends CBodyTBase implements ICBodyType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean hasWorld() { return false; }
 
 	@Override
-	public CWorldProviderPart getCWorldProvider() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public IWorldHandler provideWorldHandler() { return null; }
 	
 	public class CBodyStar extends CBody {
 
+		private double luminosity, temperature;
+		
 		public CBodyStar(CMvEntry e) {
 			super(e);
 			// TODO Auto-generated constructor stub
 		}
-
-		@Override
-		public double getRadius() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
+		
 		@Override
 		public double getMag(Wavelength wl) {
 			// TODO Auto-generated method stub

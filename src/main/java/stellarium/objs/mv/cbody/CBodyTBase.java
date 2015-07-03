@@ -120,8 +120,8 @@ public abstract class CBodyTBase implements ICBodyType {
 
 	@Override
 	public void apply(CBody body, IConfigCategory cat) {
-		body.isTidalLocked = (boolean) cat.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
-		boolean hasPrec = (boolean) cat.getProperty(CPropLangStrsCBody.hasPrecession).getVal();
+		body.isTidalLocked = (Boolean) cat.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
+		boolean hasPrec = (Boolean) cat.getProperty(CPropLangStrsCBody.hasPrecession).getVal();
 		ECoord vernalCoord;
 		
 		if(!body.isTidalLocked) {
@@ -133,17 +133,17 @@ public abstract class CBodyTBase implements ICBodyType {
 			vernal.set(CrossUtil.cross(third, pole));
 			vernalCoord = new ECoord(pole, vernal, third);
 			
-			body.w_rot = 2 * Math.PI / (double) cat.getProperty(CPropLangStrsCBody.periodRotation).getVal();
+			body.w_rot = 2 * Math.PI / (Double) cat.getProperty(CPropLangStrsCBody.periodRotation).getVal();
 			
 			if(hasPrec)
-				body.w_prec = 2 * Math.PI / (double) cat.getProperty(CPropLangStrsCBody.periodPrecession).getVal();
+				body.w_prec = 2 * Math.PI / (Double) cat.getProperty(CPropLangStrsCBody.periodPrecession).getVal();
 			else body.w_prec = 0.0;
 		} else {
 			body.w_rot = 2 * Math.PI / body.getEntry().orbit().getAvgPeriod();
 			vernalCoord = VecMath.copyCoord(body.getEntry().orbit().getOrbCoord(0.0));
 		}
 		
-		double dayViewVernal = (double) cat.getProperty(CPropLangStrsCBody.dayViewVernal).getVal();
+		double dayViewVernal = (Double) cat.getProperty(CPropLangStrsCBody.dayViewVernal).getVal();
 		body.initialCoord = VecMath.rotateCoordZ(vernalCoord, -body.w_rot * dayViewVernal);
 	}
 

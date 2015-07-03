@@ -17,12 +17,12 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "0.2.0"
+version = "v0.2.0[1.7.10]"
 group= "stellarium" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "stellarium"
+archivesBaseName = "Stellarium"
 
 minecraft {
-    version = "1.7.10-10.13.0.1160"
+    version = "1.7.10-10.13.2.1230"
     assetDir = "eclipse/assets"
 }
 

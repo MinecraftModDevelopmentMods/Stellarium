@@ -2,7 +2,7 @@ package stellarium.lighting;
 
 import stellarium.util.*;
 import stellarium.util.math.*;
-import stellarium.stellars.cbody.*;
+import stellarium.objs.mv.cbody.CBody;
 
 public class CShade {
 	public CBody cause;

@@ -4,6 +4,6 @@ import stellarium.mech.OpFilter;
 import stellarium.render.CRenderEngine;
 import stellarium.render.ISObjRenderer;
 
-public interface ICBodyRenderer extends ISObjRenderer<CBody>{
+public interface ICBodyRenderer<T extends CBody> extends ISObjRenderer<T> {
 	
 }

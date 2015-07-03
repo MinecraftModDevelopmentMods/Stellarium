@@ -20,7 +20,7 @@ public class CRenderEngine {
 	public static final CRenderEngine instance = new CRenderEngine();
 	
 	public Tessellator tessellator = Tessellator.instance;
-	public Map<String, SavedTexture> savedTexMap = Maps.newHashMap();
+	private Map<String, SavedTexture> savedTexMap = Maps.newHashMap();
 	
 	/**
 	 * Saves rendering to specific frame buffer.

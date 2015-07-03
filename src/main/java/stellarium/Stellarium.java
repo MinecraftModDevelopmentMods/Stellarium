@@ -25,8 +25,6 @@ import stellarium.lang.CLangStrs;
 import stellarium.lang.CPropLangStrs;
 import stellarium.network.StellarNetworkHandler;
 import stellarium.settings.StellarSettings;
-import stellarium.stellars.orbit.*;
-import stellarium.stellars.cbody.*;
 import stellarium.view.StellarVPManager;
 import stellarium.world.StellarWorldProvider;
 import cpw.mods.fml.common.FMLCommonHandler;

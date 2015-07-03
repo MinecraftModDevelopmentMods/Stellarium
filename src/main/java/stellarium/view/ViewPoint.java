@@ -12,16 +12,14 @@ import sciapi.api.value.euclidian.EVector;
 import sciapi.api.value.euclidian.IEVector;
 import stellarium.settings.StellarSettings;
 import stellarium.sky.ISkySet;
-import stellarium.stellars.cbody.*;
 import stellarium.stellars.local.*;
-import stellarium.stellars.orbit.*;
 import stellarium.util.math.*;
 import stellarium.world.IWorldHandler;
 
 
 public class ViewPoint {
 	
-	//
+	//The WorldHandler
 	protected IWorldHandler world;
 	
 	

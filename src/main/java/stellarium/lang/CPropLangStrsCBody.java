@@ -51,7 +51,8 @@ public class CPropLangStrsCBody {
 	
 	
 	//------------------------ Orbit Loading Failure Messages ----------------------//
-	public static final String eccOutOfRange = "Too big eccenticity; it should be smaller than 0.5";
+	public static final String eccOutOfRange = "Too big eccenticity, It should be <0.5";
+	public static final String bodyEscaped = "A body(orbit) Escaped System";
 
 
 	//------------------------ CBody Loading Failure Messages ----------------------//
@@ -104,6 +105,15 @@ public class CPropLangStrsCBody {
 		CPropLangRegistry.instance().register(periodRotation, "cmv.cbody.prop.rotation");
 		CPropLangRegistry.instance().register(hasPrecession, "cmv.cbody.prop.hasprec");
 		CPropLangRegistry.instance().register(periodPrecession, "cmv.cbody.prop.precession");
+		
+		
+		//these has .expl
+			//with one parameter: name of the orbit
+		CPropLangRegistry.instance().register(eccOutOfRange, "cmv.orbit.err.eccoutrange");
+		
+			//with one parameter: name of the body(orbit)
+		CPropLangRegistry.instance().register(bodyEscaped, "cmv.orbit.err.bodyescaped");
+		
 		
 		//these has .expl
 			//with one parameter: name of variable with error

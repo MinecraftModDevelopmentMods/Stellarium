@@ -51,6 +51,12 @@ public abstract class Orbit {
 	 * */
 	abstract public double getAvgSize();
 	
+	/**
+	 * Get the maximum distance (on the apoapsis) of this orbit.
+	 * */
+	abstract public double getMaxDist();
+
+	
 	public double getAvgPeriod() {
 		if(entry.hasParent()) {
 			double size = this.getAvgSize();

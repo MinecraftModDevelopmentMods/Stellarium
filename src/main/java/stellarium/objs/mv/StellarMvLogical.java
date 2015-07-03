@@ -142,6 +142,11 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 		return null;
 	}
 	
+	public void registerLightSource(CBody body) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public void formatConfig(IStellarConfig subConfig) {
 		cfg.formatConfig(subConfig);

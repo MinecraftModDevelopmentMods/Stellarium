@@ -11,13 +11,10 @@ import stellarium.stellars.Moon;
 import stellarium.stellars.Planet;
 import stellarium.stellars.Sun;
 import stellarium.stellars.background.BrStar;
-import stellarium.stellars.cbody.StarBody;
-import stellarium.stellars.orbit.*;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.Transforms;
 import stellarium.viewrender.render.CRenderEngine;
 import stellarium.viewrender.render.StellarRenders;
-import stellarium.viewrender.viewer.*;
 
 public class StellarSettings {
 	
@@ -33,8 +30,6 @@ public class StellarSettings {
 	public static Planet Uranus=new Planet();
 	public static Planet Neptune=new Planet();
 
-	public StarBody Star;
-	
 	public static final double AU=1.496e+8;
 	
 	

@@ -6,6 +6,7 @@ import stellarium.objs.mv.CMvEntry;
 import stellarium.objs.mv.orbit.Orbit;
 import stellarium.render.ISObjRenderer;
 import stellarium.world.CWorldProviderPart;
+import stellarium.world.IWorldHandler;
 
 public interface ICBodyType {
 	
@@ -49,7 +50,13 @@ public interface ICBodyType {
 	/**gives CBody Renderer for this type*/
 	public ICBodyRenderer getCBodyRenderer();
 	
-	/**gives WorldProvider for this type of CBody*/
-	public CWorldProviderPart getCWorldProvider();
+	/**check for existence of world in this type*/
+	public boolean hasWorld();
+	
+	/**
+	 * gives World Handler for this type of CBody
+	 * will return <code>null</code> if this type does not contain world.
+	 * */
+	public IWorldHandler provideWorldHandler();
 	
 }
