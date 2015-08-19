@@ -1,5 +1,14 @@
 package stellarium.objs.mv.cbody;
 
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
+
 import net.minecraftforge.common.config.Configuration;
 import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.CrossUtil;
@@ -9,6 +18,8 @@ import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.util.BOp;
 import sciapi.api.value.util.VOp;
 import stellarium.catalog.EnumCatalogType;
+import stellarium.lighting.ILightObject;
+import stellarium.lighting.ILightingData;
 import stellarium.mech.Wavelength;
 import stellarium.objs.EnumSObjType;
 import stellarium.objs.IStellarObj;
@@ -16,11 +27,12 @@ import stellarium.objs.mv.CMvEntry;
 import stellarium.util.math.AxisRotate;
 import stellarium.util.math.SpCoord;
 import stellarium.util.math.SpCoordf;
+import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import stellarium.view.ViewPoint;
 import stellarium.world.IWorldHandler;
 
-public abstract class CBody implements IStellarObj {
+public abstract class CBody implements IStellarObj, ILightObject {
 
 	protected CMvEntry entry;
 	
@@ -28,6 +40,8 @@ public abstract class CBody implements IStellarObj {
 	protected double w_prec, w_rot;
 	protected ECoord initialCoord;
 	protected boolean isTidalLocked;
+	
+	protected Multimap<Wavelength, ILightingData> lightData = ArrayListMultimap.create();
 	
 	public CBody(CMvEntry e)
 	{
@@ -43,12 +57,39 @@ public abstract class CBody implements IStellarObj {
 	public String getName() {
 		return entry.getName();
 	}
+	
+	@Override
+	public EVector getPosition(float partime) {
+		EVector ret = new EVector(3);
+		ret.set(entry.orbit().getPosition(partime));
+		return ret;
+	}
 
 	@Override
 	public EVector getPos(ViewPoint vp, double partime) {
 		EVector ret = new EVector(3);
 		ret.set(BOp.sub(entry.orbit().getPosition(partime), vp.EcRPos));
 		return ret;
+	}
+	
+	@Override
+	public double getMag(ViewPoint vp, double partime, Wavelength wl) {
+		double flux = 0.0;
+
+		for(ILightingData data : lightData.get(wl))
+			flux += data.getFlux(vp);
+		
+		return Spmath.LumToMag(flux);
+	}
+	
+	@Override
+	public void addLightingData(Wavelength wl, ILightingData data) {
+		lightData.put(wl, data);
+	}
+
+	@Override
+	public void refreshLightingData() {
+		lightData.clear();
 	}
 	
 	public abstract void update(double day);

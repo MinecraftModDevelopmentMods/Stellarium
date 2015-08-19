@@ -21,6 +21,7 @@ public class StellarMvFormatter {
 		nmv.Msun = lmv.Msun;
 		nmv.day = lmv.day;
 		nmv.yr = lmv.yr;
+		nmv.Tsun = lmv.Tsun;
 		
 		infmap.clear();
 		

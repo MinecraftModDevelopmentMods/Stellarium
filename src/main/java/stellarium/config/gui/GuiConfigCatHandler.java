@@ -46,6 +46,7 @@ public class GuiConfigCatHandler implements ICategoryHandler, Iterable<IGuiCfgPr
 
 	@Override
 	public IPropertyHandler getNewProp(StellarConfigProperty prop) {
+		cfgHandler.scheduleReSetup(this.category);
 		return new GuiPropertyHandler(prop);
 	}
 

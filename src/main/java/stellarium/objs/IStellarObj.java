@@ -24,7 +24,7 @@ public interface IStellarObj {
 	 * gives the apparent magnitude for certain wavelength.
 	 * @param wl the wavelength in which being observed.
 	 * */
-	public double getMag(Wavelength wl);
+	public double getMag(ViewPoint vp, double partime, Wavelength wl);
 	
 	/**gives the render id for this object*/
 	public int getRenderId();

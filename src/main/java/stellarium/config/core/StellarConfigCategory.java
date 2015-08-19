@@ -1,13 +1,16 @@
 package stellarium.config.core;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
 import stellarium.config.ICfgArrMListener;
@@ -35,7 +38,7 @@ public class StellarConfigCategory implements IConfigCategory {
 	
 	protected boolean isImmutable = false;
 	
-	private Map<String, IPropertyRelation> prels = Maps.newHashMap();
+	private Set<IPropertyRelation> prels = Sets.newIdentityHashSet();
 
 	public StellarConfigCategory(StellarConfiguration config, String name)
 	{
@@ -177,18 +180,24 @@ public class StellarConfigCategory implements IConfigCategory {
 		StellarConfigProperty prop = propmap.get(propname);
 		
 		//Clear Relations
-		List<PropertyRelation> lr = proprels.get(propname);
-		
-		for(PropertyRelation pr : lr)
-		{
-			prels.remove(pr.proprel.getRelationToolTip());
+		if(proprels.containsKey(propname)) {
+			List<PropertyRelation> lr = proprels.get(propname);
+			Iterator<PropertyRelation> ite = lr.iterator();
 			
-			handler.onPropertyRelationRemoved(pr);
-			if(invhandler != null)
-				invhandler.onPropertyRelationRemoved(pr);
+			while(ite.hasNext())
+			{
+				PropertyRelation pr = ite.next();
+				prels.remove(pr.proprel);
 			
-			for(IConfigProperty rprop : pr.relprops)
-				proprels.get(prop.getName()).remove(pr);
+				handler.onPropertyRelationRemoved(pr);
+				if(invhandler != null)
+					invhandler.onPropertyRelationRemoved(pr);
+				
+				for(IConfigProperty rprop : pr.relprops)
+					if(rprop != prop)
+						proprels.get(rprop.getName()).remove(pr);
+					else ite.remove();
+			}
 		}
 		
 		handler.onRemoveProp(prop);
@@ -220,10 +229,10 @@ public class StellarConfigCategory implements IConfigCategory {
 	@Override
 	public void addPropertyRelation(IPropertyRelation rel,
 			IConfigProperty... relprops) {
-		if(prels.containsKey(rel.getRelationToolTip()))
+		if(prels.contains(rel))
 			return;
 		
-		prels.put(rel.getRelationToolTip(), rel);
+		prels.add(rel);
 		
 		PropertyRelation pr = new PropertyRelation(rel, relprops);
 		

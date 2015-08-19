@@ -65,7 +65,7 @@ public class RenderLayerPart {
 		this.rendered = false;
 	}
 
-	public void renderForWave(final CRenderEngine re, IViewer viewer, double resolution, long time, double partialTicks, final WaveFilter wfilter) {
+	public void renderForWave(final CRenderEngine re, IViewer viewer, double resolution, double partialTicks, final WaveFilter wfilter) {
 		
 		IRenderable renderable = new IRenderable() {
 			@Override
@@ -79,10 +79,10 @@ public class RenderLayerPart {
 			}
 		};
 		
-		this.render(re, viewer, resolution, time, partialTicks, renderable);
+		this.render(re, viewer, resolution, partialTicks, renderable);
 	}
 	
-	public void renderForRGB(final CRenderEngine re, IViewer viewer, double resolution, long time, float partialTicks, final OpFilter filter) {
+	public void renderForRGB(final CRenderEngine re, IViewer viewer, double resolution, float partialTicks, final OpFilter filter) {
 		IRenderable renderable = new IRenderable() {
 			@Override
 			public Wavelength getWavelength() {
@@ -95,10 +95,10 @@ public class RenderLayerPart {
 			}
 		};
 		
-		this.render(re, viewer, resolution, time, partialTicks, renderable);
+		this.render(re, viewer, resolution, partialTicks, renderable);
 	}
 	
-	public void render(CRenderEngine re, IViewer viewer, double resolution, long time, double partialTicks, IRenderable renderable) {
+	public void render(CRenderEngine re, IViewer viewer, double resolution, double partialTicks, IRenderable renderable) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		Wavelength wl = renderable.getWavelength();
@@ -118,7 +118,7 @@ public class RenderLayerPart {
 			dist.set(VecMath.size(pos));
 			coord.setWithVec(VecMath.div(dist, pos));
 			
-			mag = obj.getMag(wl) + skyset.getExtinction(wl, coord);
+			mag = obj.getMag(viewer.getViewPoint(), partialTicks, wl) + skyset.getExtinction(wl, coord);
 			bglight = skyset.getBgLight(wl, coord);
 			
 			size = obj.getRadius(wl) / (resolution * dist.asDouble());

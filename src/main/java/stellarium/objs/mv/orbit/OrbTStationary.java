@@ -8,6 +8,7 @@ import stellarium.config.IStellarConfig;
 import stellarium.lang.CPropLangStrs;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.objs.mv.StellarMvLogical;
 import stellarium.util.math.VecMath;
 
 /**
@@ -24,7 +25,7 @@ public class OrbTStationary implements IOrbitType {
 	public void init() { }
 
 	@Override
-	public void formatConfig(IConfigCategory cat) {
+	public void formatConfig(IConfigCategory cat, StellarMvLogical mv) {
 		CPropLangStrs.addProperty(cat, "vector3", CPropLangStrsCBody.position, new EVector(0.0, 0.0, 0.0));
 	}
 

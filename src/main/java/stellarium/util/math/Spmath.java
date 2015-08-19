@@ -235,4 +235,10 @@ public class Spmath {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	public static double getBoltzmannRate(double temp, double wavelength,
+			double eqWidth) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

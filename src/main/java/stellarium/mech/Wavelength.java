@@ -9,5 +9,22 @@ public class Wavelength {
 	
 	/**Type of this wavelength*/
 	public EnumWavelength type;
+	
+	public Wavelength(double wavelength, EnumWavelength type) {
+		this.wlen = wavelength;
+		this.type = type;
+	}
+
+	public double getWidth() {
+		return type.getWidth();
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		long bits = Double.doubleToLongBits(wlen);
+        int bit = (int)(bits ^ (bits >>> 32));
+		return bit ^ type.hashCode();
+	}
 			
 }

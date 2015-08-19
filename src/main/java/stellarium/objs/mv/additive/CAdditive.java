@@ -43,7 +43,7 @@ public abstract class CAdditive implements IStellarObj {
 	}
 
 	@Override
-	public double getMag(Wavelength wl) {
+	public double getMag(ViewPoint vp, double partime, Wavelength wl) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

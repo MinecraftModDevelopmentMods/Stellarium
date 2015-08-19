@@ -36,8 +36,7 @@ public class GuiConfigCatEntry extends GuiListExtended {
 		
 		this.setShowSelectionBox(false);
 		
-		labelX = offsetX + 10;
-		sublabelX = labelX + 10;
+		this.labelX = offsetX + 10;
 		
         this.setHasListHeader(true, 20);
 	}
@@ -57,7 +56,15 @@ public class GuiConfigCatEntry extends GuiListExtended {
 	}
 	
 	public int getSubLabelX() {
-		return this.sublabelX;
+		int maxLabelWidth = 0;
+
+		for(IGuiCfgPropElement element : this.catHandler)
+		{
+			if(!element.isSubContent())
+				maxLabelWidth = Math.max(maxLabelWidth, screen.getFontRenderer().getStringWidth(element.getLabel()));
+		}
+		
+		return this.labelX + Math.max(10, maxLabelWidth / 2);
 	}
 	
 	public int getContentX() {
@@ -93,7 +100,7 @@ public class GuiConfigCatEntry extends GuiListExtended {
 		
 		maxLabelWidth = Math.min(maxLabelWidth, MAX_LABEL_WIDTH);
 		
-		return this.labelX + SPACING + maxLabelWidth;
+		return Math.max(this.getSubLabelX() + SPACING + maxLabelWidth + 6, this.getContentX() + 10);
 	}
 	
 	public void setCategory(StellarConfigCategory category, GuiConfigCatHandler catHandler)
@@ -114,7 +121,6 @@ public class GuiConfigCatEntry extends GuiListExtended {
 
         if(catHandler != null)
         	catHandler.onSetup(this);
-        
 	}
 	
 	public void onGuiClosed() {

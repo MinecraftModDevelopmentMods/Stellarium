@@ -50,6 +50,7 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.yr, 365.2564);
 			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.day, 24000.0);
 			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.au, 1.496e+11);
+			CPropLangStrs.addProperty(props, "udouble", CPropLangStrs.tsun, 5700.0);
 			//props.addProperty("udouble", "Stellar Distance Unit(pc)", 1.0);
 		}
 		
@@ -100,11 +101,13 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		IConfigProperty<Double> yr = props.getProperty(CPropLangStrs.yr);
 		IConfigProperty<Double> day = props.getProperty(CPropLangStrs.day);
 		IConfigProperty<Double> au = props.getProperty(CPropLangStrs.au);
+		IConfigProperty<Double> tsun = props.getProperty(CPropLangStrs.tsun);
 		
 		ins.Msun = mu.getVal();
 		ins.yr = yr.getVal();
 		ins.day = day.getVal();
 		ins.Au = au.getVal();
+		ins.Tsun = tsun.getVal();
 		
 		CConfigUtil.walkConfigTree(subConfig, new LoadWalker());
 		
@@ -143,6 +146,8 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 			{
 				ent.setOrbit(CMvTypeRegistry.instance().getOrbType(CPropLangStrsCBody.storb)
 						.provideOrbit(ent));
+				
+				ent.orbit().getOrbitType().formatConfig(cat, ins);
 			}
 			else if(torb.getVal() == null)
 			{
@@ -293,13 +298,13 @@ public abstract class CMvCfgBase implements ICfgArrMListener {
 		if(!cat.getCategoryEntry().getParentEntry().isRootEntry())
 		{
 			IConfigProperty typeOrbit = CPropLangStrs.addProperty(cat, "typeOrbit", CPropLangStrs.orbtype, null);
+			cat.addPropertyRelation(new TypeOrbitRelation(cat, ins), typeOrbit);
 			typeOrbit.simSetEnabled(false);
-			cat.addPropertyRelation(new TypeOrbitRelation(cat), typeOrbit);
 		}
 		
 		IConfigProperty typeCBody = CPropLangStrs.addProperty(cat, "typeCBody", CPropLangStrs.cbtype, null);
+		cat.addPropertyRelation(new TypeCBodyRelation(cat, ins), typeCBody);
 		typeCBody.simSetEnabled(false);
-		cat.addPropertyRelation(new TypeCBodyRelation(cat), typeCBody);
 	}
 	
 	public CMvEntry addEntry(String name, CMvEntry par)

@@ -6,7 +6,9 @@ import sciapi.api.value.IValRef;
 import sciapi.api.value.euclidian.EVector;
 import stellarium.config.IConfigurableData;
 import stellarium.config.IStellarConfig;
+import stellarium.mech.OpFilter;
 import stellarium.objs.IStellarObj;
+import stellarium.render.CRenderEngine;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
 
@@ -38,5 +40,14 @@ public interface IStellarCatalog extends IConfigurableData {
 	 * @return the list of Stellar Objects within the range
 	 * */
 	public <T extends IStellarObj> List<T> getList(ViewPoint vp, SpCoord dir, double hfov);
+
+	/**
+	 * called before rendering to preset filter, refresh lighting, etc.
+	 * 
+	 * @param re the rendering engine
+	 * @param filter filter for rendering
+	 * @param partime partial tick when renders the catalog. 
+	 * */
+	public void onPreRender(CRenderEngine re, OpFilter filter, float partime);
 
 }

@@ -50,7 +50,7 @@ public class DetectorEye implements IDetector {
 		
 		for(RenderLayer layer : layers) {
 			if(layer.shouldUpdateRender(time, scope, viewer.getViewPos(), fov))
-				layer.renderLayer(re, viewer, time, partialTicks, eyeLimit, fov, this.pixelScale);
+				layer.renderLayer(re, viewer, partialTicks, eyeLimit, fov, this.pixelScale);
 			
 			layer.loadRendered(re);
 		}

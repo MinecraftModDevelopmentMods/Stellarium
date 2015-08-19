@@ -17,11 +17,14 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.config.IStellarConfig;
+import stellarium.lighting.LightModel;
+import stellarium.mech.OpFilter;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.objs.mv.cbody.CBodyRenderer;
 import stellarium.objs.mv.cbody.TypeCBodyPropHandler;
 import stellarium.objs.mv.orbit.TypeOrbitPropHandler;
+import stellarium.render.CRenderEngine;
 import stellarium.render.StellarRenderingRegistry;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
@@ -31,23 +34,24 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 		
 	protected StellarManager manager;
 	public List<CBody> bodies = Lists.newArrayList();
+	private LightModel lightmodel;
 	
 	public StellarMv(StellarMvCatalog prov, int rid)
 	{
 		super(prov);
-		renderId = rid;
-		cfg = new CMvCfgPhysical(this);
+		this.renderId = rid;
+		this.cfg = new CMvCfgPhysical(this);
+		this.lightmodel = new LightModel();
 	}
 	
 	public StellarMv(StellarManager mn, StellarMvCatalog prov, int rid)
 	{
 		this(prov, rid);
-		setManager(mn);
+		this.setManager(mn);
 	}
 	
-	public void setManager(StellarManager mn)
-	{
-		manager = mn;
+	public void setManager(StellarManager mn) {
+		this.manager = mn;
 	}
 	
 	public void update(long tick) {
@@ -69,6 +73,11 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 		return null;
 	}
 	
+	@Override
+	public void onPreRender(CRenderEngine re, OpFilter filter, float partime) {
+		lightmodel.updateLighting(filter, partime);
+	}
+	
 	protected void removeEntry(CMvEntry entry) {
 		super.removeEntry(entry);
 	}
@@ -86,4 +95,5 @@ public class StellarMv extends StellarMvLogical implements IStellarCatalog, Iter
 
 	@Override
 	public boolean isDisabled() { return false; }
+	
 }

@@ -28,6 +28,7 @@ public class CPropLangStrs {
 	public static final String yr = "yr";
 	public static final String day = "day";
 	public static final String au = "Au";
+	public static final String tsun = "Tsun";
 	
 	//------------------------------ StellarMv Defaults ----------------------------//
 	public static final String def = "(default)";
@@ -65,6 +66,7 @@ public class CPropLangStrs {
 		CPropLangRegistry.instance().register(yr, "cmv.yr");
 		CPropLangRegistry.instance().register(day, "cmv.day");
 		CPropLangRegistry.instance().register(au, "cmv.au");
+		CPropLangRegistry.instance().register(tsun, "cmv.tsun");
 		
 		CPropLangRegistry.instance().register(def, "cmv.def");
 		

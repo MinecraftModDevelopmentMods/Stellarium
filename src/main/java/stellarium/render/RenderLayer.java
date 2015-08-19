@@ -67,7 +67,7 @@ public class RenderLayer {
 			this.prevScope = scope;
 			this.prevDir = dir;
 			this.isCoverSky = scope.isFOVCoverSky();
-						
+			
 			return true;
 		} else return false;
 	}
@@ -76,12 +76,14 @@ public class RenderLayer {
 		return provider.getMag() < magLimit;
 	}
 	
-	public void renderLayer(CRenderEngine re, IViewer viewer, long time, float partialTicks, double eyeLimit, double fov, double pxScale) {
+	public void renderLayer(CRenderEngine re, IViewer viewer, float partialTicks, double eyeLimit, double fov, double pxScale) {
 		OpFilter filter = viewer.getFilter();
 		ViewPoint vp = viewer.getViewPoint();
 		ISkySet skyset = vp.getSkySet();
 		
 		this.getCurrentPartition().updateView(viewer.getViewPos(), fov, pxScale);
+		
+		catalog.onPreRender(re, filter, partialTicks);
 		
 		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
 			layer.preRender(re, vp);
@@ -89,33 +91,33 @@ public class RenderLayer {
 		if(!filter.isRGB()) {
 			for(OpFilter.WaveFilter wfilter : filter.getFilterList()) {
 				double magLimit = Math.min(eyeLimit, skyset.getBgLight(wfilter.wl, viewer.getViewPos()));
-			
+				
 				if(!this.canRender(magLimit))
 					continue;
-			
-				this.renderForWave(re, viewer, time, partialTicks, wfilter);
+				
+				this.renderForWave(re, viewer, partialTicks, wfilter);
 			}
 		} else {
-			this.renderForRGB(re, viewer, time, partialTicks, filter);
+			this.renderForRGB(re, viewer, partialTicks, filter);
 		}
 	}
 
-	private void renderForWave(CRenderEngine re, IViewer viewer, long time, double partialTicks, WaveFilter wfilter) {
+	private void renderForWave(CRenderEngine re, IViewer viewer, double partialTicks, WaveFilter wfilter) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		double resolution = Math.min(scope.getResolution(wfilter.wl), skyset.getSeeing(wfilter.wl));
-			
+		
 		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
-			layer.renderForWave(re, viewer, resolution, time, partialTicks, wfilter);
+			layer.renderForWave(re, viewer, resolution, partialTicks, wfilter);
 	}
 	
-	private void renderForRGB(CRenderEngine re, IViewer viewer, long time, float partialTicks, OpFilter filter) {
+	private void renderForRGB(CRenderEngine re, IViewer viewer, float partialTicks, OpFilter filter) {
 		ISkySet skyset = viewer.getViewPoint().getSkySet();
 		IScope scope = viewer.getScope();
 		double resolution = Math.min(scope.getResolution(Wavelength.visible), skyset.getSeeing(Wavelength.visible));
 		
 		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
-			layer.renderForRGB(re, viewer, resolution, time, partialTicks, filter);
+			layer.renderForRGB(re, viewer, resolution, partialTicks, filter);
 	}
 	
 	public void loadRendered(CRenderEngine re) {

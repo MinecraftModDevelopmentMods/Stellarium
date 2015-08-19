@@ -3,6 +3,7 @@ package stellarium.objs.mv.cbody;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.objs.mv.StellarMvLogical;
 import stellarium.objs.mv.orbit.Orbit;
 import stellarium.render.ISObjRenderer;
 import stellarium.world.CWorldProviderPart;
@@ -19,8 +20,9 @@ public interface ICBodyType {
 	
 	/**forms configuration for this type
 	 * @param cfg the configuration category to format
+	 * @param mv 
 	 * @param isMain check value which is <code>true</code> iff. this category for main star.*/
-	public void formatConfig(IConfigCategory cfg, boolean isMain);
+	public void formatConfig(IConfigCategory cat, StellarMvLogical mv, boolean isMain);
 	
 	/**remove properties from this type*/
 	public void removeConfig(IConfigCategory cat);
@@ -29,10 +31,10 @@ public interface ICBodyType {
 	public CBody provideCBody(CMvEntry e);
 	
 	/**applies the configuration to the body*/
-	public void apply(CBody body, IConfigCategory cfg);
+	public void apply(CBody body, IConfigCategory cat);
 	
 	/**saves the body as configuration*/
-	public void save(CBody body, IConfigCategory cfg);
+	public void save(CBody body, IConfigCategory cat);
 	
 	/**checks the current settings and forms the celestial body*/
 	public void formCBody(CBody body, IStellarConfig cfg);

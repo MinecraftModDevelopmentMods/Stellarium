@@ -12,6 +12,7 @@ import stellarium.config.StrMessage;
 import stellarium.lang.CPropLangStrs;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.objs.mv.StellarMvLogical;
 import stellarium.util.UpdateDouble;
 import stellarium.util.math.Rotate;
 import stellarium.util.math.Spmath;
@@ -33,10 +34,12 @@ public class OrbitTSmallEcc implements IOrbitType {
 	public void init() { }
 
 	@Override
-	public void formatConfig(IConfigCategory cat) {
+	public void formatConfig(final IConfigCategory cat, StellarMvLogical mv) {
 		//Note: every property should be inserted as degrees.
-		//Note: change is per century.
-		CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.semiMajorAxis, 1.0); //a
+		//Note: change is per century.		
+		IConfigProperty semimajor = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.semiMajorAxis, 1.0); //a
+		IConfigProperty period = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.orbitalPeriod, 1.0); //P
+		
 		CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.eccentricity, 0.0); //e
 		CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.inclination, 0.0); //i
 		CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.inclinationChange, 0.0);
@@ -47,22 +50,71 @@ public class OrbitTSmallEcc implements IOrbitType {
 		
 		IConfigProperty argP = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.argumentPeri, 0.0); //w
 		IConfigProperty argPd = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.argumentPeriChange, 0.0);
-		IConfigProperty meanA = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.meanAnomaly, 1.0); //M
+		IConfigProperty meanA = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.meanAnomaly, 0.0); //M
 		
-		IConfigProperty longP = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.longitudePeri, 1.0); //wbar
-		IConfigProperty longPd = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.longitudePeriChange, 1.0);
-		IConfigProperty meanL = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.meanLongitude, 1.0);
+		IConfigProperty longP = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.longitudePeri, 0.0); //wbar
+		IConfigProperty longPd = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.longitudePeriChange, 0.0);
+		IConfigProperty meanL = CPropLangStrs.addProperty(cat, "double", CPropLangStrsCBody.meanLongitude, 0.0);
 
 		cat.addPropertyRelation(new IPropertyRelation() {
+			IMConfigProperty[] props;
+			IMConfigProperty<Double> semimajor;
+			IMConfigProperty<Double> period;
+			IConfigProperty<Double> mass;
+			
+			@Override
+			public void setProps(IMConfigProperty... props) {
+				this.props = props;
+				this.semimajor = props[0];
+				this.period = props[1];
+				period.setEnabled(false);
+				this.mass = cat.getCategoryEntry().getParentEntry().getCategory().getProperty(CPropLangStrs.mass);
+			}
+
+			@Override
+			public void onEnable(int i) {
+				props[1-i].setEnabled(false);
+			}
+
+			@Override
+			public void onDisable(int i) {
+				props[1-i].setEnabled(true);
+			}
+
+			@Override
+			public void onValueChange(int i) {				
+				if(i == 0) {
+					double a = semimajor.getVal();
+					period.setVal(Math.sqrt(a*a*a/mass.getVal()));
+				} else {
+					double p = period.getVal();
+					semimajor.setVal(Math.pow(mass.getVal()*p*p, 1.0/3));
+				}
+			}
+
+			@Override
+			public String getRelationToolTip() {
+				return CPropLangStrsCBody.sizeVsPeriod;
+			}
+			
+		}, semimajor, period);
+		
+		cat.addPropertyRelation(new IPropertyRelation() {
 			IMConfigProperty<Boolean> handleFlag;
-			IMConfigProperty[] positive;
-			IMConfigProperty[] negative;
+			IMConfigProperty[] positive = new IMConfigProperty[3];
+			IMConfigProperty[] negative = new IMConfigProperty[3];
 			
 			@Override
 			public void setProps(IMConfigProperty... props) {
 				this.handleFlag = props[0];
 				System.arraycopy(props, 1, this.negative, 0, 3);
 				System.arraycopy(props, 4, this.positive, 0, 3);
+				
+				for(IMConfigProperty prop : positive)
+					prop.setEnabled(handleFlag.getVal());
+				
+				for(IMConfigProperty prop : negative)
+					prop.setEnabled(!handleFlag.getVal());
 			}
 
 			@Override
@@ -94,7 +146,7 @@ public class OrbitTSmallEcc implements IOrbitType {
 
 			@Override
 			public String getRelationToolTip() {
-				return null;
+				return CPropLangStrsCBody.majorExpression;
 			}
 			
 		}, isMajor, argP, argPd, meanA, longP, longPd, meanL);
@@ -103,6 +155,7 @@ public class OrbitTSmallEcc implements IOrbitType {
 	@Override
 	public void removeConfig(IConfigCategory cat) {
 		cat.removeProperty(CPropLangStrsCBody.semiMajorAxis);
+		cat.removeProperty(CPropLangStrsCBody.orbitalPeriod);
 		cat.removeProperty(CPropLangStrsCBody.eccentricity);
 		cat.removeProperty(CPropLangStrsCBody.inclination);
 		cat.removeProperty(CPropLangStrsCBody.inclinationChange);

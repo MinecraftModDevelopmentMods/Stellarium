@@ -13,6 +13,7 @@ import stellarium.config.StrMessage;
 import stellarium.lang.CPropLangStrs;
 import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.objs.mv.StellarMvLogical;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import stellarium.world.CWorldProviderPart;
@@ -22,7 +23,7 @@ public abstract class CBodyTBase implements ICBodyType {
 	private static String[] dirName = {CPropLangStrsCBody.primeMeridian, CPropLangStrsCBody.east, CPropLangStrsCBody.pole};
 
 	@Override
-	public void formatConfig(IConfigCategory cat, boolean isMain) {
+	public void formatConfig(IConfigCategory cat, StellarMvLogical mv, boolean isMain) {
 		IConfigProperty tidalLock = null;
 		
 		if(!isMain)
@@ -37,6 +38,7 @@ public abstract class CBodyTBase implements ICBodyType {
 		
 		IConfigProperty hasPrec = CPropLangStrs.addProperty(cat, "toggleYesNo", CPropLangStrsCBody.hasPrecession, false);
 		IConfigProperty periodPrec = CPropLangStrs.addProperty(cat, "udouble", CPropLangStrsCBody.periodPrecession, 26000.0);
+		periodPrec.simSetEnabled((Boolean)hasPrec.getVal());
 		
 		cat.addPropertyRelation(new IPropertyRelation() {
 			IMConfigProperty<Boolean> hasPrec;
@@ -64,7 +66,7 @@ public abstract class CBodyTBase implements ICBodyType {
 
 			@Override
 			public String getRelationToolTip() {
-				return "";
+				return CPropLangStrsCBody.hasPrecRelation;
 			}
 			
 		}, hasPrec, periodPrec);
@@ -94,14 +96,14 @@ public abstract class CBodyTBase implements ICBodyType {
 
 				@Override
 				public void onValueChange(int i) {
-					if(i == 0 && check.getVal())
+					if(i == 0)
 						for(IMConfigProperty prop : props)
-							prop.setEnabled(false);
+							prop.simSetEnabled(check.getVal());
 				}
 
 				@Override
 				public String getRelationToolTip() {
-					return "";
+					return CPropLangStrsCBody.tidalLockRelation;
 				}
 				
 			}, tidalLock, pole, periodRot, hasPrec, periodPrec);
@@ -120,7 +122,10 @@ public abstract class CBodyTBase implements ICBodyType {
 
 	@Override
 	public void apply(CBody body, IConfigCategory cat) {
-		body.isTidalLocked = (Boolean) cat.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
+		if(body.entry.hasParent())
+			body.isTidalLocked = (Boolean) cat.getProperty(CPropLangStrsCBody.tidalLocked).getVal();
+		else body.isTidalLocked = false;
+		
 		boolean hasPrec = (Boolean) cat.getProperty(CPropLangStrsCBody.hasPrecession).getVal();
 		ECoord vernalCoord;
 		
@@ -148,22 +153,22 @@ public abstract class CBodyTBase implements ICBodyType {
 	}
 
 	@Override
-	public void save(CBody body, IConfigCategory cfg) {
-		cfg.getProperty(CPropLangStrsCBody.tidalLocked).simSetVal(body.isTidalLocked);
+	public void save(CBody body, IConfigCategory cat) {
+		cat.getProperty(CPropLangStrsCBody.tidalLocked).simSetVal(body.isTidalLocked);
 		
 		if(!body.isTidalLocked) {
-			cfg.getProperty(CPropLangStrsCBody.periodRotation).simSetEnabled(true);
-			cfg.getProperty(CPropLangStrsCBody.periodRotation).simSetVal(2 * Math.PI / body.w_rot);
+			cat.getProperty(CPropLangStrsCBody.periodRotation).simSetEnabled(true);
+			cat.getProperty(CPropLangStrsCBody.periodRotation).simSetVal(2 * Math.PI / body.w_rot);
 			
-			cfg.getProperty(CPropLangStrsCBody.hasPrecession).simSetEnabled(true);
+			cat.getProperty(CPropLangStrsCBody.hasPrecession).simSetEnabled(true);
 			
 			if(body.w_prec != 0.0) {
-				cfg.getProperty(CPropLangStrsCBody.hasPrecession).simSetVal(true);
+				cat.getProperty(CPropLangStrsCBody.hasPrecession).simSetVal(true);
 				
-				cfg.getProperty(CPropLangStrsCBody.periodPrecession).simSetEnabled(true);
-				cfg.getProperty(CPropLangStrsCBody.periodPrecession).simSetVal(2 * Math.PI / body.w_prec);
+				cat.getProperty(CPropLangStrsCBody.periodPrecession).simSetEnabled(true);
+				cat.getProperty(CPropLangStrsCBody.periodPrecession).simSetVal(2 * Math.PI / body.w_prec);
 			} else {
-				cfg.getProperty(CPropLangStrsCBody.hasPrecession).simSetVal(false);
+				cat.getProperty(CPropLangStrsCBody.hasPrecession).simSetVal(false);
 			}
 		}
 	}

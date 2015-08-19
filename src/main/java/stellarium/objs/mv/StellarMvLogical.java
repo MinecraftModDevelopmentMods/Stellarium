@@ -13,6 +13,8 @@ import stellarium.config.IConfigCategory;
 import stellarium.config.IConfigFormatter;
 import stellarium.config.IConfigurableData;
 import stellarium.config.IStellarConfig;
+import stellarium.lighting.ILightSource;
+import stellarium.lighting.LightModel;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.util.math.SpCoord;
 import stellarium.view.ViewPoint;
@@ -26,19 +28,21 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 	protected CMvEntry root;
 	protected CMvCfgBase cfg;
 	
-	public double Msun, yr, day, Au;
+	public double Msun, yr, day, Au, Tsun;
+	
+	private LightModel lightmodel;
 	
 	public StellarMvLogical(StellarMvCatalog par)
 	{
-		provider = par;
-		cfg = new CMvCfgLogical(this);
+		this.provider = par;
+		this.cfg = new CMvCfgLogical(this);
 	}
 	
 	protected CMvEntry newEntry(CMvEntry par, String name) {
 		CMvEntry ne = new CMvEntry(this, par, name);
 		if(par != null)
 			par.addSatellite(ne);
-		else root = ne;
+		else this.root = ne;
 		return ne;
 	}
 	
@@ -142,10 +146,9 @@ public class StellarMvLogical implements IStellarCatalogData, Iterable<CMvEntry>
 		return null;
 	}
 	
-	public void registerLightSource(CBody body) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void registerLightSource(ILightSource src) { }
+	
+	public void unregisterLightSource(ILightSource src) { }
 	
 	@Override
 	public void formatConfig(IStellarConfig subConfig) {

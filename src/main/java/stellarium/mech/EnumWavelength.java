@@ -12,4 +12,9 @@ public enum EnumWavelength {
 	Z,
 	InfraRed,
 	Radiowave;
+
+	public double getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

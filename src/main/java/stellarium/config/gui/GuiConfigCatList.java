@@ -41,6 +41,8 @@ public class GuiConfigCatList extends GuiConfigBase {
 	
 	protected List<String> loadFails = Lists.newArrayList();
 	private EnumCategoryType cattype;
+	
+	protected boolean needUpdate = false;
 
 	public GuiConfigCatList(GuiScreen parentScreen, GuiStellarConfig guiConfig, StellarConfiguration config, String title) {
 		super(parentScreen, guiConfig, config, title);
@@ -92,6 +94,11 @@ public class GuiConfigCatList extends GuiConfigBase {
 		
 		cfgList.setCategory(newSelected, handler);
 		this.selectedCategory = newSelected;
+	}
+	
+	public void scheduleReSetup(StellarConfigCategory category) {
+		if(category == this.selectedCategory)
+			this.needUpdate = true;
 	}
 
 	@Override
@@ -154,6 +161,12 @@ public class GuiConfigCatList extends GuiConfigBase {
 
 	@Override
 	public void updateScreen() {
+		if(this.needUpdate)
+		{
+			cfgList.initGui();
+			this.needUpdate = false;
+		}
+		
 		cfgList.updateScreen();
 		viewList.updateCursorCounter();
 		guiConfig.updateScreenSuper();

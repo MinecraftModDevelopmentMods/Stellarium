@@ -11,6 +11,7 @@ import stellarium.objs.mv.cbody.CBodyTStar;
 import stellarium.objs.mv.cbody.ICBodyType;
 import stellarium.objs.mv.orbit.IOrbitType;
 import stellarium.objs.mv.orbit.OrbTStationary;
+import stellarium.objs.mv.orbit.OrbitTSmallEcc;
 
 public class CMvTypeRegistry {
 	
@@ -29,6 +30,7 @@ public class CMvTypeRegistry {
 	public CMvTypeRegistry()
 	{
 		this.registerOrbType(new OrbTStationary());
+		this.registerOrbType(new OrbitTSmallEcc());
 		
 		this.registerCBodyType(new CBodyTStar());
 	}

@@ -5,16 +5,19 @@ import stellarium.config.IConfigProperty;
 import stellarium.config.IMConfigProperty;
 import stellarium.config.IPropertyRelation;
 import stellarium.lang.CPropLangStrs;
+import stellarium.objs.mv.StellarMvLogical;
 
 public class TypeCBodyRelation implements IPropertyRelation {
 	
 	IConfigCategory cat;
+	StellarMvLogical mv;
 	
 	IMConfigProperty<ICBodyType> prop;
 	
-	public TypeCBodyRelation(IConfigCategory pcat)
+	public TypeCBodyRelation(IConfigCategory pcat, StellarMvLogical ins)
 	{
 		cat = pcat;
+		mv = ins;
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class TypeCBodyRelation implements IPropertyRelation {
 		if(prop.getVal() != null)
 		{
 			IConfigProperty prep = cat.setPropAddEntry(prop);
-			prop.getVal().formatConfig(cat, cat.getCategoryEntry().getParentEntry().isRootEntry());
+			prop.getVal().formatConfig(cat, mv, cat.getCategoryEntry().getParentEntry().isRootEntry());
 			cat.setPropAddEntry(prep);
 		}
 	}

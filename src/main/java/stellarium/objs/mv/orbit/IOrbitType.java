@@ -3,6 +3,7 @@ package stellarium.objs.mv.orbit;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
 import stellarium.objs.mv.CMvEntry;
+import stellarium.objs.mv.StellarMvLogical;
 
 public interface IOrbitType {
 	
@@ -13,8 +14,9 @@ public interface IOrbitType {
 	public void init();
 	
 	
-	/**forms configuration for this type*/
-	public void formatConfig(IConfigCategory cat);
+	/**forms configuration for this type
+	 * @param mv */
+	public void formatConfig(IConfigCategory cat, StellarMvLogical mv);
 	
 	/**remove properties from this type*/
 	public void removeConfig(IConfigCategory cat);

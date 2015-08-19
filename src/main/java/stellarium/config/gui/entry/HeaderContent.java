@@ -76,7 +76,7 @@ public class HeaderContent implements IGuiCfgPropContent {
 			int mouseEvent, int relativeX, int relativeY) {
 		if(btnLock.mousePressed(screen.mc, mouseX, mouseY))
 		{
-			property.getProperty().setEnabled(this.locked); //locked != enabled.
+			property.getProperty().simSetEnabled(this.locked); //locked != enabled.
 			return true;
 		}
 		return false;

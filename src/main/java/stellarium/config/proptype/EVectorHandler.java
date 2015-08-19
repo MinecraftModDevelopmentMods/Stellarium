@@ -34,10 +34,18 @@ public class EVectorHandler implements IConfigPropHandler<EVector> {
 	}
 	
 	@Override
-	public void onSetVal(IMConfigProperty<EVector> prop, EVector val) {
+	public void onSetVal(IMConfigProperty<EVector> prop, EVector val) {		
 		IDoubleElement size = prop.getElement(CPropLangStrs.size);
 		IDoubleElement yaw = prop.getElement(CPropLangStrs.yaw);
 		IDoubleElement pitch = prop.getElement(CPropLangStrs.pitch);
+		
+		if(val.isZero())
+		{
+			size.setValue(0.0);
+			yaw.setValue(0.0);
+			pitch.setValue(0.0);
+			return;
+		}
 		
 		IValRef<IReal> sizer = VecMath.size(val);
 		double sized = sizer.getVal().asDouble();

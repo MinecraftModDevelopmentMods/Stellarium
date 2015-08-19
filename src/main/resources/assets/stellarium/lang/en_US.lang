@@ -1,4 +1,13 @@
 ﻿
+//Basis
+basis.yes=Yes
+basis.no=No
+basis.size=Size
+basis.yaw=Yaw
+basis.pitch=Pitch
+
+//Planetary System
+
 cat.moving.name=Planetary System
 
 
@@ -25,7 +34,7 @@ cmv.orbtype=Orbit Type
 cmv.orbtype.expl=The type of this Orbit. Mainly they are expressions of elliptic orbit.
 
 cmv.cbtype=Celestial Body Type
-cmv.cbtype.expl=The type of this Celestial Body. Terrestial or Jovian, etc.
+cmv.cbtype.expl=The type of this Celestial Body. Star, Terrestial or Jovian, etc.
 
 //Moving Entry Properties
 cmv.ent.name=Name
@@ -38,6 +47,85 @@ cmv.ent.mass.expl=Mass of this Body, in Solar Mass.
 cmv.ent.rel.name=The property 'Name' is Related with the category name.
 cmv.ent.rel.orbtype=Loads type-specific properties when the property 'Orbit Type'is locked.
 cmv.ent.rel.cbtype=Loads type-specific properties when the property 'Celestial Body Type'is locked.
+
+
+//Stationary Orbit
+cmv.orbtype.stationary=Stationary Orbit
+
+///Properties
+cmv.orbit.prop.position=Position
+cmv.orbit.prop.position.expl=The Position of the Celestial Body.
+
+//Elliptical Orbit (Small Eccentricity)
+cmv.orbtype.smallecc=Elliptic Orbit(small ecc.)
+
+///Properties
+cmv.orbit.prop.semimajoraxis=Semi Major Axis
+cmv.orbit.prop.semimajoraxis.expl=Semi Major Axis, indicates size of the elliptical orbit.
+cmv.orbit.prop.orbitalperiod=Orbital Period
+cmv.orbit.prop.orbitalperiod.expl=Orbital Period, which is the time duration of one complete orbit. (Warning: This is Sidereal Period)
+cmv.orbit.prop.eccentricity=Eccentricity
+cmv.orbit.prop.eccentricity.expl=Eccentricity, indicates the orbit is how far from the circle.
+cmv.orbit.prop.inclination=Inclination
+cmv.orbit.prop.inclination.expl=Inclination, slope of the orbital plane to the main plane.
+cmv.orbit.prop.inclinationd=Inclination Change Rate
+cmv.orbit.prop.inclinationd.expl=Change Rate of Inclination.
+cmv.orbit.prop.longascnode=Longitude of AscNode
+cmv.orbit.prop.longascnode.expl=Longitude of the Ascending Node, where orbital plane crosses the main plane from down to up.
+cmv.orbit.prop.longascnoded=Long. of A.N. Change Rate
+cmv.orbit.prop.longascnoded.expl=Change Rate of Longitude of Ascending Node
+
+cmv.orbit.prop.ismajor=Major Form
+cmv.orbit.prop.ismajor.expl=Determine which to use: Major Form or Minor Form.
+
+cmv.orbit.prop.argperi=Argument of Peri.
+cmv.orbit.prop.argperi.expl=Argument of Periapsis, Angle between Ascending Node and Periapsis.
+cmv.orbit.prop.argperid=Arg. of Peri. Change Rate
+cmv.orbit.prop.argperid.expl=Change Rate of Argument of Periapsis.
+cmv.orbit.prop.meananomaly=Mean Anomaly
+cmv.orbit.prop.meananomaly.expl=Angular area being swept from periapsis to time 0 position. Expressed as Degrees.
+cmv.orbit.prop.longperi=Longitude of Peri.
+cmv.orbit.rpop.longperi.expl=Longitude of Periapsis, Angle between Vernal Equinox and Periapsis.
+cmv.orbit.prop.longperid=Long. of Peri. Change Rate
+cmv.orbit.rpop.longperid.expl=Change Rate of Longitude of Periapsis.
+cmv.orbit.prop.meanlongitude=Mean Longitude
+cmv.orbit.prop.meanlongitude.expl=Ecliptic longitude at which an orbiting body could be found if its orbit were circular, at time 0.
+
+///Relations
+cmv.orbit.rel.sizevsperiod=Cubic of Orbit size(=Semi-major axis) is proportional to the Mass of the Parent Body and square of Rotation Period.
+cmv.orbit.rel.majorexpr=Determine which to use: Major Expression or Minor Expression. Major Expression will contain Longitude of Periapsis and Mean Longitude, while Minor Expression will contain Argument of Periapsis and Mean Anomaly.
+
+
+//CBody Basis
+///Vars
+cmv.cbody.var.pole=North Pole
+cmv.cbody.var.pole.expl=North Pole Direction
+cmv.cbody.var.prmer=Prime Meridian
+cmv.cbody.var.prmer.expl=Prime Meridian Direction
+cmv.cbody.var.east=East
+cmv.cbody.var.east.expl=East Direction, perpendicular to the North Pole and Prime Meridian.
+
+///Properties
+cmv.cbody.prop.pole=North Pole
+cmv.cbody.prop.pole.expl=Specify North Pole Direction
+cmv.cbody.prop.tidallock=Tidal-Locked
+cmv.cbody.prop.tidallock.expl=Tidal-Locked body always show the same face to the parent body.
+cmv.cbody.prop.dayviewvernal=Initial Direction
+cmv.cbody.prop.dayviewvernal.expl=Initial Direction of Prime Meridian on Time 0. Varies from 0 to 1, Increasing counterclockwise.
+cmv.cbody.prop.rotation=Rotation Period
+cmv.cbody.prop.rotation.expl=Rotation Period of this body.
+cmv.cbody.prop.hasprec=Have Precession
+cmv.cbody.prop.hasprec.expl=Set this to yes when this body has Precession.
+cmv.cbody.prop.precession=Precession Period
+cmv.cbody.prop.precession.expl=Precession Period of this body. Precession is North Pole direction's rotation around orbital pole.
+
+///Relations
+cmv.cbody.rel.hasprec=Determine if a body has Precession or not. Period will be disabled when the body does not have Precession.
+cmv.cbody.rel.tidallock=Tidal-Locked body always show the same face to the parent body. It has fixed North Pole which is same with Orbital Pole, and same rotation period with revolution period.
+
+//Star
+cmv.cbodytype.star=Star
+
 
 //Entry Errors
 cmv.ent.err.missingorbit=Missing Orbit

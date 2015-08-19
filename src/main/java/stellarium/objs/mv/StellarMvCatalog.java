@@ -16,6 +16,7 @@ import stellarium.config.ICfgArrMListener;
 import stellarium.config.IConfigCategory;
 import stellarium.config.IStellarConfig;
 import stellarium.lang.CPropLangStrs;
+import stellarium.lang.CPropLangStrsCBody;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.cbody.CBody;
 import stellarium.objs.mv.cbody.CBodyRenderer;
@@ -52,6 +53,8 @@ public class StellarMvCatalog implements IStellarCatalogProvider<StellarMvLogica
 	
 	@Override
 	public void load() {
+		CPropLangStrsCBody.onRegister();
+		
 		ConfigPropTypeRegistry.register("typeOrbit", new TypeOrbitPropHandler());
 		ConfigPropTypeRegistry.register("typeCBody", new TypeCBodyPropHandler());
 		

@@ -22,6 +22,7 @@ import stellarium.config.gui.StellarConfigGuiProvider;
 import stellarium.gui.config.DefCfgGuiProvider;
 import stellarium.gui.config.StellarCfgGuiRegistry;
 import stellarium.lang.CLangStrs;
+import stellarium.lang.CPropLangRegistry;
 import stellarium.lang.CPropLangStrs;
 import stellarium.network.StellarNetworkHandler;
 import stellarium.settings.StellarSettings;
