@@ -77,7 +77,7 @@ public abstract class CBody implements IStellarObj, ILightObject {
 		double flux = 0.0;
 
 		for(ILightingData data : lightData.get(wl))
-			flux += data.getFlux(vp);
+			flux += data.getFlux();
 		
 		return Spmath.LumToMag(flux);
 	}
@@ -122,6 +122,12 @@ public abstract class CBody implements IStellarObj, ILightObject {
 	public double getRadius(Wavelength wl) {
 		return this.radius;
 	}
+	
+	@Override
+	public double getMaxRadius() {
+		return this.radius;
+	}
+
 
 	@Override
 	public int getRenderId() {

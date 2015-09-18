@@ -230,6 +230,25 @@ public class Spmath {
 	public static double lumRatioToMag(double lum) {
 		return -2.5 * Math.log10(lum);
 	}
+	
+	public static double getAreaOfIntersection(double radius1, double radius2, double distance) {
+		double r = radius1;
+		double R = radius2;
+		double d = distance;
+		
+		if(d > R + r)
+			return 0.0;
+		else if(R > d + r)
+			return Math.PI * r * r;
+		else if(r > d + R)
+			return Math.PI * R * R;
+		
+		double part1 = r*r*Math.acos((d*d + r*r - R*R)/(2*d*r));
+		double part2 = R*R*Math.acos((d*d + R*R - r*r)/(2*d*R));
+		double part3 = 0.5*Math.sqrt((-d+r+R)*(d+r-R)*(d-r+R)*(d+r+R));
+		
+		return part1 + part2 - part3;
+	}
 
 	public static double distArc(SpCoord dir1, SpCoord dir2) {
 		// TODO Auto-generated method stub

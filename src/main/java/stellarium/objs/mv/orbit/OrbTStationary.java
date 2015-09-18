@@ -100,11 +100,15 @@ public class OrbTStationary implements IOrbitType {
 		public double getMaxDist() {
 			return 0.0;
 		}
+		
+		@Override
+		public double getInfluenceSize() {
+			return Double.MAX_VALUE;
+		}
 
 		@Override
 		public IOrbitType getOrbitType() {
 			return OrbTStationary.this;
 		}
-		
 	}
 }

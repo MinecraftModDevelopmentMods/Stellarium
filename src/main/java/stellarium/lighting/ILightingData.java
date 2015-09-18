@@ -6,17 +6,17 @@ import stellarium.view.ViewPoint;
 public interface ILightingData {
 	
 	/**
-	 * gives light flux from specific lighting effect on specific viewpoint
+	 * gives light flux from specific lighting effect.
 	 * @param vp the viewpoint
 	 * */
-	public double getFlux(ViewPoint vp);
+	public double getFlux();
 	
 	/**
-	 * gives light intensity from specific origin point on specific viewpoint.
+	 * gives light intensity from specific origin point.
 	 * regards global coordinate system.
 	 * @param vp the viewpoint
 	 * @param origin the origin point relative to the lighting object
 	 * */
-	public double getIntensity(ViewPoint vp, EVector origin);
+	public double getIntensity(EVector origin);
 	
 }

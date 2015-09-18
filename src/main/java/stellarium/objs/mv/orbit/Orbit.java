@@ -55,6 +55,11 @@ public abstract class Orbit {
 	 * Get the maximum distance (on the apoapsis) of this orbit.
 	 * */
 	abstract public double getMaxDist();
+	
+	/**
+	 * Get the size of gravitational influence of this orbit.
+	 * */
+	abstract public double getInfluenceSize();
 
 	
 	public double getAvgPeriod() {

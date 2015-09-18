@@ -1,5 +1,7 @@
 package stellarium.lighting;
 
+import java.util.List;
+
 import sciapi.api.value.euclidian.EVector;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
@@ -7,25 +9,31 @@ import stellarium.view.ViewPoint;
 
 public class LightingDataSource implements ILightingData {
 	
-	private static double RATE_SR = 0.25 / Math.PI / Math.PI;
-	private final double luminosity;
-	private final EVector pos;
+	private static final double RATE_SR = 0.25 / Math.PI / Math.PI;
+	private final double flux;
+	private EVector pos;
+	private List<LightingShadeVP> shades;
 	
-	public LightingDataSource(double lum, EVector pos) {
-		this.luminosity = lum;
-		this.pos = pos;
+	public LightingDataSource(double flux) {
+		this.flux = flux;
 	}
 
 	@Override
-	public double getFlux(ViewPoint vp) {
-		double dist2 = Spmath.getD(VecMath.size2(VecMath.sub(pos, vp.getEcRPos())));
-		return luminosity / dist2;
+	public double getFlux() {
+		double shadeFactor = 1.0;
+		for(LightingShadeVP shade : shades)
+			shadeFactor -= shade.getTotalShadedAmount(this.pos);
+		shadeFactor = Math.max(0.0, shadeFactor);
+		return this.flux * shadeFactor;
 	}
 
 	@Override
-	public double getIntensity(ViewPoint vp, EVector origin) {
-		double dist2 = Spmath.getD(VecMath.size2(VecMath.sub(pos, vp.getEcRPos())));
-		return luminosity * RATE_SR / dist2;
+	public double getIntensity(EVector origin) {
+		double shadeFactor = 1.0;
+		for(LightingShadeVP shade : shades)
+			shadeFactor += shade.getTotalShadedAmount(this.pos);
+		shadeFactor = Math.max(0.0, shadeFactor);
+		return this.flux * RATE_SR * shadeFactor;
 	}
 
 }

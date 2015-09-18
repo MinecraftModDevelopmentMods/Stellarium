@@ -83,7 +83,7 @@ public class RenderLayer {
 		
 		this.getCurrentPartition().updateView(viewer.getViewPos(), fov, pxScale);
 		
-		catalog.onPreRender(re, filter, partialTicks);
+		catalog.onPreRender(re, vp, filter, partialTicks);
 		
 		for(RenderLayerPart layer : this.getCurrentPartition().getLayers())
 			layer.preRender(re, vp);

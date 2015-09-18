@@ -12,9 +12,9 @@ public interface ILightObject {
 	public EVector getPosition(float partime);
 	
 	/**
-	 * gives the radius of the object
+	 * gives the max radius of objects via wavelength.
 	 * */
-	public double getRadius();
+	public double getMaxRadius();
 	
 	/**
 	 * adds lighting data to object

@@ -285,7 +285,7 @@ public class OrbitTSmallEcc implements IOrbitType {
 					new StrMessage(CPropLangStrs.getExpl(CPropLangStrsCBody.eccOutOfRange)));
 		
 		for(CMvEntry child : orb.getEntry().getSatelliteList()) {
-			if(child.orbit().getMaxDist() > orbit.hillRadius)
+			if(child.orbit().getMaxDist() > orbit.getInfluenceSize())
 				cfg.addLoadFailMessage(CPropLangStrsCBody.bodyEscaped,
 					new StrMessage(CPropLangStrs.getExpl(CPropLangStrsCBody.bodyEscaped)));
 		}
@@ -375,6 +375,11 @@ public class OrbitTSmallEcc implements IOrbitType {
 		@Override
 		public double getMaxDist() {
 			return this.a * (1 + this.e);
+		}
+		
+		@Override
+		public double getInfluenceSize() {
+			return this.hillRadius;
 		}
 
 		@Override

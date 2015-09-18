@@ -45,9 +45,10 @@ public interface IStellarCatalog extends IConfigurableData {
 	 * called before rendering to preset filter, refresh lighting, etc.
 	 * 
 	 * @param re the rendering engine
+	 * @param vp the viewpoint viewing the objects
 	 * @param filter filter for rendering
 	 * @param partime partial tick when renders the catalog. 
 	 * */
-	public void onPreRender(CRenderEngine re, OpFilter filter, float partime);
+	public void onPreRender(CRenderEngine re, ViewPoint vp, OpFilter filter, float partime);
 
 }

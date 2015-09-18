@@ -2,12 +2,10 @@ package stellarium.util.math;
 
 import sciapi.api.temporaries.Temporal;
 import sciapi.api.value.IValRef;
-import sciapi.api.value.IValue;
 import sciapi.api.value.STempRef;
-import sciapi.api.value.absalg.IVectorSpace;
+import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.ECoord;
 import sciapi.api.value.euclidian.EVector;
-import sciapi.api.value.euclidian.IEVecSet;
 import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.numerics.DDouble;
 import sciapi.api.value.numerics.DDoubleSet;
@@ -114,9 +112,22 @@ public class VecMath {
 		return par.getVal().getDimension();
 	}
 	
-	/**Projection of target to Polar plane*/
-	public static final IValRef<EVector> Projection(IValRef<EVector> pol, IValRef<EVector> tar){
-		return VecMath.sub(tar, VecMath.mult(VecMath.dot(pol,tar), pol));
+	/**
+	 * Projection of target to pole
+	 * @param vec normalized polar vector
+	 * @param tar the target vector
+	 * */
+	public static final IValRef<EVector> projection(EVector vec, IValRef<EVector> tar){
+		return VecMath.mult(VecMath.dot(vec,tar), vec);
+	}
+	
+	/**
+	 * Projection of target to Polar plane
+	 * @param pol normalized polar vector
+	 * @param tar the target vector
+	 * */
+	public static final IValRef<EVector> projectionToPlane(EVector pol, EVector tar){
+		return VecMath.sub(tar, projection(pol, tar));
 	}
 	
 	
@@ -137,6 +148,10 @@ public class VecMath {
 
 	public static IValRef<EVector> interpolate(EVector prevPos, EVector curPos, double partime) {
 		return add(prevPos, mult(partime, sub(curPos, prevPos)));
+	}
+	
+	public static double getAngle(EVector vec1, EVector vec2) {
+		return Spmath.getD(NumMath.atan2.calc(VecMath.size(CrossUtil.cross(vec1, vec2)), VecMath.dot(vec1, vec2)));
 	}
 
 	
