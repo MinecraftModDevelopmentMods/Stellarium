@@ -1,36 +1,19 @@
 package stellarium.objs.mv.cbody;
 
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 
-import net.minecraftforge.common.config.Configuration;
-import sciapi.api.value.IValRef;
-import sciapi.api.value.euclidian.CrossUtil;
 import sciapi.api.value.euclidian.ECoord;
 import sciapi.api.value.euclidian.EVector;
-import sciapi.api.value.euclidian.IEVector;
 import sciapi.api.value.util.BOp;
-import sciapi.api.value.util.VOp;
-import stellarium.catalog.EnumCatalogType;
 import stellarium.lighting.ILightObject;
 import stellarium.lighting.ILightingData;
 import stellarium.mech.Wavelength;
-import stellarium.objs.EnumSObjType;
 import stellarium.objs.IStellarObj;
 import stellarium.objs.mv.CMvEntry;
-import stellarium.util.math.AxisRotate;
-import stellarium.util.math.SpCoord;
-import stellarium.util.math.SpCoordf;
 import stellarium.util.math.Spmath;
 import stellarium.util.math.VecMath;
 import stellarium.view.ViewPoint;
-import stellarium.world.IWorldHandler;
 
 public abstract class CBody implements IStellarObj, ILightObject {
 

@@ -17,7 +17,7 @@ public class StellarWorldProvider extends WorldProviderSurface {
     	if(StellarSettings.Earth.EcRPos == null)
     		StellarSettings.Update(par1+par3, isSurfaceWorld());
     	
-    	IValRef<EVector> sun = EVectorSet.ins(3).getSTemp();
+    	IValRef<EVector> sun = EVectorSet.ins(3).getNew();
     	
     	sun.set(StellarSettings.Sun.GetPosition());
     	sun.set(ExtinctionRefraction.Refraction(sun, true));
@@ -27,9 +27,7 @@ public class StellarWorldProvider extends WorldProviderSurface {
     	
     	if(VecMath.getCoord(sun, 0).asDouble()<0) h=Math.PI-h;
     	if(VecMath.getCoord(sun, 0).asDouble()>0 && h<0) h=h+2*Math.PI;
-    	
-    	sun.onUsed();
-    	
+    	    	
     	return (float)(Spmath.fmod((h/2/Math.PI)+0.75,2));
     }
 

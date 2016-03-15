@@ -55,7 +55,7 @@ public class VecMath {
 	@Temporal
 	public static IValRef<EVector> mult(double par1, IValRef<EVector> par2)
 	{
-		STempRef<DDouble> ref = DDoubleSet.ins.getSTemp();
+		IValRef<DDouble> ref = DDoubleSet.ins.getNew();
 		ref.getVal().set(par1);
 		return VOp.mult(ref, par2);
 	}
@@ -66,7 +66,7 @@ public class VecMath {
 	@Temporal
 	public static IValRef<EVector> div(double par1, IValRef<EVector> par2)
 	{
-		STempRef<DDouble> ref = DDoubleSet.ins.getSTemp();
+		IValRef<DDouble> ref = DDoubleSet.ins.getNew();
 		ref.getVal().set(par1);
 		return VOp.div(ref, par2);
 	}
